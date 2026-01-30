@@ -1,0 +1,25 @@
+README.md
+  ef5772735639beeb 286-608
+README_EN.md
+  ef5772735639beeb 286-608
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.40",
+  "base_commit_sha": "d88218a312bd6827322d574b3c273b7f4669f528",
+  "prompts": {
+    "ef5772735639beeb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_3efdd83c2ffeN6BDstPTu5LYr1",
+        "model": "opencode/kimi-k2.5-free"
+      },
+      "human_author": "Trongdepzai-dev <Trongdepzai-dev@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 646,
+      "total_deletions": 0,
+      "accepted_lines": 646,
+      "overriden_lines": 0
+    }
+  }
+}
