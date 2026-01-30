@@ -2,17 +2,18 @@
 
 > ⚠️ **CẢNH BÁO PHÁP LÝ**: Repository này chứa mã độc (malware) đã được decompile. Nội dung này được cung cấp **CHỈ** cho mục đích nghiên cứu, phân tích và giáo dục an ninh mạng. Việc sử dụng mã này cho mục đích bất hợp pháp là **NGHIÊM CẤM** và có thể dẫn đến truy tố hình sự.
 
-**[🇬🇧 English Version](README_EN.md)** | **[📊 Báo cáo Kỹ thuật Chi tiết](REPORT.md)**
+**[🇬🇧 English Version](README_EN.md)** | **[📊 Báo cáo Kỹ thuật](REPORT.md)** | **[🛡️ Phân tích Điểm yếu](DEFENSIVE_ANALYSIS.md)**
 
 ---
 
 ## 📑 Mục lục Tài liệu
 
-| Tài liệu | Mô tả |
-|----------|-------|
-| **README.md** (hiện tại) | Tổng quan, cấu trúc, targets, phòng chống |
-| **README_EN.md** | English version của README |
-| **REPORT.md** | [Báo cáo kỹ thuật sâu 893 dòng →](REPORT.md) - 15 thuật toán mã hóa, SQLite parser, 84+ browsers, Windows APIs, IOCs |
+| Tài liệu | Mô tả | Đối tượng |
+|----------|-------|-----------|
+| **README.md** (hiện tại) | Tổng quan, cấu trúc, targets | Tất cả |
+| **README_EN.md** | English version của README | Tất cả |
+| **REPORT.md** | [Báo cáo kỹ thuật sâu 893 dòng →](REPORT.md) | Malware Analyst |
+| **DEFENSIVE_ANALYSIS.md** | [🛡️ Phân tích điểm yếu + YARA/Sigma rules →](DEFENSIVE_ANALYSIS.md) | **Blue Team, SOC, IR** |
 
 ---
 

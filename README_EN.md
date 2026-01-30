@@ -2,17 +2,18 @@
 
 > ⚠️ **LEGAL WARNING**: This repository contains decompiled malware. The content is provided **ONLY** for research, analysis, and cybersecurity education purposes. Using this code for illegal purposes is **STRICTLY PROHIBITED** and may result in criminal prosecution.
 
-**[🇻🇳 Vietnamese Version](README.md)** | **[📊 Detailed Technical Report](REPORT.md)**
+**[🇻🇳 Vietnamese Version](README.md)** | **[📊 Technical Report](REPORT.md)** | **[🛡️ Defensive Analysis](DEFENSIVE_ANALYSIS.md)**
 
 ---
 
 ## 📑 Documentation Index
 
-| Document | Description |
-|----------|-------------|
-| **README.md** | Overview, structure, targets, prevention (Vietnamese) |
-| **README_EN.md** (current) | English version of README |
-| **REPORT.md** | [Deep technical report 893 lines →](REPORT.md) - 15+ encryption algorithms, SQLite parser, 84+ browsers, Windows APIs, IOCs |
+| Document | Description | Audience |
+|----------|-------------|----------|
+| **README.md** | Overview, structure, targets (Vietnamese) | Everyone |
+| **README_EN.md** (current) | English version of README | Everyone |
+| **REPORT.md** | [Deep technical report 893 lines →](REPORT.md) | Malware Analysts |
+| **DEFENSIVE_ANALYSIS.md** | [🛡️ Weaknesses + YARA/Sigma rules →](DEFENSIVE_ANALYSIS.md) | **Blue Team, SOC, IR** |
 
 ---
 
