@@ -1,0 +1,23 @@
+COMPREHENSIVE_REPORT.md
+  ef5772735639beeb 1-855
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.40",
+  "base_commit_sha": "434be4607db074fc639cc333474af8df732a6354",
+  "prompts": {
+    "ef5772735639beeb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_3efdd83c2ffeN6BDstPTu5LYr1",
+        "model": "opencode/kimi-k2.5-free"
+      },
+      "human_author": "Trongdepzai-dev <Trongdepzai-dev@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 863,
+      "total_deletions": 7,
+      "accepted_lines": 863,
+      "overriden_lines": 0
+    }
+  }
+}
