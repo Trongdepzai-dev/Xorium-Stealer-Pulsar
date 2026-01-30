@@ -1,0 +1,12 @@
+costura.costura.dll.compressed|6.0.0.0|Costura, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d|Costura.dll|028E9832F421F11F9497C610F1734E0F3D868037|5120
+costura.costura.pdb.compressed|||Costura.pdb|806F4C19B2D7FD9E3B836269EC07647019A29E95|7960
+costura.pulsar.common.dll.compressed|2.3.3.0|Pulsar.Common, Version=2.3.3.0, Culture=neutral, PublicKeyToken=null|Pulsar.Common.dll|B63EE635427C6728C87F65314568D21A22138397|180736
+costura.messagepack.dll.compressed|3.1.4.0|MessagePack, Version=3.1.4.0, Culture=neutral, PublicKeyToken=b4a0369545f0a1be|MessagePack.dll|B57B485BA7372FB3403FD0C36043A051AF2AFC05|377344
+costura.system.memory.dll.compressed|4.0.1.2|System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51|System.Memory.dll|3C5C5DF5F8F8DB3F0A35C5ED8D357313A54E3CDE|142240
+costura.messagepack.annotations.dll.compressed|3.1.4.0|MessagePack.Annotations, Version=3.1.4.0, Culture=neutral, PublicKeyToken=b4a0369545f0a1be|MessagePack.Annotations.dll|A0690708C86F009D41FDA400FEAD8407B8168895|18432
+costura.system.buffers.dll.compressed|4.0.3.0|System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51|System.Buffers.dll|2F410A0396BC148ED533AD49B6415FB58DD4D641|20856
+costura.system.threading.tasks.extensions.dll.compressed|4.2.0.1|System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51|System.Threading.Tasks.Extensions.dll|2242627282F9E07E37B274EA36FAC2D3CD9C9110|25984
+costura.microsoft.bcl.asyncinterfaces.dll.compressed|8.0.0.0|Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51|Microsoft.Bcl.AsyncInterfaces.dll|74DC07A8CCCEE0CA3BF5CF64320230CA1A37AD85|26904
+costura.system.collections.immutable.dll.compressed|8.0.0.0|System.Collections.Immutable, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a|System.Collections.Immutable.dll|6E3CCF50BB1D30805DCE58AB6BDD63E0196669E6|252696
+costura.microsoft.net.stringtools.dll.compressed|1.0.0.0|Microsoft.NET.StringTools, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a|Microsoft.NET.StringTools.dll|6B7839DC2A44CAA0B501333DD3C6915A0601E8C0|31504
+costura.system.numerics.vectors.dll.compressed|4.1.4.0|System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a|System.Numerics.Vectors.dll|3D216458740AD5CB05BC5F7C3491CDE44A1E5DF0|115856

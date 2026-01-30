@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\Users\Administrator\Downloads\Pulsar Premium v2.4.5\Plugins\Stealer.Server.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2D2A4030-6836-4C66-B9A8-BEA4EA134EED}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Stealer.Server</AssemblyName>
+    <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Collections" />
+    <Reference Include="System.Drawing.Primitives" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Threading" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="_003CModule_003E.cs" />
+    <Compile Include="StealerServer_ProcessedByFody.cs" />
+    <Compile Include="Costura\AssemblyLoader.cs" />
+    <Compile Include="Pulsar\Plugins\Server\ArchiveCollectorServer.cs" />
+    <Compile Include="Pulsar\Plugins\Server\SettingsForm.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="costura.metadata" />
+    <EmbeddedResource Include="costura\bouncycastle\crypto\dll.compressed" />
+    <EmbeddedResource Include="costura\discordrpc\dll.compressed" />
+    <EmbeddedResource Include="costura\dnlib\dll.compressed" />
+    <EmbeddedResource Include="costura\glwpfcontrol\dll.compressed" />
+    <EmbeddedResource Include="costura\gma\system\mousekeyhook\dll.compressed" />
+    <EmbeddedResource Include="costura\livechartscore\skiasharpview\wpf\dll.compressed" />
+    <EmbeddedResource Include="costura\messagepack\annotations\dll.compressed" />
+    <EmbeddedResource Include="costura\messagepack\dll.compressed" />
+    <EmbeddedResource Include="costura\microsoft\data\sqlite\dll.compressed" />
+    <EmbeddedResource Include="costura\microsoft\net\stringtools\dll.compressed" />
+    <EmbeddedResource Include="costura\mono\cecil\dll.compressed" />
+    <EmbeddedResource Include="costura\naudio\core\dll.compressed" />
+    <EmbeddedResource Include="costura\naudio\winforms\dll.compressed" />
+    <EmbeddedResource Include="costura\naudio\winmm\dll.compressed" />
+    <EmbeddedResource Include="costura\newtonsoft\json\dll.compressed" />
+    <EmbeddedResource Include="costura\open\nat\dll.compressed" />
+    <EmbeddedResource Include="costura\opentk\dll.compressed" />
+    <EmbeddedResource Include="costura\pulsar\common\dll.compressed" />
+    <EmbeddedResource Include="costura\pulsar\dll.compressed" />
+    <EmbeddedResource Include="costura\skiasharp\dll.compressed" />
+    <EmbeddedResource Include="costura\skiasharp\views\desktop\common\dll.compressed" />
+    <EmbeddedResource Include="costura\skiasharp\views\wpf\dll.compressed" />
+    <EmbeddedResource Include="costura\sqlitepclraw\core\dll.compressed" />
+    <EmbeddedResource Include="costura\vestris\resourcelib\dll.compressed" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
