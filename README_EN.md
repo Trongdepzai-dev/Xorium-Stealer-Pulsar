@@ -2,7 +2,17 @@
 
 > ⚠️ **LEGAL WARNING**: This repository contains decompiled malware. The content is provided **ONLY** for research, analysis, and cybersecurity education purposes. Using this code for illegal purposes is **STRICTLY PROHIBITED** and may result in criminal prosecution.
 
-**[🇻🇳 Vietnamese Version](README.md)**
+**[🇻🇳 Vietnamese Version](README.md)** | **[📊 Detailed Technical Report](REPORT.md)**
+
+---
+
+## 📑 Documentation Index
+
+| Document | Description |
+|----------|-------------|
+| **README.md** | Overview, structure, targets, prevention (Vietnamese) |
+| **README_EN.md** (current) | English version of README |
+| **REPORT.md** | [Deep technical report 893 lines →](REPORT.md) - 15+ encryption algorithms, SQLite parser, 84+ browsers, Windows APIs, IOCs |
 
 ---
 
