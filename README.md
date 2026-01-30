@@ -235,6 +235,54 @@ Dữ liệu được đóng gói thành file ZIP với cấu trúc:
 
 ---
 
+## 🛡️ Anti-VM & Anti-Sandbox
+
+Mã độc sử dụng nhiều kỹ thuật để phát hiện và tránh chạy trong môi trường ảo hóa (VM) hoặc sandbox:
+
+### Các kỹ thuật Anti-Analysis
+
+| Kỹ thuật | Mô tả | Điều kiện phát hiện |
+|----------|-------|---------------------|
+| **Processor Count Check** | Kiểm tra số lượng CPU cores | `Environment.ProcessorCount <= 1` |
+| **Debugger Detection** | Phát hiện debugger đang attach | `Debugger.IsAttached` |
+| **Memory Check** | Kiểm tra RAM tổng | RAM < 2GB |
+| **Drive Space Check** | Kiểm tra dung lượng ổ C | < 50GB |
+| **Cache Memory Check** | Kiểm tra Win32_CacheMemory | Không có cache memory |
+| **CIM Memory Check** | Kiểm tra CIM_Memory | Không có CIM memory |
+| **Process Name Check** | Kiểm tra tên process | Chứa từ "sandbox" |
+| **User/Machine Check** | Kiểm tra username và hostname | Các pattern đặc biệt |
+
+### Các pattern User/Machine bị phát hiện
+
+```csharp
+// Windows Defender Application Guard
+username == "WDAGUtilityAccount"
+
+// Các pattern sandbox phổ biến
+(username == "frank" && hostname.Contains("desktop"))
+(username == "robert" && hostname.Contains("22h2"))
+```
+
+### Hành vi khi phát hiện VM/Sandbox
+
+```csharp
+public static void CheckOrExit()
+{
+    if (ProccessorCheck()) throw new Exception();
+    if (CheckDebugger()) throw new Exception();
+    if (CheckMemory()) throw new Exception();
+    if (CheckDriveSpace()) throw new Exception();
+    if (CheckUserConditions()) throw new Exception();
+    if (CheckCache()) throw new Exception();
+    if (CheckFileName()) throw new Exception();
+    if (CheckCim()) throw new Exception();
+}
+```
+
+Khi phát hiện bất kỳ điều kiện nào, mã độc sẽ throw exception và dừng thực thi ngay lập tức.
+
+---
+
 ## 🛡️ Phòng chống & Phát hiện
 
 ### IOCs (Indicators of Compromise)

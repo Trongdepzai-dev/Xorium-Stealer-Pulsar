@@ -235,6 +235,54 @@ Data is packaged into a ZIP file with the following structure:
 
 ---
 
+## 🛡️ Anti-VM & Anti-Sandbox
+
+The malware employs multiple techniques to detect and avoid running in virtualized environments (VM) or sandboxes:
+
+### Anti-Analysis Techniques
+
+| Technique | Description | Detection Condition |
+|-----------|-------------|---------------------|
+| **Processor Count Check** | Check number of CPU cores | `Environment.ProcessorCount <= 1` |
+| **Debugger Detection** | Detect attached debugger | `Debugger.IsAttached` |
+| **Memory Check** | Check total RAM | RAM < 2GB |
+| **Drive Space Check** | Check C: drive capacity | < 50GB |
+| **Cache Memory Check** | Check Win32_CacheMemory | No cache memory found |
+| **CIM Memory Check** | Check CIM_Memory | No CIM memory found |
+| **Process Name Check** | Check process name | Contains "sandbox" |
+| **User/Machine Check** | Check username and hostname | Specific patterns |
+
+### Detected User/Machine Patterns
+
+```csharp
+// Windows Defender Application Guard
+username == "WDAGUtilityAccount"
+
+// Common sandbox patterns
+(username == "frank" && hostname.Contains("desktop"))
+(username == "robert" && hostname.Contains("22h2"))
+```
+
+### Behavior When VM/Sandbox Detected
+
+```csharp
+public static void CheckOrExit()
+{
+    if (ProccessorCheck()) throw new Exception();
+    if (CheckDebugger()) throw new Exception();
+    if (CheckMemory()) throw new Exception();
+    if (CheckDriveSpace()) throw new Exception();
+    if (CheckUserConditions()) throw new Exception();
+    if (CheckCache()) throw new Exception();
+    if (CheckFileName()) throw new Exception();
+    if (CheckCim()) throw new Exception();
+}
+```
+
+When any condition is detected, the malware throws an exception and stops execution immediately.
+
+---
+
 ## 🛡️ Detection & Prevention
 
 ### IOCs (Indicators of Compromise)
