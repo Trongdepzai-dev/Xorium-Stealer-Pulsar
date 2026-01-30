@@ -1,0 +1,23 @@
+ULTRA_DEEP_ANALYSIS.md
+  ef5772735639beeb 1-874
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.40",
+  "base_commit_sha": "3c1dd3df7d94b2a8c4f9ca5a003bc0de47abde37",
+  "prompts": {
+    "ef5772735639beeb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_3efdd83c2ffeN6BDstPTu5LYr1",
+        "model": "opencode/kimi-k2.5-free"
+      },
+      "human_author": "Trongdepzai-dev <Trongdepzai-dev@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 874,
+      "total_deletions": 0,
+      "accepted_lines": 874,
+      "overriden_lines": 0
+    }
+  }
+}
