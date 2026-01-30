@@ -1,0 +1,23 @@
+DEFENSIVE_ANALYSIS.md
+  ef5772735639beeb 1-597
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.40",
+  "base_commit_sha": "ae0c8255faec43543189e868e1d954a8aa888565",
+  "prompts": {
+    "ef5772735639beeb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_3efdd83c2ffeN6BDstPTu5LYr1",
+        "model": "opencode/kimi-k2.5-free"
+      },
+      "human_author": "Trongdepzai-dev <Trongdepzai-dev@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 597,
+      "total_deletions": 0,
+      "accepted_lines": 597,
+      "overriden_lines": 0
+    }
+  }
+}
