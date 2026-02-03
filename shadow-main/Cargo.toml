@@ -1,0 +1,20 @@
+[package]
+name = "shadow_core"
+version = "1.0.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+winapi = { version = "0.3.9", features = ["sysinfoapi", "processthreadsapi", "minwindef", "ntdef", "ntstatus", "libloaderapi", "winerror", "memoryapi", "handleapi", "winnt", "synchapi"] }
+detour = "0.8.0"
+lazy_static = "1.4.0"
+libc = "0.2"
+
+[profile.release]
+opt-level = "z"     # Optimize for size
+lto = true          # Link Time Optimization
+strip = true        # Strip symbols
+panic = "abort"     # Abort on panic for smaller binary
+codegen-units = 1   # Maximize optimization
