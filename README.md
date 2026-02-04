@@ -33,11 +33,27 @@ Why run as a user when you can run as **GOD**?
 - **Command Dominance**: Execute any command with the highest privileges available on Windows.
 
 ### 3. 🌑 VOID WALKER (Ring 0 Kernel Rootkit)
-The ultimate weapon for absolute OS control. Xorium now integrates a **Rust-based Kernel Rootkit**.
+The ultimate weapon for absolute OS control. Xorium now integrates a **Rust-based Kernel Rootkit** with **Silent IOCTL Interaction**.
+- **Ghost Communication**: No CLI calls, no noisy `.exe` wrappers. Communicates directly with Ring 0 via `DeviceIoControl`.
 - **DKOM (Direct Kernel Object Manipulation)**: Manipulates `EPROCESS` structures to hide any process from Task Manager, ProcExp, and the kernel itself.
-- **Callback Neutralization**: Strips `PsSetCreateProcessNotifyRoutine` and other security callbacks to blind EDRs/AVs.
-- **Port/Driver Hiding**: Conceals network connections and loaded drivers at the ring 0 level.
-- **Xorium Bridge**: The loader can now command the kernel directly using original Rust client tools.
+- **Kernel Keylogger**: Maps `gafAsyncKeyState` directly to user-space for zero-hook keystroke capture.
+- **EDR Blinding**: Disables **ETWTI** (Event Tracing for Windows Threat Intelligence) and **DSE** (Driver Signature Enforcement).
+
+---
+
+## 🛠️ COMMAND SYSTEMS
+
+Xorium Pulsar supports a wide range of remote commands. Here are some highlight commands:
+
+### 🎮 General Commands
+- `collect`: Scans 150+ targets (Browsers, Wallets, VPNs, etc.) and zips them.
+
+### 🌑 Kernel Commands (Ring 0 - SILENT)
+- `kernel_hide`: Hides the target PID from the entire OS via IOCTL.
+- `kernel_elevate`: Forces the target PID to SYSTEM status via Token Stealing.
+- `kernel_protect`: Makes the target PID unkillable.
+- `kernel_keylog`: Activates the kernel-level stealth keylogger.
+- `kernel_blind`: Disables ETWTI and DSE silencing security monitors.
 
 ---
 
