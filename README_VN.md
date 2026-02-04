@@ -59,8 +59,12 @@ Xorium Pulsar hỗ trợ hàng loạt lệnh điều khiển từ xa:
 - `kernel_ghost_reg`: Ẩn Registry Key khỏi RegEdit.
 - `kernel_inject_apc`: Inject shellcode qua cơ chế APC tàng hình.
 - `kernel_inject_hijack`: Inject shellcode qua Thread Hijacking.
-- `kernel_hide_thread`: Ẩn Thread mục tiêu khỏi sự giám sát của OS.
-- `kernel_hide_module`: Bản sao ma (Ghost) DLL bên trong tiến trình.
+- `kernel_terminate` [PID]: Kết liễu tiến trình từ cấp độ Kernel (bất chấp sự bảo vệ của các phần mềm khác).
+- `kernel_block_driver` [driverName]: Chặn không cho một Driver cụ thể tải vào hệ thống.
+- `kernel_protect_reg_key` [path]: Bảo vệ một Registry Key khỏi bị xóa hoặc sửa đổi.
+- `kernel_protect_reg_val` [path|val]: Bảo vệ một Registry Value cụ thể.
+- `kernel_hide_thread` [TID]: Ẩn luồng thực thi (Thread) tàng hình tuyệt đối.
+- `kernel_hide_module` [PID|module]: Ẩn module DLL trong bộ nhớ tiến trình (Ghosting).
 
 ---
 

