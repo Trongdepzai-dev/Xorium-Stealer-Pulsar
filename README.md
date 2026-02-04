@@ -1,6 +1,6 @@
 # 💎 XORIUM STEALER PULSAR [GOD EDITION] 💎
 ### *The Last Stealer You Will Ever Need.*
-[👉 Đọc bản tiếng Việt tại đây (Vietnamese Version)](file:///d:/Xorium_Stealer_Pulsar/Xorium%20Stealer%20Pulsar/README_VN.md)
+[👉 Đọc bản tiếng Việt tại đây (Vietnamese Version)](https://github.com/Trongdepzai-dev/Xorium-Stealer-Pulsar/blob/main/README_VN.md)
 
 [![Rust](https://img.shields.io/badge/Core-Rust_Shadow-orange?style=for-the-badge&logo=rust)]()
 [![C#](https://img.shields.io/badge/Loader-C%23_GodPower-blue?style=for-the-badge&logo=csharp)]()
