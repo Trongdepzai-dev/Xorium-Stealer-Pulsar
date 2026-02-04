@@ -60,6 +60,8 @@ Xorium Pulsar supports a wide range of remote commands. Here are some highlight 
 - `kernel_ghost_reg`: Hides registry keys from RegEdit.
 - `kernel_inject_apc`: Injects shellcode via stealthy APC queuing.
 - `kernel_inject_hijack`: Injects shellcode via thread context hijacking.
+- `kernel_hide_thread`: Hides a specific thread from OS accounting.
+- `kernel_hide_module`: Ghost a DLL within a process context.
 
 ---
 

