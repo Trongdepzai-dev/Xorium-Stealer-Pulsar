@@ -55,6 +55,11 @@ Xorium Pulsar supports a wide range of remote commands. Here are some highlight 
 - `kernel_protect`: Makes the target PID unkillable.
 - `kernel_keylog`: Activates the kernel-level stealth keylogger.
 - `kernel_blind`: Disables ETWTI and DSE silencing security monitors.
+- `kernel_hide_port`: Hides TCP/UDP ports from network analysis tools.
+- `kernel_clean_callbacks`: Neutralizes all EDR/AV notification routines.
+- `kernel_ghost_reg`: Hides registry keys from RegEdit.
+- `kernel_inject_apc`: Injects shellcode via stealthy APC queuing.
+- `kernel_inject_hijack`: Injects shellcode via thread context hijacking.
 
 ---
 

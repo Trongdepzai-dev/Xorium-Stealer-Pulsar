@@ -54,6 +54,11 @@ Xorium Pulsar hỗ trợ hàng loạt lệnh điều khiển từ xa:
 - `kernel_protect`: Biến tiến trình trở nên bất tử (không thể bị kill).
 - `kernel_keylog`: Kích hoạt Keylogger cấp độ Kernel.
 - `kernel_blind`: Vô hiệu hóa ETWTI và DSE để tắt các hệ thống giám sát.
+- `kernel_hide_port`: Ẩn cổng TCP/UDP khỏi các công cụ giám sát mạng.
+- `kernel_clean_callbacks`: Vô hiệu hóa mọi notification routine của EDR/AV.
+- `kernel_ghost_reg`: Ẩn Registry Key khỏi RegEdit.
+- `kernel_inject_apc`: Inject shellcode qua cơ chế APC tàng hình.
+- `kernel_inject_hijack`: Inject shellcode qua Thread Hijacking.
 
 ---
 
