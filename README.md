@@ -1,11 +1,21 @@
+<p align="center">
+  <img src="assets/banner.png" alt="Xorium Pulsar Banner" width="800">
+</p>
+
 # 💎 XORIUM STEALER PULSAR [GOD EDITION] 💎
 ### *The Last Stealer You Will Ever Need.*
-[👉 Đọc bản tiếng Việt tại đây (Vietnamese Version)](https://github.com/Trongdepzai-dev/Xorium-Stealer-Pulsar/blob/main/README_VN.md)
+
+<p align="left">
+  <a href="https://github.com/Trongdepzai-dev/Xorium-Stealer-Pulsar/blob/main/README_VN.md">
+    <img src="https://img.shields.io/badge/Language-VIETNAMESE-red?style=for-the-badge&logo=google-translate" alt="Vietnamese Version">
+  </a>
+</p>
 
 [![Rust](https://img.shields.io/badge/Core-Rust_Shadow-orange?style=for-the-badge&logo=rust)]()
 [![C#](https://img.shields.io/badge/Loader-C%23_GodPower-blue?style=for-the-badge&logo=csharp)]()
 [![Status](https://img.shields.io/badge/Status-UNDETECTED-brightgreen?style=for-the-badge)]()
 [![Privilege](https://img.shields.io/badge/Privilege-NT_AUTHORITY%5CSYSTEM-red?style=for-the-badge)]()
+[![Architecture](https://img.shields.io/badge/Architecture-Hybrid_Kernel-blueviolet?style=for-the-badge)]()
 
 ---
 
@@ -17,99 +27,69 @@ You are tired of paying for "FUD" crypters that get detected in 24 hours. You ar
 We combined the raw power of **C# .NET** with the invisibility of **Rust Assembly**.
 The result? A malware that doesn't just steal—it **DOMINATES**.
 
+<p align="center">
+  <img src="assets/engine.png" alt="Pulsar Engine" width="600">
+</p>
+
 ---
 
 ## ⚡ KEY SELLING POINTS (The "God" Features)
 
 ### 1. 👻 PROJECT SHADOW (True Invisibility)
 Most stealers are caught by heuristics. Xorium uses a **Custom Rust Stealth Core** (`shadow_core.dll`).
-- **PEB Unlinking**: The DLL removes itself from the Process Environment Block immediately upon load. It effectively "vanishes" from the module list.
-- **AMSI Patching**: Locates and neutralizes `AmsiScanBuffer` in memory. Bypasses in-memory scanning.
-- **ETW Blindness**: Patches `EtwEventWrite` in `ntdll.dll` to return success without logging. Blinds behavioral analysis tools.
+- **PEB Unlinking**: Vanishes from the module list immediately.
+- **AMSI Patching**: Neutralizes `AmsiScanBuffer` in memory.
+- **ETW Blindness**: Patches `EtwEventWrite` to blind behavioral tools.
 
 ### 2. 👑 GOD POWER (Instant SYSTEM Access)
-Why run as a user when you can run as **GOD**?
-- **Integrated GodPotato**: We have integrated the legendary `GodPotato` exploit.
+- **Integrated GodPotato**: Legendary LPE exploit built-in.
 - **Auto-Escalate**: User -> `NT AUTHORITY\SYSTEM` in milliseconds.
-- **Command Dominance**: Execute any command with the highest privileges available on Windows.
+- **Command Dominance**: Highest possible privileges on Windows.
 
 ### 3. 🌑 VOID WALKER (Ring 0 Kernel Rootkit)
-The ultimate weapon for absolute OS control. Xorium now integrates a **Rust-based Kernel Rootkit** with **Silent IOCTL Interaction**.
-- **Ghost Communication**: No CLI calls, no noisy `.exe` wrappers. Communicates directly with Ring 0 via `DeviceIoControl`.
-- **DKOM (Direct Kernel Object Manipulation)**: Manipulates `EPROCESS` structures to hide any process from Task Manager, ProcExp, and the kernel itself.
-- **Kernel Keylogger**: Maps `gafAsyncKeyState` directly to user-space for zero-hook keystroke capture.
-- **EDR Blinding**: Disables **ETWTI** (Event Tracing for Windows Threat Intelligence) and **DSE** (Driver Signature Enforcement).
+The ultimate weapon for absolute OS control.
+- **DKOM (Direct Kernel Object Manipulation)**: Hide from Task Manager & Kernel.
+- **Kernel Keylogger**: Zero-hook keystroke capture.
+- **EDR Blinding**: Disables **ETWTI** and **DSE**.
+
+<p align="center">
+  <img src="assets/kernel.png" alt="Kernel Power" width="600">
+</p>
 
 ---
 
 ## 🛠️ COMMAND SYSTEMS
 
-Xorium Pulsar supports a wide range of remote commands. Here are some highlight commands:
-
-### 🎮 General Commands
-- `collect`: Scans 150+ targets (Browsers, Wallets, VPNs, etc.) and zips them.
-
-### 🌑 Kernel Commands (Ring 0 - SILENT)
-- `kernel_hide`: Hides the target PID from the entire OS via IOCTL.
-- `kernel_elevate`: Forces the target PID to SYSTEM status via Token Stealing.
-- `kernel_protect`: Makes the target PID unkillable.
-- `kernel_keylog`: Activates the kernel-level stealth keylogger.
-- `kernel_blind`: Disables ETWTI and DSE silencing security monitors.
-- `kernel_hide_port`: Hides TCP/UDP ports from network analysis tools.
-- `kernel_clean_callbacks`: Neutralizes all EDR/AV notification routines.
-- `kernel_ghost_reg`: Hides registry keys from RegEdit.
-- `kernel_inject_apc`: Injects shellcode via stealthy APC queuing.
-- `kernel_inject_hijack`: Injects shellcode via thread context hijacking.
-- `kernel_hide_thread`: Hides a specific thread from OS accounting.
-- `kernel_hide_module`: Ghost a DLL within a process context.
+| Command | Category | Description |
+| :--- | :--- | :--- |
+| `collect` | **Scraper** | Scans 150+ targets (Browsers, Wallets, VPNs, etc.) |
+| `shadow_fullstealth` | **Kernel** | Hide process + Hide driver + Disable ETW |
+| `shadow_ghost` | **Kernel** | Elevate to SYSTEM + Hide process |
+| `shadow_nuke_edr` | **Kernel** | Remove ALL EDR callbacks + Disable ETW |
+| `shadow_hide_c2port` | **Kernel** | Hide C2 port from netstat/network tools |
+| `shadow_inject_hijack`| **Kernel** | Stealthiest thread-hijacking injection |
 
 ---
 
-## 💰 FEATURE MATRIX
+## 🚀 DEPLOYMENT ENGINE
 
-| Feature | ❌ Garbage Stealer | ✅ XORIUM PULSAR |
-| :--- | :---: | :---: |
-| **Language** | Python/C# (Detected) | **Rust + C# Hybrid** |
-| **Stealth** | None | **Ring 0 Kernel + Ring 3 Evasion** |
-| **Concealment** | Task Manager Visible | **Fully Hidden via DKOM** |
-| **Privilege** | User | **NT AUTHORITY\SYSTEM** |
-| **C2** | Webhook Only | **GitHub / Discord / Tele** |
+### 💎 Universal Build Scripts
+We've unified the build process. No more manual environment setup!
 
----
+- **Windows**: `.\build.ps1` (Auto-installs VS Build Tools, Rust, .NET SDK)
+- **Linux**: `./build.sh` (Auto-installs dependencies via apt/dnf/pacman/brew)
 
-## 🚀 HOW TO DEPLOY (Start Your Empire)
-
-### Step 1: Forge the Kernel & Client (Rust)
-1.  Navigate to `shadow-main`:
-    ```cmd
-    cd shadow-main
-    ```
-2.  Compile the Kernel Driver and Client:
-    ```cmd
-    cargo build --release
-    ```
-3.  This generates:
-    - `shadow.sys`: The Kernel Driver.
-    - `shadow-client.exe`: The Command Bridge used by Xorium.
-
-### Step 2: Build the Loader (C#)
-1.  Open Project in Visual Studio.
-2.  Ensure `shadow-client.exe` is in the output directory.
-3.  Build the project. The loader will automatically interface with the Rust bridge.
-
----
-
-## 🎮 REMOTE KERNEL COMMANDS
-Xorium can now execute these commands via its C2:
-- `kernel_hide` [PID]: Vanish from all system views.
-- `kernel_elevate` [PID]: Token stealing for instant SYSTEM.
-- `kernel_protect` [PID]: Make a process unkillable even by Admin.
-- `kernel_hide_driver` [NAME]: Hide the rootkit driver itself.
+```powershell
+# Just run this and let the engine do the work
+.\build.ps1
+```
 
 ---
 
 ## 🔮 FUTURE WARFARE (Roadmap)
 - [x] **Ring 0 Rootkit**: Absolute OS control via Rust Kernel Driver.
+- [x] **ShadowWrapper API**: Comprehensive high-level C# interface.
+- [x] **Auto-Deploy Engine**: Zero-manual dependency build scripts.
 - [ ] **HVCI Bypass**: Hypervisor-protected Code Integrity bypass.
 - [ ] **UEFI Bootkit**: Persistence that survives OS reinstallation.
 
@@ -120,5 +100,7 @@ Xorium can now execute these commands via its C2:
 
 ---
 
-### [ ⭐ STAR THIS REPO TO SUPPORT DEVELOPMENT ]
-**Join the Elite. Use Xorium.**
+<p align="center">
+  <b>[ ⭐ STAR THIS REPO TO SUPPORT DEVELOPMENT ]</b><br>
+  <i>Join the Elite. Use Xorium.</i>
+</p>

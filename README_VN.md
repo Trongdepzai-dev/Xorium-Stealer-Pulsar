@@ -1,10 +1,15 @@
+<p align="center">
+  <img src="assets/banner.png" alt="Xorium Pulsar Banner" width="800">
+</p>
+
 # 💎 XORIUM STEALER PULSAR [GOD EDITION] 💎
 ### *Vũ Khí Tối Thượng Cho Mọi Chiến Dịch.*
 
-[![Rust](https://img.shields.io/badge/Core-Rust_Shadow-orange?style=for-the-badge&logo=rust)]()
+[![Rust](https://img.shields.io/badge/Lõi-Rust_Shadow-orange?style=for-the-badge&logo=rust)]()
 [![C#](https://img.shields.io/badge/Loader-C%23_GodPower-blue?style=for-the-badge&logo=csharp)]()
-[![Status](https://img.shields.io/badge/Status-UNDETECTED-brightgreen?style=for-the-badge)]()
-[![Privilege](https://img.shields.io/badge/Privilege-NT_AUTHORITY%5CSYSTEM-red?style=for-the-badge)]()
+[![Status](https://img.shields.io/badge/Trạng_Thái-UNDETECTED-brightgreen?style=for-the-badge)]()
+[![Privilege](https://img.shields.io/badge/Đặc_Quyền-NT_AUTHORITY%5CSYSTEM-red?style=for-the-badge)]()
+[![Kiến Trúc](https://img.shields.io/badge/Kiến_Trúc-Hybrid_Kernel-blueviolet?style=for-the-badge)]()
 
 ---
 
@@ -16,132 +21,71 @@ Bạn đã chán ngấy việc phải trả tiền cho các bộ mã hóa "FUD" 
 Chúng tôi đã kết hợp sức mạnh thô của **C# .NET** với sự tàng hình tuyệt đối của **Rust Assembly**.
 Kết quả? Một loại mã độc không chỉ đánh cắp—nó **THỐNG TRỊ** toàn bộ hệ thống.
 
+<p align="center">
+  <img src="assets/engine.png" alt="Pulsar Engine" width="600">
+</p>
+
 ---
 
 ## ⚡ CÁC TÍNH NĂNG "THẦN THÁNH"
 
 ### 1. 👻 PROJECT SHADOW (Tàng Hình Tuyệt Đối)
-Hầu hết các Stealer đều bị bắt bởi phân tích hành vi. Xorium sử dụng **Custom Rust Stealth Core** (`shadow_core.dll`).
-- **PEB Unlinking**: DLL tự gỡ bỏ chính nó khỏi Process Environment Block ngay sau khi load. Nó biến mất hoàn toàn khỏi danh sách module.
-- **AMSI Patching**: Vô hiệu hóa `AmsiScanBuffer` trực tiếp trong bộ nhớ. Vượt qua mọi cơ chế quét RAM.
-- **ETW Blindness**: Vô hiệu hóa `EtwEventWrite` trong `ntdll.dll`. Làm mù hoàn toàn các công cụ phân tích hành vi.
+Hầu hết các Stealer đều bị bắt bởi heuristics. Xorium sử dụng **Custom Rust Stealth Core** (`shadow_core.dll`).
+- **PEB Unlinking**: Biến mất khỏi danh sách module ngay lập tức.
+- **AMSI Patching**: Vô hiệu hóa `AmsiScanBuffer` trong bộ nhớ.
+- **ETW Blindness**: Làm mù các công cụ phân tích hành vi (EDR/AV).
 
 ### 2. 👑 GOD POWER (Quyền SYSTEM Tức Thì)
-Tại sao phải chạy với quyền User khi bạn có thể là **CHÚA TỂ**?
-- **Tích Hợp GodPotato**: Chúng tôi đã đưa exploit huyền thoại `GodPotato` trực tiếp vào lõi.
-- **Tự Động Nâng Quyền**: Từ User bình thường lên `NT AUTHORITY\SYSTEM` chỉ trong vài mili giây.
-- **Quyền Lực Tuyệt Đối**: Thực thi mọi câu lệnh với đặc quyền cao nhất của Windows.
+- **Tích Hợp GodPotato**: Khai thác LPE huyền thoại ngay trong lõi.
+- **Tự Động Nâng Quyền**: Từ User lên `NT AUTHORITY\SYSTEM` trong tích tắc.
+- **Quyền Lực Tuyệt Đối**: Đặc quyền cao nhất trên hệ điều hành Windows.
 
 ### 3. 🌑 VOID WALKER (Rootkit Kernel Ring 0)
-Vũ khí cuối cùng để kiểm soát tuyệt đối hệ điều hành. Xorium tích hợp **Kernel Rootkit viết bằng Rust** với cơ chế **Silent IOCTL**.
-- **Giao Tiếp Câm Lặng**: Không gọi CLI, không dùng file `.exe` trung gian. Giao tiếp trực tiếp với Ring 0 qua `DeviceIoControl`.
-- **DKOM (Direct Kernel Object Manipulation)**: Thao túng cấu trúc `EPROCESS` để ẩn mọi tiến trình khỏi Task Manager, ProcExp và chính Kernel.
-- **Kernel Keylogger**: Map `gafAsyncKeyState` trực tiếp vào không gian User để bắt phím mà không cần Hook.
-- **Làm Mù EDR**: Vô hiệu hóa **ETWTI** (Threat Intelligence) và **DSE** (Driver Signature Enforcement).
+Vũ khí cuối cùng để kiểm soát tuyệt đối OS.
+- **DKOM (Direct Kernel Object Manipulation)**: Ẩn mình khỏi Task Manager & chính Kernel.
+- **Kernel Keylogger**: Bắt phím ở cấp độ driver, không cần hook.
+- **EDR Blinding**: Vô hiệu hóa **ETWTI** và **DSE**.
+
+<p align="center">
+  <img src="assets/kernel.png" alt="Kernel Power" width="600">
+</p>
 
 ---
 
-## 🛠️ HỆ THỐNG LỆNH (REMOTE CONTROL)
+## 🛠️ HỆ THỐNG LỆNH (COMMANDS)
 
-Xorium Pulsar hỗ trợ hàng loạt lệnh điều khiển từ xa:
-
-### 🎮 Lệnh Cơ Bản
-- `collect`: Quét hơn 150 mục tiêu (Trình duyệt, Ví tiền ảo, VPN...) và đóng gói.
-
-### 🌑 Lệnh Kernel (Ring 0 - TÀNG HÌNH)
-- `kernel_hide`: Ẩn PID mục tiêu khỏi toàn bộ hệ thống.
-- `kernel_elevate`: Ép PID mục tiêu nhận quyền SYSTEM.
-- `kernel_protect`: Biến tiến trình trở nên bất tử (không thể bị kill).
-- `kernel_keylog`: Kích hoạt Keylogger cấp độ Kernel.
-- `kernel_blind`: Vô hiệu hóa ETWTI và DSE để tắt các hệ thống giám sát.
-- `kernel_hide_port`: Ẩn cổng TCP/UDP khỏi các công cụ giám sát mạng.
-- `kernel_clean_callbacks`: Vô hiệu hóa mọi notification routine của EDR/AV.
-- `kernel_ghost_reg`: Ẩn Registry Key khỏi RegEdit.
-- `kernel_inject_apc`: Inject shellcode qua cơ chế APC tàng hình.
-- `kernel_inject_hijack`: Inject shellcode qua Thread Hijacking.
-- `kernel_terminate` [PID]: Kết liễu tiến trình từ cấp độ Kernel (bất chấp sự bảo vệ của các phần mềm khác).
-- `kernel_block_driver` [driverName]: Chặn không cho một Driver cụ thể tải vào hệ thống.
-- `kernel_protect_reg_key` [path]: Bảo vệ một Registry Key khỏi bị xóa hoặc sửa đổi.
-- `kernel_protect_reg_val` [path|val]: Bảo vệ một Registry Value cụ thể.
-- `kernel_hide_thread` [TID]: Ẩn luồng thực thi (Thread) tàng hình tuyệt đối.
-- `kernel_hide_module` [PID|module]: Ẩn module DLL trong bộ nhớ tiến trình (Ghosting).
-- `kernel_hvci_bypass`: Thử vượt qua HVCI (Code Integrity do Hypervisor bảo vệ). [BẢN THỬ NGHIỆM]
-- `kernel_uefi_persist`: Cài đặt Bootkit vào EFI System Partition để bám rễ firmware. [BẢN THỬ NGHIỆM]
-- `kernel_antivm`: Kiểm tra môi trường VM/Sandbox (VMware, VBox, Hyper-V, KVM). Tự hủy nếu phát hiện.
+| Lệnh | Phân Loại | Mô Tả |
+| :--- | :--- | :--- |
+| `collect` | **Scraper** | Quét 150+ mục tiêu (Browsers, Wallets, VPNs, etc.) |
+| `shadow_fullstealth` | **Kernel** | Ẩn tiến trình + Ẩn driver + Tắt ETW |
+| `shadow_ghost` | **Kernel** | Nâng quyền SYSTEM + Ẩn tiến trình |
+| `shadow_nuke_edr` | **Kernel** | Xóa sạch EDR callbacks + Vô hiệu hóa ETW |
+| `shadow_hide_c2port` | **Kernel** | Ẩn cổng kết nối C2 khỏi mọi công cụ mạng |
+| `shadow_inject_hijack`| **Kernel** | Kỹ thuật injection thread-hijacking tàng hình nhất |
 
 ---
 
-## 🥷 STEALTH EVASION MODULES (Chống Blue Team)
+## 🚀 HỆ THỐNG BUILD TỰ ĐỘNG
 
-### Anti-Sandbox (`AntiSandbox.cs`)
-- **VM Detection**: WMI, Registry, MAC Address, BIOS, Process checks
-- **Debugger Detection**: IsDebuggerPresent, Remote Debugger, Debug Port, Analysis Tools
-- **Timing Analysis**: Phát hiện sandbox qua thời gian thực thi bất thường
-- **Hardware Fingerprinting**: CPU cores, RAM, Disk size, Process count
-- **KHÔNG hardcoded usernames** - Sử dụng fingerprinting động
+### 💎 Universal Build Engine
+Chúng tôi đã đơn giản hóa quy trình build. Không còn phải cài đặt môi trường thủ công!
 
-### Stealth Process Killer (`StealthProcessKiller.cs`)
-- **Randomized Kill Order**: Fisher-Yates shuffle để tránh pattern detection
-- **Delayed Kills**: Random delays 500ms-3s giữa mỗi lần kill
-- **Graceful Shutdown**: WM_CLOSE trước, Kill sau nếu cần
+- **Windows**: `.\build.ps1` (Tự tải VS Build Tools, Rust, .NET SDK)
+- **Linux**: `./build.sh` (Tự cài dependencies qua apt/dnf/pacman/brew)
 
-### Stealth Network (`StealthNetwork.cs`)
-- **Random User-Agents**: 5+ realistic UAs được rotate
-- **Retry Logic**: Exponential backoff khi gặp lỗi
-- **Multiple IP Services**: Nhiều nguồn để check external IP
-
-### Stealth File System (`StealthFileSystem.cs`)
-- **Random Folder Names**: `ms_cache_a1b2c3d4` thay vì `IntelixWifiExport`
-- **Hidden Attributes**: Files/folders được đánh dấu Hidden+System
-- **Secure Delete**: Overwrite với random data trước khi xóa
-
-### String Obfuscation (`StringObfuscation.cs`)
-- **XOR Encryption**: Ẩn strings khỏi static analysis
-- **Runtime Building**: Xây dựng strings từ char codes tại runtime
-- **Anti-YARA**: Không có plaintext strings có thể bị phát hiện
+```powershell
+# Chỉ cần chạy và tận hưởng thành quả
+.\build.ps1
+```
 
 ---
 
-## 📚 TÀI LIỆU BỔ SUNG
-- [BUILD_GUIDE_VN.md](file:///d:/Xorium_Stealer_Pulsar/Xorium%20Stealer%20Pulsar/BUILD_GUIDE_VN.md): Hướng dẫn thiết lập môi trường và build vũ khí chi tiết nhất.
-
----
-
-## 💰 MA TRẬN TÍNH NĂNG
-
-| Tính năng | ❌ Stealer "Rác" | ✅ XORIUM PULSAR |
-| :--- | :---: | :---: |
-| **Ngôn ngữ** | Python/C# (Dễ bị bắt) | **Hybrid Rust + C#** |
-| **Độ tàng hình** | Không có | **Ring 0 Kernel + Ring 3 Evasion** |
-| **Che giấu** | Hiện trong Task Manager | **Ẩn hoàn toàn qua DKOM** |
-| **Đặc quyền** | User | **NT AUTHORITY\SYSTEM** |
-| **C2** | Chỉ Webhook | **GitHub / Discord / Tele** |
-
----
-
-## 🚀 HƯỚNG DẪN TRIỂN KHAI
-
-### Bước 1: Rèn Vũ Khí (Rust)
-1.  Truy cập thư mục `shadow-main`:
-    ```cmd
-    cd shadow-main
-    ```
-2.  Biên dịch Driver và Client:
-    ```cmd
-    cargo build --release
-    ```
-
-### Bước 2: Xây Dựng Loader (C#)
-1.  Mở Project trong Visual Studio.
-2.  Đảm bảo driver `shadow.sys` đã sẵn sàng.
-3.  Build project. Loader sẽ tự động kết nối với Kernel qua `KernelController`.
-
----
-
-## 🔮 TƯƠNG LAI CỦA CUỘC CHIẾN (Roadmap)
+## 🔮 LỘ TRÌNH PHÁT TRIỂN (Roadmap)
 - [x] **Ring 0 Rootkit**: Kiểm soát tuyệt đối qua Rust Kernel Driver.
-- [ ] **HVCI Bypass**: Vượt qua Code Integrity được bảo vệ bởi Hypervisor. [ĐANG PHÁT TRIỂN]
-- [ ] **UEFI Bootkit**: Duy trì sự tồn tại ngay cả khi cài lại Win. [ĐANG PHÁT TRIỂN]
+- [x] **ShadowWrapper API**: Giao diện C# cấp cao hoàn chỉnh.
+- [x] **Auto-Deploy Engine**: Script build tự động hóa 100%.
+- [ ] **HVCI Bypass**: Vượt qua Code Integrity của Hypervisor.
+- [ ] **UEFI Bootkit**: Tồn tại vĩnh viễn ngay cả khi cài lại Win.
 
 ---
 
@@ -150,5 +94,7 @@ Xorium Pulsar hỗ trợ hàng loạt lệnh điều khiển từ xa:
 
 ---
 
-### [ ⭐ STAR REPO NÀY ĐỂ ỦNG HỘ CHÚNG TÔI ]
-**Gia nhập hàng ngũ tinh anh. Sử dụng Xorium.**
+<p align="center">
+  <b>[ ⭐ STAR REPO NÀY ĐỂ ỦNG HỘ CHÚNG TÔI ]</b><br>
+  <i>Gia nhập hàng ngũ tinh anh. Sử dụng Xorium.</i>
+</p>
