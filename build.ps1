@@ -30,8 +30,8 @@ function Install-VisualStudioBuildTools {
     
     # Install with C++ workload (required for Rust)
     Write-Host "[*] Installing (this may take 10-20 minutes)..." -ForegroundColor Cyan
-    $args = "--passive --wait --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
-    Start-Process -FilePath $installerPath -ArgumentList $args -Wait
+    $installArgs = "--passive --wait --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
+    Start-Process -FilePath $installerPath -ArgumentList $installArgs -Wait
     
     Write-Host "[+] VS Build Tools installed! Please RESTART PowerShell and run build.ps1 again." -ForegroundColor Green
     return $true
@@ -80,6 +80,34 @@ function Install-DotNetSdk {
         Write-Host "[!] Failed. Please install from: https://dotnet.microsoft.com/download" -ForegroundColor Red
         return $false
     }
+}
+
+function Install-UPX {
+    Write-Host "[!] UPX NOT FOUND - Auto-installing..." -ForegroundColor Yellow
+
+    $upxZip = "$env:TEMP\upx.zip"
+    $upxDir = "$env:TEMP\upx"
+    $upxUrl = "https://github.com/upx/upx/releases/download/v5.1.0/upx-5.1.0-win64.zip"
+
+    try {
+        Invoke-WebRequest -Uri $upxUrl -OutFile $upxZip -UseBasicParsing
+        Expand-Archive $upxZip $upxDir -Force
+
+        $upxExe = Get-ChildItem $upxDir -Recurse -Filter upx.exe | Select-Object -First 1
+        if ($upxExe) {
+            $destPath = Join-Path $env:ProgramFiles "upx.exe"
+            Copy-Item $upxExe.FullName $destPath -Force
+            # Add to current session path
+            $env:PATH += ";$env:ProgramFiles"
+            Write-Host "[+] UPX installed!" -ForegroundColor Green
+            return $true
+        }
+    }
+    catch {
+        Write-Host "[!] Failed to install UPX. Packing will be skipped." -ForegroundColor Red
+        return $false
+    }
+    return $false
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -183,6 +211,39 @@ try {
 }
 finally {
     Pop-Location
+}
+
+# 4. Post-build Hardening (Strip & UPX Pack)
+Write-Host "`n[*] Hardening binaries..." -ForegroundColor Yellow
+
+# Check for UPX
+$upx = Get-Command upx.exe -ErrorAction SilentlyContinue
+if (-not $upx) {
+    Install-UPX | Out-Null
+    $upx = Get-Command upx.exe -ErrorAction SilentlyContinue
+}
+
+$exeFiles = Get-ChildItem $DistDir -Filter *.exe -Recurse
+foreach ($exe in $exeFiles) {
+    # 4.1. Strip symbols if llvm-strip is available
+    $strip = Get-Command llvm-strip.exe -ErrorAction SilentlyContinue
+    if ($strip) {
+        Write-Host "    Stripping $($exe.Name)..." -ForegroundColor Cyan
+        & $strip.Source --strip-all $exe.FullName 2>$null
+    }
+
+    # 4.2. UPX Packing
+    if ($upx) {
+        Write-Host "    Packing $($exe.Name) with UPX..." -ForegroundColor Cyan
+        & $upx.Source --best --lzma $exe.FullName | Out-Null
+    }
+}
+
+if ($exeFiles.Count -gt 0) {
+    Write-Host "[+] Hardening complete!" -ForegroundColor Green
+}
+else {
+    Write-Host "[!] No .exe files found in dist/ to harden." -ForegroundColor Gray
 }
 
 Write-Host "`n--- ✅ BUILD COMPLETE! Artifacts are in 'dist/' folder ---" -ForegroundColor Cyan

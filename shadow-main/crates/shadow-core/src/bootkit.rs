@@ -154,9 +154,6 @@ pub unsafe fn read_disk_lba(disk_num: u32, lba: u64, buffer: &mut [u8]) -> Shado
     }
 }
 
-    Ok(false)
-}
-
 /// Production-grade ESP discovery using GPT LBA-level parsing.
 pub unsafe fn mount_esp_production() -> ShadowResult<NTSTATUS> {
     use crate::utils::unicode_string::UnicodeString;

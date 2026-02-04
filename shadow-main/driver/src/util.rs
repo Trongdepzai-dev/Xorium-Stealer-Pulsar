@@ -5,23 +5,24 @@ use wdk_sys::{
     NT_SUCCESS, POOL_FLAG_NON_PAGED, _IO_STACK_LOCATION
 };
 
-/// Retrieves the input buffer from the given IO stack location.
+/// Retrieves the input buffer from the given IO stack location using METHOD_BUFFERED.
 ///
 /// # Arguments
 /// 
+/// * `irp` - A pointer to the `IRP` structure.
 /// * `stack` - A pointer to the `_IO_STACK_LOCATION` structure.
 ///
 /// # Returns
 /// 
 /// Containing the pointer to the input buffer or an NTSTATUS error code.
-pub unsafe fn get_input_buffer<T>(stack: *mut _IO_STACK_LOCATION) -> Result<*mut T, ShadowError> {
-    // Retrieves the input buffer pointer from the I/O stack location.
-    let input_buffer = (*stack).Parameters.DeviceIoControl.Type3InputBuffer;
+pub unsafe fn get_input_buffer<T>(irp: *mut IRP, stack: *mut _IO_STACK_LOCATION) -> Result<*mut T, ShadowError> {
+    // In METHOD_BUFFERED, the buffer is in SystemBuffer
+    let input_buffer = (*irp).AssociatedIrp.SystemBuffer;
     let input_length = (*stack).Parameters.DeviceIoControl.InputBufferLength;
 
     // Validate that the input buffer is not null
     if input_buffer.is_null() {
-        return Err(ShadowError::NullPointer("Type3InputBuffer"))
+        return Err(ShadowError::NullPointer("SystemBuffer"))
     } 
     
     // Validate that the input buffer size is sufficient
@@ -29,52 +30,26 @@ pub unsafe fn get_input_buffer<T>(stack: *mut _IO_STACK_LOCATION) -> Result<*mut
         return Err(ShadowError::BufferTooSmall);
     }
 
-    // Alignment check
-    if (input_buffer as usize) % align_of::<T>() != 0 {
-        return Err(ShadowError::MisalignedBuffer);
-    }
-
-    // Allocate a kernel-mode buffer in non-paged memory
-    let buffer = ExAllocatePool2(POOL_FLAG_NON_PAGED, size_of::<T>() as u64, 0x1234) as *mut T;
-    if buffer.is_null() {
-        return Err(ShadowError::NullPointer("buffer"));
-    }
-
-    // Prepare the MM_COPY_ADDRESS structure for secure copying.
-    let mut src_address = core::mem::zeroed::<MM_COPY_ADDRESS>();
-    src_address.__bindgen_anon_1.VirtualAddress = input_buffer as *mut _;
-    
-    // Use `MmCopyMemory` to safely copy data from user-mode to kernel-mode
-    let mut bytes_copied = 0u64;
-    let status = MmCopyMemory(
-        buffer as *mut _,
-        src_address,
-        size_of::<T>() as u64,
-        MM_COPY_MEMORY_VIRTUAL,
-        &mut bytes_copied,
-    );
-    
-    if !NT_SUCCESS(status) || bytes_copied != size_of::<T>() as u64 {
-        ExFreePool(buffer as *mut _);
-        return Err(ShadowError::InvalidMemory);
-    }
-
-    Ok(buffer)
+    // Alignment and security is handled by the I/O manager in METHOD_BUFFERED
+    // We can cast directly as the buffer is now in kernel space and immutable by user-space during processing
+    Ok(input_buffer as *mut T)
 }
 
-/// Retrieves the output buffer from the given IRP.
+/// Retrieves the output buffer from the given IRP using METHOD_BUFFERED.
 ///
 /// # Arguments
 /// 
 /// * `irp` - A pointer to the `IRP` structure.
+/// * `stack` - A pointer to the `_IO_STACK_LOCATION` structure.
 ///
 /// # Returns
 /// 
-/// Containing the pointer to the output buffer or an NTSTATUS error code.
+/// Containing the pointer to the output buffer and count of objects or an NTSTATUS error code.
 pub unsafe fn get_output_buffer<T>(irp: *mut IRP, stack: *mut _IO_STACK_LOCATION) -> Result<(*mut T, usize), ShadowError> {
-    let buffer = (*irp).UserBuffer;
+    // In METHOD_BUFFERED, the output buffer is also in SystemBuffer
+    let buffer = (*irp).AssociatedIrp.SystemBuffer;
     if buffer.is_null() {
-        return Err(ShadowError::NullPointer("UserBuffer"));
+        return Err(ShadowError::NullPointer("SystemBuffer"));
     }
 
     let output_length = (*stack).Parameters.DeviceIoControl.OutputBufferLength;

