@@ -65,6 +65,8 @@ Xorium Pulsar hỗ trợ hàng loạt lệnh điều khiển từ xa:
 - `kernel_protect_reg_val` [path|val]: Bảo vệ một Registry Value cụ thể.
 - `kernel_hide_thread` [TID]: Ẩn luồng thực thi (Thread) tàng hình tuyệt đối.
 - `kernel_hide_module` [PID|module]: Ẩn module DLL trong bộ nhớ tiến trình (Ghosting).
+- `kernel_hvci_bypass`: Thử vượt qua HVCI (Code Integrity do Hypervisor bảo vệ). [BẢN THỬ NGHIỆM]
+- `kernel_uefi_persist`: Cài đặt Bootkit vào EFI System Partition để bám rễ firmware. [BẢN THỬ NGHIỆM]
 
 ---
 
@@ -106,8 +108,8 @@ Xorium Pulsar hỗ trợ hàng loạt lệnh điều khiển từ xa:
 
 ## 🔮 TƯƠNG LAI CỦA CUỘC CHIẾN (Roadmap)
 - [x] **Ring 0 Rootkit**: Kiểm soát tuyệt đối qua Rust Kernel Driver.
-- [ ] **HVCI Bypass**: Vượt qua Code Integrity được bảo vệ bởi Hypervisor.
-- [ ] **UEFI Bootkit**: Duy trì sự tồn tại ngay cả khi cài lại Win.
+- [ ] **HVCI Bypass**: Vượt qua Code Integrity được bảo vệ bởi Hypervisor. [ĐANG PHÁT TRIỂN]
+- [ ] **UEFI Bootkit**: Duy trì sự tồn tại ngay cả khi cài lại Win. [ĐANG PHÁT TRIỂN]
 
 ---
 

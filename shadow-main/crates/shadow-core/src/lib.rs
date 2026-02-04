@@ -16,6 +16,8 @@ pub mod module;
 pub mod misc;
 pub mod driver;
 pub mod injection;
+pub mod hvci;
+pub mod bootkit;
 
 mod data;
 mod offsets;
@@ -32,3 +34,5 @@ pub use process::*;
 pub use registry::*;
 pub use thread::*;
 pub use utils::*;
+pub use hvci::*;
+pub use bootkit::*;

