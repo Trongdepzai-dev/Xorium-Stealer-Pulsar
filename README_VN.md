@@ -64,6 +64,11 @@ Xorium Pulsar hỗ trợ hàng loạt lệnh điều khiển từ xa:
 
 ---
 
+## 📚 TÀI LIỆU BỔ SUNG
+- [BUILD_GUIDE_VN.md](file:///d:/Xorium_Stealer_Pulsar/Xorium%20Stealer%20Pulsar/BUILD_GUIDE_VN.md): Hướng dẫn thiết lập môi trường và build vũ khí chi tiết nhất.
+
+---
+
 ## 💰 MA TRẬN TÍNH NĂNG
 
 | Tính năng | ❌ Stealer "Rác" | ✅ XORIUM PULSAR |
