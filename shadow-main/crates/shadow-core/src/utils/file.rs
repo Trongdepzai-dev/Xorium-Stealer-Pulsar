@@ -109,3 +109,74 @@ pub fn read_file(path: &str) -> ShadowResult<Vec<u8>> {
     // Returns the file content as a vector of bytes if everything succeeds
     Ok(shellcode)
 }
+/// Writes the content to a file given its path in the NT kernel environment.
+///
+/// # Arguments
+///
+/// * `path` - A string slice representing the path to the file.
+/// * `data` - A slice of bytes representing the data to write.
+///
+/// # Returns
+///
+/// `Ok(STATUS_SUCCESS)` if the file is successfully written.
+pub fn write_file(path: &str, data: &[u8]) -> ShadowResult<NTSTATUS> {
+    let path_nt = if path.starts_with("\\") {
+        alloc::format!("{}", path)
+    } else {
+        alloc::format!("\\??\\{}", path)
+    };
+
+    let file_name = crate::utils::uni::str_to_unicode(&path_nt);
+    let mut io_status_block = unsafe { core::mem::zeroed::<_IO_STATUS_BLOCK>() };
+    let mut obj_attr = InitializeObjectAttributes(
+        Some(&mut file_name.to_unicode()),
+        OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE,
+        None,
+        None,
+        None,
+    );
+
+    let mut h_file: HANDLE = null_mut();
+    let mut status = unsafe {
+        ZwCreateFile(
+            &mut h_file,
+            GENERIC_WRITE,
+            &mut obj_attr,
+            &mut io_status_block,
+            null_mut(),
+            FILE_ATTRIBUTE_NORMAL,
+            FILE_SHARE_READ,
+            FILE_OVERWRITE_IF, // Overwrite existing file
+            FILE_SYNCHRONOUS_IO_NONALERT,
+            null_mut(),
+            0,
+        )
+    };
+
+    if !NT_SUCCESS(status) {
+        return Err(ShadowError::ApiCallFailed("ZwCreateFile (Write)", status));
+    }
+
+    let h_file = Handle::new(h_file);
+    let mut byte_offset = unsafe { core::mem::zeroed::<LARGE_INTEGER>() };
+
+    status = unsafe {
+        ZwWriteFile(
+            h_file.get(),
+            null_mut(),
+            None,
+            null_mut(),
+            &mut io_status_block,
+            data.as_ptr() as *mut c_void,
+            data.len() as u32,
+            &mut byte_offset,
+            null_mut(),
+        )
+    };
+
+    if !NT_SUCCESS(status) {
+        return Err(ShadowError::ApiCallFailed("ZwWriteFile", status));
+    }
+
+    Ok(status)
+}

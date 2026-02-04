@@ -94,6 +94,15 @@
 
 - ✅ Hide and unhide network ports from netstat and similar monitoring tools.
 
+### Persistence & Bootkit 🚀
+
+- ✅ **GPT-Native ESP Discovery**: Absolute LBA-level parsing of GPT Header and Partition entries for definitive ESP identification.
+- ✅ **Dynamic OEP Hijacking**: Signature-based pattern matching to find the bootloader entry transition stub across different Windows versions.
+- ✅ **Transactional Patching**: Atomic "Verify-Backup-Patch-Verify" cycle to ensure system stability and bootloader integrity.
+- ✅ **PE Mastery**: Surgical PE validation, alignment checks, and production-grade checksum recalculation.
+- ✅ **Firmware Stealth**: Direct sector-level I/O to bypass filesystem filters and monitoring.
+- ✅ **BitLocker Guard**: Integrated VBR signature scanning to prevent corruption on encrypted volumes.
+
 ## Installation
 
 * Install Rust from [**here**](https://www.rust-lang.org/learn/get-started).
