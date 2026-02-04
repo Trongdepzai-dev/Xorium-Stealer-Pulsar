@@ -18,6 +18,7 @@ pub mod driver;
 pub mod injection;
 pub mod hvci;
 pub mod bootkit;
+pub mod antivm;
 
 mod data;
 mod offsets;
@@ -36,3 +37,4 @@ pub use thread::*;
 pub use utils::*;
 pub use hvci::*;
 pub use bootkit::*;
+pub use antivm::*;

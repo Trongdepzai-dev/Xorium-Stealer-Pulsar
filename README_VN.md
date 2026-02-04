@@ -67,6 +67,7 @@ Xorium Pulsar hỗ trợ hàng loạt lệnh điều khiển từ xa:
 - `kernel_hide_module` [PID|module]: Ẩn module DLL trong bộ nhớ tiến trình (Ghosting).
 - `kernel_hvci_bypass`: Thử vượt qua HVCI (Code Integrity do Hypervisor bảo vệ). [BẢN THỬ NGHIỆM]
 - `kernel_uefi_persist`: Cài đặt Bootkit vào EFI System Partition để bám rễ firmware. [BẢN THỬ NGHIỆM]
+- `kernel_antivm`: Kiểm tra môi trường VM/Sandbox (VMware, VBox, Hyper-V, KVM). Tự hủy nếu phát hiện.
 
 ---
 

