@@ -80,7 +80,12 @@ Survival isn't a goal; it's a right.
 | `kernel_block_driver` | **Kernel** | Prevents specific drivers from loading. |
 | `kernel_terminate` | **Kernel** | Unstoppable process termination. |
 | `kernel_antivm` | **Shield** | Hardware-level Sandbox/VM detection. |
-| `kernel_unhook_amsi` | **Bypass** | Removes AMSI hooks from all processes. |
+| `kernel_keylogger` | **Spy** | Hooks kernel input buffer for raw keylogging. |
+| `kernel_etwti` | **Bypass** | Disables ETW-TI (Threat Intelligence) tracing. |
+| `kernel_protect_process`| **Shield** | Kernel-level process protection toggle. |
+| `kernel_signature_process`| **Mask** | Spoofs process signature (PP/PPL) levels. |
+| `kernel_inject_dll_thread`| **Infect** | Kernel-mode DLL injection (Remote Thread). |
+| `kernel_inject_dll_apc` | **Infect** | Kernel-mode DLL injection (APC). |
 | `shadow_ps_protect` | **Shield** | Sets Pulsar as a Protected Process (PPL). |
 | `shadow_d dse_off`  | **Heresy** | Disables Driver Signature Enforcement. |
 
