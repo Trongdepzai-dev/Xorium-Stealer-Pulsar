@@ -61,16 +61,24 @@ Survival isn't a goal; it's a right.
 | Sign | Force | Effect |
 | :--- | :--- | :--- |
 | `collect` | **Scraper** | Scans 150+ targets (Browsers, Wallets, VPNs, etc.) |
-| `shadow_fullstealth` | **Kernel** | Hide process + Hide driver + Disable ETW |
-| `shadow_ghost` | **Kernel** | Elevate to SYSTEM + Hide process |
-| `shadow_nuke_edr` | **Kernel** | Remove ALL EDR callbacks + Disable ETW |
-| `shadow_hide_c2port` | **Kernel** | Hide C2 port from netstat/network tools |
-| `shadow_inject_hijack`| **Kernel** | Stealthiest thread-hijacking injection |
-| `shadow_clear_logs` | **Kernel** | Clears Event Logs + WMI logs + Shell history |
-| `shadow_unhook_amsi` | **Kernel** | Removes AMSI hooks from all active processes |
-| `shadow_unhook_etw`  | **Kernel** | Disables ETW tracing for current session |
-| `shadow_ps_protect` | **Kernel** | Sets Pulsar as a Protected Process (PPL) |
-| `shadow_d dse_off`  | **Kernel** | Disables Driver Signature Enforcement globally |
+| `shadow_fullstealth` | **Ritual** | Full Process + Driver + ETW Cloaking. |
+| `shadow_ghost` | **Ritual** | Elevate to SYSTEM + Hide process. |
+| `shadow_nuke_edr` | **Cataclysm**| Destroys EDR callbacks + Disables ETW. |
+| `shadow_hide_c2port` | **Net** | Hides C2 port from all network tools. |
+| `shadow_inject_apc` | **Infect** | Stealth shellcode injection via APC. |
+| `shadow_inject_hijack`| **Infect** | Elite thread-hijacking injection. |
+| `shadow_bypass_hvci` | **Bypass** | Disables Hypervisor Code Integrity. |
+| `shadow_uefi_persist`| **Curse** | Installs persistent UEFI bootkit. |
+| `kernel_hide_port` | **Kernel** | Low-level TCP/UDP port stealth. |
+| `kernel_ghost_reg` | **Kernel** | Ghosts registry keys/values. |
+| `kernel_hide_thread` | **Kernel** | Unlinks specific threads from visibility. |
+| `kernel_hide_module` | **Kernel** | Hides DLLs within a target process. |
+| `kernel_block_driver` | **Kernel** | Prevents specific drivers from loading. |
+| `kernel_terminate` | **Kernel** | Unstoppable process termination. |
+| `kernel_antivm` | **Shield** | Hardware-level Sandbox/VM detection. |
+| `kernel_unhook_amsi` | **Bypass** | Removes AMSI hooks from all processes. |
+| `shadow_ps_protect` | **Shield** | Sets Pulsar as a Protected Process (PPL). |
+| `shadow_d dse_off`  | **Heresy** | Disables Driver Signature Enforcement. |
 
 ---
 
