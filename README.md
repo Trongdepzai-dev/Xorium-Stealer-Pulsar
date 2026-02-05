@@ -60,11 +60,17 @@ Survival isn't a goal; it's a right.
 
 | Sign | Force | Effect |
 | :--- | :--- | :--- |
-| `collect` | **Scraper** | Harvests 150+ targets (Browsers, Wallets, VPNs). |
-| `shadow_fullstealth` | **Ritual** | Full Process + Driver + ETW Cloaking. |
-| `shadow_nuke_edr` | **Cataclysm**| Destroys EDR callbacks. Leaves them paralyzed. |
-| `shadow_ps_protect` | **Shield** | Sets Pulsar as a Protected Process (PPL). |
-| `shadow_d dse_off` | **Heresy** | Disables Driver Signature Enforcement globally. |
+| `collect` | **Scraper** | Scans 150+ targets (Browsers, Wallets, VPNs, etc.) |
+| `shadow_fullstealth` | **Kernel** | Hide process + Hide driver + Disable ETW |
+| `shadow_ghost` | **Kernel** | Elevate to SYSTEM + Hide process |
+| `shadow_nuke_edr` | **Kernel** | Remove ALL EDR callbacks + Disable ETW |
+| `shadow_hide_c2port` | **Kernel** | Hide C2 port from netstat/network tools |
+| `shadow_inject_hijack`| **Kernel** | Stealthiest thread-hijacking injection |
+| `shadow_clear_logs` | **Kernel** | Clears Event Logs + WMI logs + Shell history |
+| `shadow_unhook_amsi` | **Kernel** | Removes AMSI hooks from all active processes |
+| `shadow_unhook_etw`  | **Kernel** | Disables ETW tracing for current session |
+| `shadow_ps_protect` | **Kernel** | Sets Pulsar as a Protected Process (PPL) |
+| `shadow_d dse_off`  | **Kernel** | Disables Driver Signature Enforcement globally |
 
 ---
 
