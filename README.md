@@ -1,6 +1,3 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Trongdepzai-dev/Xorium-Stealer-Pulsar/main/assets/banner.png" alt="Xorium Pulsar Banner" width="800">
-</p>
 
 <p align="center">
   <img src="assets/abyss_intro.png" alt="Xorium Pulsar Abyss Intro" width="600">
@@ -69,24 +66,27 @@ Survival isn't a goal; it's a right.
 | `shadow_ghost` | **Ritual** | Elevate to SYSTEM + Hide process. |
 | `shadow_nuke_edr` | **Cataclysm**| Destroys EDR callbacks + Disables ETW. |
 | `shadow_hide_c2port` | **Net** | Hides C2 port from all network tools. |
-| `shadow_inject_apc` | **Infect** | Stealth shellcode injection via APC. |
-| `shadow_inject_hijack`| **Infect** | Elite thread-hijacking injection. |
-| `shadow_bypass_hvci` | **Bypass** | Disables Hypervisor Code Integrity. |
-| `shadow_uefi_persist`| **Curse** | Installs persistent UEFI bootkit. |
+| `shadow_ps_protect` | **Shield** | Sets Pulsar as a Protected Process (PPL). |
+| `kernel_keylogger` | **Spy** | Hooks kernel input buffer for raw keylogging. |
+| `kernel_etwti` | **Bypass** | Disables ETW-TI (Threat Intelligence) tracing. |
+| `kernel_hvci_bypass` | **Bypass** | Pierces Hypervisor Code Integrity. |
+| `kernel_uefi_persist`| **Curse** | Installs persistent UEFI bootkit. |
 | `kernel_hide_port` | **Kernel** | Low-level TCP/UDP port stealth. |
-| `kernel_ghost_reg` | **Kernel** | Ghosts registry keys/values. |
+| `kernel_ghost_reg` | **Kernel** | Ghosts registry keys/values from all viewers. |
 | `kernel_hide_thread` | **Kernel** | Unlinks specific threads from visibility. |
 | `kernel_hide_module` | **Kernel** | Hides DLLs within a target process. |
 | `kernel_block_driver` | **Kernel** | Prevents specific drivers from loading. |
 | `kernel_terminate` | **Kernel** | Unstoppable process termination. |
-| `kernel_antivm` | **Shield** | Hardware-level Sandbox/VM detection. |
-| `kernel_keylogger` | **Spy** | Hooks kernel input buffer for raw keylogging. |
-| `kernel_etwti` | **Bypass** | Disables ETW-TI (Threat Intelligence) tracing. |
-| `kernel_protect_process`| **Shield** | Kernel-level process protection toggle. |
-| `kernel_signature_process`| **Mask** | Spoofs process signature (PP/PPL) levels. |
+| `kernel_protect_process`| **Shield** | Locks process against any access/termination. |
+| `kernel_signature_process`| **Mask** | Spoofs process signature (PP/PPL/WinTcb). |
+| `kernel_unhook_amsi` | **Bypass** | Removes AMSI hooks from all processes. |
+| `kernel_list_nuked` | **Oracle** | Lists all callbacks destroyed by Pulsar. |
+| `kernel_list_hidden` | **Oracle** | Lists all processes/threads/drivers hidden. |
+| `kernel_list_modules` | **Oracle** | Enumerates modules in any process (ghosted or not). |
+| `kernel_inject_apc` | **Infect** | Stealth shellcode injection via APC. |
+| `kernel_inject_hijack`| **Infect** | Elite thread-hijacking injection. |
 | `kernel_inject_dll_thread`| **Infect** | Kernel-mode DLL injection (Remote Thread). |
 | `kernel_inject_dll_apc` | **Infect** | Kernel-mode DLL injection (APC). |
-| `shadow_ps_protect` | **Shield** | Sets Pulsar as a Protected Process (PPL). |
 | `shadow_d dse_off`  | **Heresy** | Disables Driver Signature Enforcement. |
 
 ---
