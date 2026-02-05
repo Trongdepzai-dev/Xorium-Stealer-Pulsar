@@ -1,0 +1,11 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+D:\Xorium_Stealer_Pulsar\Xorium Stealer Pulsar\Pulsar.Plugin.Client\Stealer.Client\Pulsar\Plugins\Client\Stealer.cs(201,118): error CS1003: Syntax error, 'switch' expected [D:\Xorium_Stealer_Pulsar\Xorium Stealer Pulsar\Pulsar.Plugin.Client\Stealer.Client\Stealer.Client.csproj]
+
+Build FAILED.
+
+D:\Xorium_Stealer_Pulsar\Xorium Stealer Pulsar\Pulsar.Plugin.Client\Stealer.Client\Pulsar\Plugins\Client\Stealer.cs(201,118): error CS1003: Syntax error, 'switch' expected [D:\Xorium_Stealer_Pulsar\Xorium Stealer Pulsar\Pulsar.Plugin.Client\Stealer.Client\Stealer.Client.csproj]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:08.49

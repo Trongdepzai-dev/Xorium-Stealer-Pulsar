@@ -1,0 +1,45 @@
+**********************************************************************
+** Visual Studio 2026 Developer Command Prompt v18.1.1
+** Copyright (c) 2025 Microsoft Corporation
+**********************************************************************
+The system cannot find the file specified.
+[DEBUG:ext\vcvars.bat] Found potential v145 version file: 'Microsoft.VCToolsVersion.VC.14.50.18.0.txt'
+[DEBUG:ext\vcvars.bat] Testing v145 version file: 'Microsoft.VCToolsVersion.VC.14.50.18.0.txt'
+[vcvarsall.bat] Environment initialized for: 'x64'
+   Compiling winapi v0.3.9
+   Compiling libc v0.2.180
+   Compiling typenum v1.19.0
+   Compiling libudis86-sys v0.2.1
+error: linking with `link.exe` failed: exit code: 1181
+  |
+  = note: "D:\\buildtool\\VC\\Tools\\MSVC\\14.50.35717\\bin\\HostX64\\x64\\link.exe" "/NOLOGO" "C:\\Users\\ADMINI~1.ADM\\AppData\\Local\\Temp\\rustcFKTH0O\\symbols.o" "<2 object files omitted>" "D:\\Xorium_Stealer_Pulsar\\Xorium Stealer Pulsar\\shadow-main\\target\\release\\deps/{libcc-45cf3184a1a4225e.rlib,libfind_msvc_tools-a5854f160b8d9881.rlib,libshlex-d220c62a16fbcf74.rlib}" "C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\x86_64-pc-windows-msvc\\lib/{libstd-99a5467416e27682.rlib,libpanic_unwind-b2376f55ca9ba5db.rlib,libwindows_targets-e982c2634e026463.rlib,librustc_demangle-622607d70f9500c2.rlib,libstd_detect-402c0b1e8e67cb33.rlib,libhashbrown-d36035ae19bb0c8b.rlib,librustc_std_workspace_alloc-cb12c14614b55d43.rlib,libunwind-8e666946f8f5db2b.rlib,libcfg_if-ac9947000bdc169e.rlib,liballoc-4f54ad4ac4b0f4c5.rlib,librustc_std_workspace_core-ff8db640d177ed2a.rlib,libcore-745ff350a54e4299.rlib,libcompiler_builtins-b2f39c5f2779068f.rlib}" "kernel32.lib" "advapi32.lib" "ole32.lib" "oleaut32.lib" "kernel32.lib" "kernel32.lib" "advapi32.lib" "ntdll.lib" "userenv.lib" "ws2_32.lib" "dbghelp.lib" "/defaultlib:msvcrt" "/NXCOMPAT" "/OUT:D:\\Xorium_Stealer_Pulsar\\Xorium Stealer Pulsar\\shadow-main\\target\\release\\build\\libudis86-sys-046ca23463f7d6b0\\build_script_build-046ca23463f7d6b0.exe" "/OPT:REF,NOICF" "/DEBUG" "/PDBALTPATH:%_PDB%" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\intrinsic.natvis" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\liballoc.natvis" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\libcore.natvis" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\libstd.natvis"
+  = note: some arguments are omitted. use `--verbose` to show all linker arguments
+  = note: LINK : fatal error LNK1181: cannot open input file 'kernel32.lib'ΓÉì
+          
+
+error: could not compile `libudis86-sys` (build script) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: linking with `link.exe` failed: exit code: 1181
+  |
+  = note: "D:\\buildtool\\VC\\Tools\\MSVC\\14.50.35717\\bin\\HostX64\\x64\\link.exe" "/NOLOGO" "C:\\Users\\ADMINI~1.ADM\\AppData\\Local\\Temp\\rustctkHvLm\\symbols.o" "<4 object files omitted>" "C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\x86_64-pc-windows-msvc\\lib/{libstd-99a5467416e27682.rlib,libpanic_unwind-b2376f55ca9ba5db.rlib,libwindows_targets-e982c2634e026463.rlib,librustc_demangle-622607d70f9500c2.rlib,libstd_detect-402c0b1e8e67cb33.rlib,libhashbrown-d36035ae19bb0c8b.rlib,librustc_std_workspace_alloc-cb12c14614b55d43.rlib,libunwind-8e666946f8f5db2b.rlib,libcfg_if-ac9947000bdc169e.rlib,liballoc-4f54ad4ac4b0f4c5.rlib,librustc_std_workspace_core-ff8db640d177ed2a.rlib,libcore-745ff350a54e4299.rlib,libcompiler_builtins-b2f39c5f2779068f.rlib}" "kernel32.lib" "kernel32.lib" "advapi32.lib" "ntdll.lib" "userenv.lib" "ws2_32.lib" "dbghelp.lib" "/defaultlib:msvcrt" "/NXCOMPAT" "/OUT:D:\\Xorium_Stealer_Pulsar\\Xorium Stealer Pulsar\\shadow-main\\target\\release\\build\\typenum-cb3067836a21a199\\build_script_build-cb3067836a21a199.exe" "/OPT:REF,NOICF" "/DEBUG" "/PDBALTPATH:%_PDB%" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\intrinsic.natvis" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\liballoc.natvis" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\libcore.natvis" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\libstd.natvis"
+  = note: some arguments are omitted. use `--verbose` to show all linker arguments
+  = note: LINK : fatal error LNK1181: cannot open input file 'kernel32.lib'ΓÉì
+          
+
+error: could not compile `typenum` (build script) due to 1 previous error
+error: linking with `link.exe` failed: exit code: 1181
+  |
+  = note: "D:\\buildtool\\VC\\Tools\\MSVC\\14.50.35717\\bin\\HostX64\\x64\\link.exe" "/NOLOGO" "C:\\Users\\ADMINI~1.ADM\\AppData\\Local\\Temp\\rustcXt7Qa9\\symbols.o" "<5 object files omitted>" "C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\x86_64-pc-windows-msvc\\lib/{libstd-99a5467416e27682.rlib,libpanic_unwind-b2376f55ca9ba5db.rlib,libwindows_targets-e982c2634e026463.rlib,librustc_demangle-622607d70f9500c2.rlib,libstd_detect-402c0b1e8e67cb33.rlib,libhashbrown-d36035ae19bb0c8b.rlib,librustc_std_workspace_alloc-cb12c14614b55d43.rlib,libunwind-8e666946f8f5db2b.rlib,libcfg_if-ac9947000bdc169e.rlib,liballoc-4f54ad4ac4b0f4c5.rlib,librustc_std_workspace_core-ff8db640d177ed2a.rlib,libcore-745ff350a54e4299.rlib,libcompiler_builtins-b2f39c5f2779068f.rlib}" "kernel32.lib" "kernel32.lib" "advapi32.lib" "ntdll.lib" "userenv.lib" "ws2_32.lib" "dbghelp.lib" "/defaultlib:msvcrt" "/NXCOMPAT" "/OUT:D:\\Xorium_Stealer_Pulsar\\Xorium Stealer Pulsar\\shadow-main\\target\\release\\build\\libc-93b3e2674e8f11e4\\build_script_build-93b3e2674e8f11e4.exe" "/OPT:REF,NOICF" "/DEBUG" "/PDBALTPATH:%_PDB%" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\intrinsic.natvis" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\liballoc.natvis" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\libcore.natvis" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\libstd.natvis"
+  = note: some arguments are omitted. use `--verbose` to show all linker arguments
+  = note: LINK : fatal error LNK1181: cannot open input file 'kernel32.lib'ΓÉì
+          
+
+error: linking with `link.exe` failed: exit code: 1181
+  |
+  = note: "D:\\buildtool\\VC\\Tools\\MSVC\\14.50.35717\\bin\\HostX64\\x64\\link.exe" "/NOLOGO" "C:\\Users\\ADMINI~1.ADM\\AppData\\Local\\Temp\\rustczxXxpC\\symbols.o" "<6 object files omitted>" "C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\x86_64-pc-windows-msvc\\lib/{libstd-99a5467416e27682.rlib,libpanic_unwind-b2376f55ca9ba5db.rlib,libwindows_targets-e982c2634e026463.rlib,librustc_demangle-622607d70f9500c2.rlib,libstd_detect-402c0b1e8e67cb33.rlib,libhashbrown-d36035ae19bb0c8b.rlib,librustc_std_workspace_alloc-cb12c14614b55d43.rlib,libunwind-8e666946f8f5db2b.rlib,libcfg_if-ac9947000bdc169e.rlib,liballoc-4f54ad4ac4b0f4c5.rlib,librustc_std_workspace_core-ff8db640d177ed2a.rlib,libcore-745ff350a54e4299.rlib,libcompiler_builtins-b2f39c5f2779068f.rlib}" "kernel32.lib" "kernel32.lib" "advapi32.lib" "ntdll.lib" "userenv.lib" "ws2_32.lib" "dbghelp.lib" "/defaultlib:msvcrt" "/NXCOMPAT" "/OUT:D:\\Xorium_Stealer_Pulsar\\Xorium Stealer Pulsar\\shadow-main\\target\\release\\build\\winapi-f036edff94e9adf0\\build_script_build-f036edff94e9adf0.exe" "/OPT:REF,NOICF" "/DEBUG" "/PDBALTPATH:%_PDB%" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\intrinsic.natvis" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\liballoc.natvis" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\libcore.natvis" "/NATVIS:C:\\Users\\Administrator.ADMIN\\.rustup\\toolchains\\1.85.0-x86_64-pc-windows-msvc\\lib\\rustlib\\etc\\libstd.natvis"
+  = note: some arguments are omitted. use `--verbose` to show all linker arguments
+  = note: LINK : fatal error LNK1181: cannot open input file 'kernel32.lib'ΓÉì
+          
+
+error: could not compile `libc` (build script) due to 1 previous error
+error: could not compile `winapi` (build script) due to 1 previous error

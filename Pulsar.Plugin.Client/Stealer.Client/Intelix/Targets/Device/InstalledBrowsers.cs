@@ -105,7 +105,7 @@ public class InstalledBrowsers : ITarget
         browsersFromRegistry = false;
       }
     }
-    return browsersFromRegistry;
+
   }
 
   private static InstalledBrowsers.Browser GetEdgeLegacyVersion()

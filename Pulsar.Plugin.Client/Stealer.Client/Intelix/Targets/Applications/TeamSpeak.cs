@@ -27,7 +27,7 @@ public class TeamSpeak : ITarget
     {
       Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "TeamSpeak 3 Client"),
       Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "TeamSpeak 3 Client")
-    }).FirstOrDefault<string>(TeamSpeak.\u003C\u003EO.\u003C0\u003E__Exists ?? (TeamSpeak.\u003C\u003EO.\u003C0\u003E__Exists = new Func<string, bool>(Directory.Exists)));
+    }).FirstOrDefault(Directory.Exists);
     if (string.IsNullOrEmpty(path1))
       return;
     string path2 = Path.Combine(path1, "config", "chats");

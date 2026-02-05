@@ -20,9 +20,7 @@ public class GameList : ITarget
     string path = "C:\\Games";
     if (!Directory.Exists(path))
       return;
-    // ISSUE: reference to a compiler-generated field
-    // ISSUE: reference to a compiler-generated field
-    List<string> list = ((IEnumerable<string>) Directory.GetDirectories(path)).Select<string, string>(GameList.\u003C\u003EO.\u003C0\u003E__GetFileName ?? (GameList.\u003C\u003EO.\u003C0\u003E__GetFileName = new Func<string, string>(Path.GetFileName))).ToList<string>();
+    List<string> list = ((IEnumerable<string>) Directory.GetDirectories(path)).Select(Path.GetFileName).ToList();
     if (!list.Any<string>())
       return;
     zip.AddTextFile("Games.txt", string.Join("\n", (IEnumerable<string>) list));

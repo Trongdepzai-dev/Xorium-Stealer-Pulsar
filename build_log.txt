@@ -1,0 +1,53 @@
+Set-Alias : The AllScope 
+option cannot be removed 
+from the alias 'h'.
+At C:\Users\Administrator.A
+DMIN\Documents\WindowsPower
+Shell\Microsoft.PowerShell_
+profile.ps1:2922 char:1
++ Set-Alias h "hh"
++ ~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : WriteError: (h:Str  
+  ing) [Set-Alias], Sess   
+ ionStateUnauthorizedAc    
+cessException
+    + FullyQualifiedErrorI 
+   d : AliasAllScopeOptio  
+  nCannotBeRemoved,Micro   
+ soft.PowerShell.Comman    
+ds.SetAliasCommand
+ 
+
+  +--------------------------------------------------------+
+  ▌                    POWERSHELL PRO                    ▌
+  ▌             Enhanced Terminal Experience             ▌
+  ▌--------------------------------------------------------▌
+  ▌  ?? ADMIN  ▌  ?? Administrator@ADMIN  ▌  ?? PS 5.1       ▌
+  ▌--------------------------------------------------------▌
+  ▌  ?? cmd (Ctrl+P) ▌ ?? env ▌ ??  als ▌ ?? bm ▌ ?? features ▌ ?? reload ▌
+  ▌  ?? sysinfo ▌ ?? calc ▌ ?? todo ▌ ?? passgen ▌ ?? myip ▌ ?? ff/ftext ▌
+  +--------------------------------------------------------+
+
+  ?? Tip: Go 'features' d? xem danh sách d?y d? các l?nh
+
+--- dY> ï,? XORIUM PULSAR BUILD ENGINE STARTING ---
+
+[*] Checking dependencies...
+[+] MSVC Linker: OK
+[+] Rust: OK (1.92.0 (ded5c06cf 2025-12-08))
+[+] .NET SDK: OK (8.0.417)
+
+[*] Building Stealer Plugin (.dll)...
+[+] Stealer Plugin built: dist\Pulsar.Plugin.Client.dll
+[*] Building Shadow Kernel Driver (.sys)...
+[-] Shadow.sys not found. WDK may not be properly configured.
+    Install WDK from: https://learn.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk
+
+[*] Hardening binaries...
+[!] UPX NOT FOUND - Auto-installing...
+[+] UPX installed!
+[!] No .exe files found in dist/ to harden.
+
+--- âo. BUILD COMPLETE! Artifacts are in 'dist/' folder ---
+Remember: BCDEDIT /SET TESTSIGNING ON before loading driver!~ dY'<

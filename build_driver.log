@@ -1,0 +1,65 @@
+   Compiling winapi v0.3.9
+   Compiling libc v0.2.180
+   Compiling typenum v1.19.0
+   Compiling libudis86-sys v0.2.1
+   Compiling generic-array v0.14.9
+   Compiling bitflags v1.3.2
+   Compiling cfg-if v1.0.4
+   Compiling slice-pool v0.4.1
+   Compiling lazy_static v1.5.0
+   Compiling mmap-fixed v0.1.6
+   Compiling region v2.2.0
+   Compiling detour v0.8.1
+error[E0554]: `#![feature]` may not be used on the stable release channel
+ --> C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\detour-0.8.1\src\lib.rs:4:3
+  |
+4 |   feature(const_fn_trait_bound, unboxed_closures, abi_thiscall)
+  |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: the feature `abi_thiscall` has been stable since `1.73.0` and no longer requires an attribute to enable
+  = help: the feature `abi_thiscall` has been stable since `1.73.0` and no longer requires an attribute to enable
+
+error[E0059]: type parameter to bare `Fn` trait must be a tuple
+   --> C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\detour-0.8.1\src\detours\statik.rs:106:8
+    |
+106 |     D: Fn<T::Arguments, Output = T::Output> + Send + 'static,
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `Tuple` is not implemented for `<T as Function>::Arguments`
+    |
+note: required by a bound in `Fn`
+   --> /rustc/4d91de4e48198da2e33413efdcd9cd2cc0c46688\library\core\src\ops\function.rs:76:1
+help: consider further restricting the associated type
+    |
+106 |     D: Fn<T::Arguments, Output = T::Output> + Send + 'static, <T as Function>::Arguments: Tuple
+    |                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+error[E0059]: type parameter to bare `Fn` trait must be a tuple
+   --> C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\detour-0.8.1\src\detours\statik.rs:157:8
+    |
+157 |     C: Fn<T::Arguments, Output = T::Output> + Send + 'static,
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `Tuple` is not implemented for `<T as Function>::Arguments`
+    |
+note: required by a bound in `Fn`
+   --> /rustc/4d91de4e48198da2e33413efdcd9cd2cc0c46688\library\core\src\ops\function.rs:76:1
+help: consider further restricting the associated type
+    |
+157 |     C: Fn<T::Arguments, Output = T::Output> + Send + 'static, <T as Function>::Arguments: Tuple
+    |                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+error[E0277]: `<T as Function>::Arguments` is not a tuple
+   --> C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\detour-0.8.1\src\detours\statik.rs:180:5
+    |
+180 | /     unsafe { self.closure.load(Ordering::SeqCst).as_ref() }
+181 | |       .ok_or(Error::NotInitialized)
+182 | |       .expect("retrieving detour closure")
+    | |__________________________________________^ the trait `Tuple` is not implemented for `<T as Function>::Arguments`
+    |
+    = note: required for `Box<dyn Fn<<T as Function>::Arguments, Output = <T as Function>::Output>>` to implement `Fn<<T as Function>::Arguments>`
+    = note: required for the cast from `&Box<dyn Fn<<T as Function>::Arguments, Output = <T as Function>::Output>>` to `&dyn Fn<<T as Function>::Arguments, Output = <T as Function>::Output>`
+help: consider further restricting the associated type
+    |
+178 |   pub fn __detour(&self) -> &dyn Fn<T::Arguments, Output = T::Output> where <T as Function>::Arguments: Tuple {
+    |                                                                       +++++++++++++++++++++++++++++++++++++++
+
+Some errors have detailed explanations: E0059, E0277, E0554.
+For more information about an error, try `rustc --explain E0059`.
+error: could not compile `detour` (lib) due to 4 previous errors

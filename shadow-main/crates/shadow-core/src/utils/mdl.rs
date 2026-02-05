@@ -7,6 +7,11 @@ use wdk_sys::{
     MdlMappingNoExecute, MDL, PUCHAR, _LOCK_OPERATION::IoModifyAccess,
     _MEMORY_CACHING_TYPE::MmCached, _MM_PAGE_PRIORITY::HighPagePriority, _MODE::KernelMode,
 };
+use wdk_sys::ntddk::KeGetCurrentIrql;
+use spin::Mutex;
+
+/// Global lock to prevent concurrent memory modifications which can lead to race conditions.
+static MDL_LOCK: Mutex<()> = Mutex::new(());
 
 /// Memory Descriptor List (MDL) wrapper for safe kernel memory modification.
 pub struct Mdl {
@@ -15,6 +20,9 @@ pub struct Mdl {
 
     /// Mapped kernel address of the locked memory.
     mapped_address: PUCHAR,
+
+    /// Guard to release the lock when the MDL is dropped.
+    _guard: Option<spin::MutexGuard<'static, ()>>,
 }
 
 impl Mdl {
@@ -31,6 +39,14 @@ impl Mdl {
         }
 
         unsafe {
+            // MmProbeAndLockPages MUST be called at IRQL <= APC_LEVEL
+            if KeGetCurrentIrql() > wdk_sys::APC_LEVEL as u8 {
+                wdk::println!("IRQL too high for MmProbeAndLockPages: {}", KeGetCurrentIrql());
+                return None;
+            }
+
+            // Acquire global lock
+            let guard = MDL_LOCK.lock();
             // Allocate an MDL
             let mdl = IoAllocateMdl(dest as _, size as u32, 0, 0, null_mut());
             if mdl.is_null() {
@@ -60,6 +76,7 @@ impl Mdl {
             Some(Self {
                 mdl,
                 mapped_address,
+                _guard: Some(guard),
             })
         }
     }

