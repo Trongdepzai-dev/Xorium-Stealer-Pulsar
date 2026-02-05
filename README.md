@@ -59,35 +59,35 @@ Survival isn't a goal; it's a right.
 
 ## 📜 FORBIDDEN COMMANDS
 
-| Sign | Force | Effect |
-| :--- | :--- | :--- |
-| `collect` | **Scraper** | Scans 150+ targets (Browsers, Wallets, VPNs, etc.) |
-| `shadow_fullstealth` | **Ritual** | Full Process + Driver + ETW Cloaking. |
-| `shadow_ghost` | **Ritual** | Elevate to SYSTEM + Hide process. |
-| `shadow_nuke_edr` | **Cataclysm**| Destroys EDR callbacks + Disables ETW. |
-| `shadow_hide_c2port` | **Net** | Hides C2 port from all network tools. |
-| `shadow_ps_protect` | **Shield** | Sets Pulsar as a Protected Process (PPL). |
-| `kernel_keylogger` | **Spy** | Hooks kernel input buffer for raw keylogging. |
-| `kernel_etwti` | **Bypass** | Disables ETW-TI (Threat Intelligence) tracing. |
-| `kernel_hvci_bypass` | **Bypass** | Pierces Hypervisor Code Integrity. |
-| `kernel_uefi_persist`| **Curse** | Installs persistent UEFI bootkit. |
-| `kernel_hide_port` | **Kernel** | Low-level TCP/UDP port stealth. |
-| `kernel_ghost_reg` | **Kernel** | Ghosts registry keys/values from all viewers. |
-| `kernel_hide_thread` | **Kernel** | Unlinks specific threads from visibility. |
-| `kernel_hide_module` | **Kernel** | Hides DLLs within a target process. |
-| `kernel_block_driver` | **Kernel** | Prevents specific drivers from loading. |
-| `kernel_terminate` | **Kernel** | Unstoppable process termination. |
-| `kernel_protect_process`| **Shield** | Locks process against any access/termination. |
-| `kernel_signature_process`| **Mask** | Spoofs process signature (PP/PPL/WinTcb). |
-| `kernel_unhook_amsi` | **Bypass** | Removes AMSI hooks from all processes. |
-| `kernel_list_nuked` | **Oracle** | Lists all callbacks destroyed by Pulsar. |
-| `kernel_list_hidden` | **Oracle** | Lists all processes/threads/drivers hidden. |
-| `kernel_list_modules` | **Oracle** | Enumerates modules in any process (ghosted or not). |
-| `kernel_inject_apc` | **Infect** | Stealth shellcode injection via APC. |
-| `kernel_inject_hijack`| **Infect** | Elite thread-hijacking injection. |
-| `kernel_inject_dll_thread`| **Infect** | Kernel-mode DLL injection (Remote Thread). |
-| `kernel_inject_dll_apc` | **Infect** | Kernel-mode DLL injection (APC). |
-| `shadow_d dse_off`  | **Heresy** | Disables Driver Signature Enforcement. |
+### Forbidden Commands (C2-Operational)
+| Sign | Force | Effect | Parameters |
+| :--- | :--- | :--- | :--- |
+| `collect` | **Scraper** | Scans 150+ targets (Browsers, Wallets, etc.) | N/A |
+| `shadow_fullstealth`| **Ritual** | Process + Driver + ETW Cloaking (All-in-one). | N/A |
+| `shadow_ghost` | **Ritual** | Elevate to SYSTEM + Hide process. | N/A |
+| `shadow_nuke_edr` | **Cataclysm**| Best-effort wipe of all EDR callbacks + ETW. | N/A |
+| `shadow_hide_c2port`| **Net** | Hides connection from netstat/viewers. | `port` |
+| `shadow_inject_apc` | **Infect** | Stealth shellcode injection via APC. | `pid\|path` |
+| `shadow_inject_hijack`| **Infect** | Elite thread-hijacking injection. | `pid\|path` |
+| `shadow_bypass_hvci` | **Bypass** | Disables Hypervisor Code Integrity. | N/A |
+| `shadow_uefi_persist`| **Curse** | Installs persistent UEFI bootkit. | N/A |
+| `kernel_hide_port` | **Kernel** | Low-level TCP/UDP port stealth. | `proto\|port` |
+| `kernel_clean_callbacks`| **Kernel** | Simplified mass-removal of Process/Thread/Image. | N/A |
+| `kernel_ghost_reg` | **Kernel** | Ghosts registry keys/values from all viewers. | `key\|value` |
+| `kernel_hide_thread` | **Kernel** | Unlinks specific threads from visibility. | `tid` |
+| `kernel_hide_module` | **Kernel** | Hides DLLs within a target process. | `pid\|modName` |
+| `kernel_terminate` | **Kernel** | Unstoppable kernel-level process termination. | `pid` |
+| `kernel_block_driver` | **Kernel** | Prevents specific drivers from loading. | `driverName` |
+| `kernel_protect_reg_key`| **Shield** | Locks registry key against modification. | `keyPath` |
+| `kernel_protect_reg_val`| **Shield** | Locks registry value against modification. | `key\|value` |
+| `kernel_hvci_bypass` | **Bypass** | (Raw) Trigger HVCI bypass attempt. | N/A |
+| `kernel_uefi_persist`| **Curse** | (Raw) Trigger UEFI persistence attempt. | N/A |
+| `kernel_antivm` | **Shield** | Triggers deep kernel Anti-VM/Sandbox check. | N/A |
+
+> [!TIP]
+> **Manual Rituals**: Commands like `kernel_protect_process` and `kernel_signature_process` are fully implemented in the Hardware Driver and ShadowWrapper, but require manual invocation or C2 mapping updates to be used via the remote dispatcher.
+
+---
 
 ---
 
