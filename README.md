@@ -2,6 +2,10 @@
   <img src="https://raw.githubusercontent.com/Trongdepzai-dev/Xorium-Stealer-Pulsar/main/assets/banner.png" alt="Xorium Pulsar Banner" width="800">
 </p>
 
+<p align="center">
+  <img src="assets/abyss_intro.png" alt="Xorium Pulsar Abyss Intro" width="600">
+</p>
+
 # 👹 XORIUM STEALER PULSAR: THE ABYSS EDITION 👹
 ### *"Software is a soul. Pulsar is a Curse."*
 
