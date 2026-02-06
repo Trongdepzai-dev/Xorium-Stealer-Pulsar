@@ -90,7 +90,7 @@ namespace Intelix.PrivilegeEscalation
             try
             {
                 // Try to find GodPotato.exe in the project root first
-                string projectRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string projectRoot = AppContext.BaseDirectory;
                 string[] searchPaths = new string[]
                 {
                     Path.Combine(projectRoot, PotatoName),

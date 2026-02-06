@@ -24,9 +24,9 @@ public static class IpApi
         return IpApi._cachedIp;
       try
       {
-        using (WebClient webClient = new WebClient())
+        using (System.Net.Http.HttpClient client = new System.Net.Http.HttpClient())
         {
-          string str = webClient.DownloadString("http://icanhazip.com");
+          string str = client.GetStringAsync("http://icanhazip.com").Result;
           if (!string.IsNullOrEmpty(str))
             IpApi._cachedIp = str.Trim();
         }

