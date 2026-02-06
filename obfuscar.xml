@@ -1,0 +1,19 @@
+<?xml version='1.0'?>
+<Obfuscar>
+  <Var name="InPath" value="dist" />
+  <Var name="OutPath" value="dist\obfuscated" />
+  <Var name="KeepPublicApi" value="false" />
+  <Var name="HideStrings" value="true" />
+  <Var name="RenameProperties" value="true" />
+  <Var name="RenameEvents" value="true" />
+  <Var name="RenameFields" value="true" />
+  <Var name="UseUnicodeNames" value="true" />
+  <Var name="Analyze" value="true" />
+  <Var name="AnalyzeLog" value="obfuscation_log.txt" />
+
+  <Module file="$(InPath)\nvhda64v.dll" />
+  
+  <!-- Protect dependencies too to blend them in -->
+  <Module file="$(InPath)\System.Management.dll" />
+  <Module file="$(InPath)\System.IO.Hashing.dll" />
+</Obfuscar>

