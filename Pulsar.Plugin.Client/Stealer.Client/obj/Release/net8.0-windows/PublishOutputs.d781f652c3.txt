@@ -1,5 +1,0 @@
-D:\Xorium_Stealer_Pulsar\Xorium Stealer Pulsar\dist\Pulsar.Plugin.Client.dll
-D:\Xorium_Stealer_Pulsar\Xorium Stealer Pulsar\dist\Pulsar.Plugin.Client.deps.json
-D:\Xorium_Stealer_Pulsar\Xorium Stealer Pulsar\dist\System.IO.Hashing.dll
-D:\Xorium_Stealer_Pulsar\Xorium Stealer Pulsar\dist\System.Management.dll
-D:\Xorium_Stealer_Pulsar\Xorium Stealer Pulsar\dist\runtimes\win\lib\net8.0\System.Management.dll

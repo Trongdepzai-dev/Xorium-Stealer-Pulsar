@@ -1,0 +1,10 @@
+D:\Xorium_Stealer_Pulsar\Xorium Stealer Pulsar\shadow-main\driver\target\release\deps\log-99454eb424ea2747.d: C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\lib.rs C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\macros.rs C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\serde.rs C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\__private_api.rs
+
+D:\Xorium_Stealer_Pulsar\Xorium Stealer Pulsar\shadow-main\driver\target\release\deps\liblog-99454eb424ea2747.rlib: C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\lib.rs C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\macros.rs C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\serde.rs C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\__private_api.rs
+
+D:\Xorium_Stealer_Pulsar\Xorium Stealer Pulsar\shadow-main\driver\target\release\deps\liblog-99454eb424ea2747.rmeta: C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\lib.rs C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\macros.rs C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\serde.rs C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\__private_api.rs
+
+C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\lib.rs:
+C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\macros.rs:
+C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\serde.rs:
+C:\Users\Administrator.ADMIN\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\log-0.4.27\src\__private_api.rs:

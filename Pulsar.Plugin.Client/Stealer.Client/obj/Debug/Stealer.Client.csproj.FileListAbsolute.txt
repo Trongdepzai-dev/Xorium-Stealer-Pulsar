@@ -1,2 +1,0 @@
-C:\Users\Administrator\Documents\Pulsar.Plugin.Client\Stealer.Client\obj\Debug\Stealer.Client.csproj.AssemblyReference.cache
-C:\Users\Administrator\Documents\Pulsar.Plugin.Client\Stealer.Client\obj\Debug\Stealer.Client.csproj.CoreCompileInputs.cache
