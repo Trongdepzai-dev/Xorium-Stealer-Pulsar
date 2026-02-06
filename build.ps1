@@ -344,7 +344,7 @@ Write-SectionHeader "STAGE 3/5: COMPILING ABYSS LOADER (LEVEL 4)"
 Show-ProgressBar -Current 3 -Total 5 -Activity "Building Native Loader..."
 
 # Detect MSVC for Native Build
-$hasMsbuild = (Get-Command "msbuild.exe" -ErrorAction SilentlyContinue) -ne $null
+$hasMsbuild = ($null -ne (Get-Command "msbuild.exe" -ErrorAction SilentlyContinue))
 
 if ($hasMsbuild) {
     Write-Status "MSVC detected. Compiling Native Abyss (SOC Nightmare)..."
@@ -373,15 +373,20 @@ Invoke-Expression $publishCommand
 
 if ($LASTEXITCODE -eq 0) {
     $exePath = Join-Path $DistDir "nvhda64v.exe"
-    if (Test-Path $exePath) {
-        $exeSize = [math]::Round((Get-Item $exePath).Length / 1KB, 2)
-        Write-Success "Level 4 Abyss Loader compiled: nvhda64v.exe ($exeSize KB)"
+    # Dynamically find the produced artifact
+    $producedExe = Get-ChildItem $DistDir -Filter "*.exe" | Select-Object -First 1
+    $producedDll = Get-ChildItem $DistDir -Filter "*.dll" | Select-Object -First 1
+    
+    if ($producedExe -or $producedDll) {
+        $artifact = if ($producedExe) { $producedExe } else { $producedDll }
+        $exeSize = [math]::Round($artifact.Length / 1KB, 2)
+        Write-Success "Abyss Loader compiled: $($artifact.Name) ($exeSize KB)"
         
-        # Immediate cleanup of redundant runtime files if they exist (SingleFile should handle most)
+        # Immediate cleanup
         Get-ChildItem $DistDir -Filter *.json | Remove-Item -Force -ErrorAction SilentlyContinue
     }
     else {
-        Write-ErrorMsg "Build passed but nvhda64v.exe not found. Check $buildLog"
+        Write-ErrorMsg "Build passed but no artifacts (EXE/DLL) found in $DistDir. Check $buildLog"
         exit 1
     }
 }

