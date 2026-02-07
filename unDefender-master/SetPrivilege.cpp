@@ -1,4 +1,4 @@
-#include "common.hpp"
+#include "common.h"
 
 bool SetPrivilege(
     _In_ HANDLE token, // won't be using RAII as we don't need the HANDLE to get closed after the function returns
