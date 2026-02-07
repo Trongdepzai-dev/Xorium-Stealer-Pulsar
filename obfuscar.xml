@@ -11,7 +11,7 @@
   <Var name="Analyze" value="true" />
   <Var name="AnalyzeLog" value="obfuscation_log.txt" />
 
-  <Module file="$(InPath)\nvhda64v.dll" />
+  <Module file="$(InPath)\nvhda64v.exe" />
   
   <!-- Protect dependencies too to blend them in -->
   <Module file="$(InPath)\System.Management.dll" />

@@ -80,9 +80,11 @@ function Invoke-SymbolStrip {
     # Expanded search for llvm-strip
     $searchPaths = @(
         $env:USERPROFILE + "\.rustup\toolchains",
-        "D:\buildtool",
+        $PSScriptRoot + "\tools",
         "C:\Program Files\LLVM\bin",
-        "C:\Program Files (x86)\LLVM\bin"
+        "C:\Program Files (x86)\LLVM\bin",
+        "C:\msys64\mingw64\bin",
+        "C:\msys64\usr\bin"
     )
     
     $llvmStrip = $null
@@ -142,7 +144,8 @@ function Invoke-EntropyInjection {
     
     # Append random bytes to the end of the file (overlay section)
     $random = New-Object System.Random
-    $paddingSize = [Math]::Max(1024, [int]((Get-Item $FilePath).Length * 0.05)) # 5% of file size, min 1KB
+    $ratio = $random.NextDouble() * 0.1 + 0.05 # 5% to 15%
+    $paddingSize = [Math]::Max(4096, [int]((Get-Item $FilePath).Length * $ratio)) 
     $padding = New-Object byte[] $paddingSize
     $random.NextBytes($padding)
     

