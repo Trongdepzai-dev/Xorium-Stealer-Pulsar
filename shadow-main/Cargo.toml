@@ -8,10 +8,11 @@ crate-type = ["cdylib"]
 
 [dependencies]
 winapi = { version = "0.3.9", features = ["sysinfoapi", "processthreadsapi", "minwindef", "ntdef", "ntstatus", "libloaderapi", "winerror", "memoryapi", "handleapi", "winnt", "synchapi"] }
-detour = "0.8.0"
+retour = "0.3"
 lazy_static = "1.4.0"
 libc = "0.2"
-obfstr = "0.4"  # Compile-time string obfuscation (Abyss Edition)
+obfstr = "0.4"
+log = "0.4"  # Compile-time string obfuscation (Abyss Edition)
 
 [profile.release]
 opt-level = "z"     # Optimize for size

